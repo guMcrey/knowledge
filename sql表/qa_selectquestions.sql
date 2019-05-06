@@ -1,0 +1,2 @@
+INSERT INTO `qa_selectquestions` (`id`, `title`, `content`, `type`, `correct_code`, `created_time`, `updated_time`, `analyzations`, `level`, `score`) VALUES (1, 'test', '11111111111', 0, '11111111111', '2019-5-3 16:25:30', '2019-5-3 16:25:30', '1111111111111111', 0, 10);
+INSERT INTO `qa_selectquestions` (`id`, `title`, `content`, `type`, `correct_code`, `created_time`, `updated_time`, `analyzations`, `level`, `score`) VALUES (2, '第二题', '第二题的标题', 0, '2', '2019-5-3 17:12:48', '2019-5-3 17:12:48', '这部分是解析', 0, 10);
