@@ -5,39 +5,32 @@
       <div class="ask-top">
         <div class="ask-button" @click="askQuestion()">我有问题，我要提问！</div>
       </div>
-      <div class="ask_main">
+      <div class="ask_main" @click="viewDetail(item.id)" v-for="(item,index) in questionList" :key="index">
         <div class="amIn">
-          <div class="AskItemList" @click="viewDetail()">
+          <div class="AskItemList">
             <div class="top">
               <div class="info">
-                <span style="color:#666;">2小时前&nbsp;</span>
+                <span style="color:#666;">{{item.updated_time}}&nbsp;</span>
                 <span>来自&nbsp;</span>
-                <a href class="uname">xxx用户昵称</a>
+                <a href class="uname">{{item.owner}}</a>
                 <span>&nbsp;的提问</span>
-                <a class="title">如何在dxf文件中添加新图层及在新添图层中添加实体信息？</a>
+                <a class="title">{{item.title}}</a>
               </div>
               <div class="da">
                 <span>
-                  <em>24</em>
+                  <em>{{item.answers.length}}</em>
                   <dl>已有回答</dl>
                 </span>
               </div>
             </div>
-            <div
-              class="desc"
-            >拦截所有的浏览器请求 access="ROLE_ADMIN" 只有ROLE_ADMIN角色的用才可以访问 规则角色名必须以ROLE_开头 为啥都得以ROLE_开头 还必须得大写 我试了小写role都不..</div>
+            <div class="desc">{{item.content}}</div>
             <div class="tags">
-              <a href>html</a>
+              <a href>{{item.type}}</a>
               <div class="Appreciation">
                 <i></i>
-                <span>25</span>
+                <span>{{item.score}}</span>
               </div>
-              <div class="share_bar_con">
-                <span>
-                  <dl>浏览量</dl>
-                  <em>(16)</em>
-                </span>
-              </div>
+              <div class="share_bar_con"></div>
             </div>
           </div>
         </div>
@@ -49,14 +42,57 @@
 <script>
 import SdHeader from "~/components/navBar";
 import PageFooter from "~/components/pageFooter";
+import { apiGetQuestionList } from "~/servers/api/discuss";
+import { apiUserDetail } from "~/servers/api/user";
+// 积分列表
+const scoreMap = {
+  1: "5分",
+  2: "10分",
+  3: "15分",
+  4: "20分",
+}
+//问题类型
+const typeMap = {
+  1: "社会民生",
+  2: "健康生活",
+  3: "文化艺术",
+  4: "电脑网络",
+  5: "科学教育",
+  6: "经济金融",
+  7: "医疗卫生",
+  8: "电子数码",
+  9: "心理分析"
+};
 export default {
-  created() {},
+  data() {
+    return {
+      type: '', // 问题列表
+      questionList: [] // 问题列表
+    };
+  },
+  created() {
+    this.getQuestionList();
+  },
   methods: {
-    viewDetail() {
-      this.$router.push("./visit");
+    async getQuestionList() {
+      // 获取个人详情
+      const userInfo = await apiUserDetail("get")
+      
+      // 获取问题列表
+      const data = await apiGetQuestionList("get");
+      this.questionList = data.results;
+      this.type = this.questionList.forEach(res => {
+         res.type = typeMap[res.type]
+         res.score = scoreMap[res.score]
+         return res.type, res.score
+      })
+    },
+    // 点击问题列表查看详情
+    viewDetail(item) {
+      this.$router.push(`./visit?question_id=${item}`);
     },
     askQuestion() {
-      this.$router.push('./askQuestion')
+      this.$router.push("./askQuestion");
     }
   },
   components: {
@@ -68,20 +104,20 @@ export default {
 <style scoped>
 .root {
   background: #f5f5f5;
-  height: 100vh;
   padding-top: 60px;
 }
 .ask-button {
   display: block;
-  background-color: rgba(245,173,27,.8);
+  background-color: rgba(245, 173, 27, 0.8);
   font: 15px/50px "microsoft yahei";
   color: #fff;
   text-align: center;
   border-radius: 3px;
-  border: 1px solid rgba(245,173,27,.6);
+  border: 1px solid rgba(245, 173, 27, 0.6);
   padding: 3px;
 }
-.ask-top, .ask_main  {
+.ask-top,
+.ask_main {
   box-shadow: 0 2px 10px #d9d9d9, inset 0 10px 1px #f1f1f1;
   display: flex;
   justify-content: space-around;
@@ -95,7 +131,7 @@ export default {
   width: 100%;
   height: 36px;
   font: 15px/36px "microsoft yahei";
-  background-color: rgba(245,173,27,.8);
+  background-color: rgba(245, 173, 27, 0.8);
   color: #fff;
   text-align: center;
 }
@@ -122,7 +158,7 @@ export default {
   text-align: center;
 }
 .ask_main .amLeft ul li a:hover {
-  background-color: rgba(245,173,27,.6);
+  background-color: rgba(245, 173, 27, 0.6);
   color: #fff;
 }
 
@@ -193,7 +229,7 @@ export default {
   display: block;
   width: 80px;
   height: 70px;
-  background-color:rgba(76,103,232,.9);
+  background-color: rgba(76, 103, 232, 0.9);
   float: right;
   border-radius: 3px;
 }
@@ -270,7 +306,7 @@ export default {
   width: 22px;
   height: 22px;
   float: left;
-  background-image: url(././img/goldcoin.png); 
+  background-image: url(././img/goldcoin.png);
 }
 .AskItemList .tags .Appreciation span {
   display: block;

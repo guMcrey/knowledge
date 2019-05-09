@@ -48,7 +48,7 @@
           </div>
 
           <el-form-item>
-            <div class="tijiao" @click="createDiscuss('form')">
+            <div class="tijiao" @click="submitDiscuss('form')">
               <el-button class="button1" value="确定提问">确认提交</el-button>
             </div>
           </el-form-item>
@@ -65,7 +65,8 @@
 <script>
 import SdHeader from "~/components/navBar";
 import PageFooter from "~/components/pageFooter";
-import * as api from '~/assets/api'
+import { apiCreateQuestion } from "~/servers/api/discuss";
+
 export default {
   data() {
     return {
@@ -73,8 +74,7 @@ export default {
         title: "",
         type: "",
         content: "",
-        score: "",
-        userid: 1
+        score: ""
       },
       options: [
         {
@@ -143,28 +143,18 @@ export default {
     };
   },
   methods: {
-    createDiscuss(formName) {
+    // 创建讨论区问题
+    async createDiscuss() {
+      const { title, content, score, type } = this.form;
+      const data = await apiCreateQuestion(title, content, score, type);
+    },
+    // 点击确认提交
+    submitDiscuss(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          api
-            .cerateDiscuss({
-              owner: this.form.userid,
-              title: this.form.title,
-              type: this.form.type,
-              content: this.form.content,
-              score: this.form.score
-            })
-            .then(res => {
-              // this.$message("登录成功");
-              // window.localStorage.setItem("USERNAME", this.form.username);
-              // this.successLogin(res.data.token);
-              // this.$router.push("./");
-            })
-            .catch(res => {
-              // this.$message("账号或密码错误");
-            });
+          this.createDiscuss();
+          this.$router.push("./discuss");
         } else {
-          // this.$message("操作有误,请重试！！");
           return false;
         }
       });

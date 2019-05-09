@@ -4,127 +4,152 @@
     <div class="root">
       <div class="ask_main">
         <div class="amVist">
-          <div class="curNav">
-            <!-- <a href>网站首页</a> -->
-            <!-- <span>></span> -->
-          </div>
-          <div class="vistInfo">
+          <div class="curNav"></div>
+          <div class="vistInfo" v-for="(item, index) in questionContent" :key="index">
             <h1>
               <!-- <span>[已采纳]&nbsp;</span> -->
-              电子烟有害吗？电子烟有什么危害？电子烟有害吗？电子烟有什么危害？
+              {{item.title}}
             </h1>
-            <div class="fui">
-            </div>
+            <div class="fui"></div>
 
-            <div class="content">
-              唉，又看到了这个关于“敢不敢”的话题了，记得前不久，白色的被单除了给人留下一种如同白云般舒适柔软的感觉之外，还传达给顾客一个重要的信息，干净、清洁，让顾客更加信任该酒店。
-            </div>
+            <div class="content">{{item.content}}</div>
 
             <div class="vice-info">
               <a class="MydaBut" id="MydaBut">
                 <i>答</i>
                 <span>我来答</span>
               </a>
-              <div class="th">
-                <!-- <a href class="z">
-                  <span>点赞</span>
-                  <em>2</em>
-                </a>
-                <i>|</i>
-                <a href class="z">
-                  <span>收藏</span>
-                  <em>1</em>
-                </a>
-                <i>|</i>
-                <a href class="z">
-                  <span>举报</span>
-                </a> -->
-              </div>
-              <div class="hits">浏览 16094 次</div>
+              <div class="th"></div>
+              <div class="hits">积分：{{item.score}}</div>
             </div>
 
             <div class="AnswerForm" id="AnswerForm">
               <p>&hearts; 请认真作答，如牛头不对马嘴或发布违规及广告内容，发现一律封号处理！</p>
-              <form id="form1" name="form1" method="post" action>
-                <textarea name="content22" id="editor1" style="width:99.8%;height:150px;"></textarea>
-                <div class="button">
-                  <a class="sq" id="sq">​&spades; 收起</a>
-                  <input type="submit" class="button" value="提交回答">
+              <form>
+                <textarea
+                  name="content22"
+                  id="editor1"
+                  style="width:99.8%;height:150px;"
+                  v-model="content"
+                ></textarea>
+                <div class="button" @click="createAnswer()">
+                  <!-- <a class="sq" id="sq">​&spades; 收起</a> -->
+                  <input class="button" value="提交回答">
                 </div>
               </form>
             </div>
 
-            <div class="AnswerQuantity">
-              <span>
-                其他
-                <em>82</em>个回答
-              </span>
-            </div>
-            <!---AnswerItemList E--->
-            <!---AnswerItemList S--->
-            <div class="AnswerItemList">
-              <div class="userInfo">
-                <div class="info">
+            <div v-if="item.answers.length>0">
+              <div>
+                <div class="AnswerQuantity">
                   <span>
-                    <a href>xiezhengyi</a>
-                  </span>
-                  <span>
-                    <dl>回答时间：</dl>
-                    <em>2019年01月02日 16:27</em>
+                    共
+                     <em>{{item.answers.length}}</em>个回答
                   </span>
                 </div>
-              </div>
-              <div class="content" id="wrap3">
-                <p>唉，又看到了这个关于“敢不敢”的话题了，记得前不久，因为北京同仁堂蜂蜜造假事件，我回答过“你还敢相信那些所谓的大品牌吗”这个问题。</p>
-
-                <!-- <p>酒店为什么使用白床单而不是其他颜色较深的，如黑色和棕色的床单呢？这样即使被单、床单脏了，我们消费者仅凭肉眼不是很难察觉吗？其实酒店最初使用白色床单就是为了让顾客满意，白色的被单除了给人留下一种如同白云般舒适柔软的感觉之外，还传达给顾客一个重要的信息，干净、清洁，让顾客更加信任该酒店。</p> -->
-
-                <div class="gradient" id="gradient3"></div>
-              </div>
-              <div class="read-more" id="read-more3"></div>
-              <div class="fuInfo">
-                <!-- <a href class="Report">举报</a> -->
+                <div class="AnswerItemList" v-for="(sitem, index) in item.answers" :key="index">
+                  <div class="userInfo">
+                    <div class="info">
+                      <span>
+                        <a href>{{sitem.owner}}</a>
+                      </span>
+                      <span>
+                        <dl>回答时间：</dl>
+                        <em>{{sitem.created_time}}</em>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="content" id="wrap3">
+                    <p>{{sitem.content}}</p>
+                    <div class="gradient" id="gradient3"></div>
+                  </div>
+                  <div class="read-more" id="read-more3"></div>
+                  <div class="fuInfo">
+                    <!-- <a href class="Report">举报</a> -->
+                  </div>
+                </div>
               </div>
             </div>
             <div class="pageType">
-              <ul class="pagination">
-                <li class="disabled">
-                  <dl>上一页</dl>
-                </li>
-                <li class="active">
-                  <span>1</span>
-                </li>
-                <li>
-                  <a href>2</a>
-                </li>
-                <li>
-                  <a href>3</a>
-                </li>
-                <li>
-                  <a href>下一页</a>
-                </li>
-                <li class="pageRemark">
-                  共
-                  <b>3</b>页
-                  <b>43</b>条数据
-                </li>
-              </ul>
-            </div>
+                  <ul class="pagination">
+                    <li class="disabled">
+                      <dl>上一页</dl>
+                    </li>
+                    <li class="active">
+                      <span>1</span>
+                    </li>
+                    <li>
+                      <a href>2</a>
+                    </li>
+                    <li>
+                      <a href>3</a>
+                    </li>
+                    <li>
+                      <a href>下一页</a>
+                    </li>
+                    <li class="pageRemark">
+                      共
+                      <b>3</b>页
+                      <b>43</b>条数据
+                    </li>
+                  </ul>
+                </div>
           </div>
         </div>
       </div>
-       <page-footer></page-footer>
+      <page-footer></page-footer>
     </div>
   </div>
 </template>
 <script>
 import SdHeader from "~/components/navBar";
 import PageFooter from "~/components/pageFooter";
+import { apiCheckInfo, apiCreateAnswer } from "~/servers/api/discuss";
+import { apiUserDetail } from "~/servers/api/user";
+
+const scoreMap = {
+  1: "5分",
+  2: "10分",
+  3: "15分",
+  4: "20分"
+};
 export default {
-  created() {},
+  data() {
+    return {
+      question_id: this.$route.query.question_id, // 问题id
+      questionContent: [], // 问题详情
+      // otherAnswerList: [], // 其他回答列表
+      score: "", // 积分
+      content: "", // 回答内容
+      created_time: null, // 问题创建时间
+      owner: "", // 回答者id
+      updated_time: null // 问题更新时间
+    };
+  },
+  created() {
+    this.getQuestionInfo();
+  },
   methods: {
-    viewDetail() {
-      this.$router.push("./visit");
+    // 获取问题详情
+    async getQuestionInfo() {
+      const data = await apiCheckInfo(this.question_id, "get");
+      this.questionContent = data.results;
+      console.log('otherAnswerList', this.otherAnswerList)
+      this.score = this.questionContent.forEach(res => {
+        res.score = scoreMap[res.score];
+      });
+    },
+    // 创建问题回答
+    async createAnswer() {
+      const userInfo = await apiUserDetail("get");
+      this.owner = userInfo.id;
+      const data = await apiCreateAnswer(
+        this.owner,
+        this.question_id,
+        this.content,
+        this.created_time,
+        this.updated_time
+      );
     }
   },
   components: {
@@ -250,7 +275,7 @@ export default {
 }
 .AskItemList .top .info .title span {
   font: 16px/26px "microsoft yahei";
-  color: rgba(76,103,232,.9);
+  color: rgba(76, 103, 232, 0.9);
 }
 .AskItemList .top .da {
   width: 12%;
@@ -348,7 +373,7 @@ export default {
   color: #f60;
 }
 .AskItemList .tags a:hover {
-  background-color: rgba(76,103,232,.9);
+  background-color: rgba(76, 103, 232, 0.9);
   color: #fff;
 }
 .AskItemList .tags .share_bar_con {
@@ -519,7 +544,7 @@ export default {
   border-bottom: 1px dotted #e3e3e3;
 }
 .ask_main .amRight .titleList a:hover {
-  color: rgba(76,103,232,.9);
+  color: rgba(76, 103, 232, 0.9);
 }
 
 .ask_main .amRight .newAnswer {
@@ -563,7 +588,7 @@ export default {
   float: left;
 }
 .ask_main .amRight .newAnswer .item .info .t:hover {
-  color: rgba(76,103,232,.9);
+  color: rgba(76, 103, 232, 0.9);
 }
 
 .floatRight {
@@ -748,7 +773,7 @@ export default {
 }
 .vistInfo h1 span {
   font: 16px/26px "microsoft yahei";
-  color: rgba(76,103,232,.9);
+  color: rgba(76, 103, 232, 0.9);
 }
 .vistInfo .fui {
   width: 100%;
@@ -779,7 +804,7 @@ export default {
   float: left;
 }
 .fui {
-    margin-top: 30px;
+  margin-top: 30px;
 }
 .vistInfo .fui .Appreciation span {
   display: block;
@@ -812,7 +837,7 @@ export default {
   display: block;
   height: 42px;
   padding: 0 15px;
-  background-color: rgba(245,173,27);
+  background-color: rgba(245, 173, 27);
   float: left;
   border-radius: 4px;
   cursor: pointer;
@@ -827,7 +852,7 @@ export default {
   margin-top: 5px;
   margin-right: 12px;
   font: 18px/32px "microsoft yahei";
-  color: rgba(245,173,27);
+  color: rgba(245, 173, 27);
   text-align: center;
 }
 .vistInfo .vice-info .MydaBut span {
@@ -923,7 +948,7 @@ export default {
   height: 46px;
   font: 16px/46px "microsoft yahei";
   color: #fff;
-  background-color: rgba(245,173,27);
+  background-color: rgba(245, 173, 27);
   float: right;
   cursor: pointer;
   text-align: center;
@@ -945,7 +970,7 @@ export default {
 }
 .vistInfo .AnswerQuantity em {
   font: 26px/50px "microsoft yahei";
-  color: rgba(245,173,27);
+  color: rgba(245, 173, 27);
 }
 .AnswerItemList {
   width: 100%;
@@ -1055,7 +1080,7 @@ export default {
   transition-duration: 0.2s;
 }
 .AnswerItemList .fuInfo .Fabulous:hover {
-  border: 1px solid rgba(76,103,232,.9);
+  border: 1px solid rgba(76, 103, 232, 0.9);
 }
 .AnswerItemList .fuInfo .Fabulous span {
   display: block;
@@ -1066,7 +1091,7 @@ export default {
   transition-duration: 0.2s;
 }
 .AnswerItemList .fuInfo .Fabulous:hover span {
-  color: rgba(76,103,232,.9);
+  color: rgba(76, 103, 232, 0.9);
 }
 .AnswerItemList .fuInfo .Fabulous em {
   display: block;
@@ -1078,7 +1103,7 @@ export default {
   transition-duration: 0.2s;
 }
 .AnswerItemList .fuInfo .Fabulous:hover em {
-  color:rgba(76,103,232,.9);
+  color: rgba(76, 103, 232, 0.9);
   font-weight: bold;
 }
 .AnswerItemList .fuInfo .Report {
@@ -1130,7 +1155,7 @@ export default {
   transition-duration: 0.2s;
 }
 .pageType .pagination li a:hover {
-  background-color: rgba(76,103,232,.9);
+  background-color: rgba(76, 103, 232, 0.9);
   color: #fff;
 }
 
@@ -1153,7 +1178,7 @@ export default {
   margin: 0 3px;
   padding: 0 15px;
   border-radius: 4px;
-  background-color: rgba(76,103,232,.9);
+  background-color: rgba(76, 103, 232, 0.9);
   font-size: 15px;
   line-height: 40px;
   height: 40px;
@@ -1165,7 +1190,7 @@ export default {
 }
 .pageType .pagination li.pageRemark b {
   font-size: 15px;
-  color: rgba(76,103,232,.9);
+  color: rgba(76, 103, 232, 0.9);
   font-weight: bold;
 }
 
