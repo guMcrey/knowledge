@@ -3,7 +3,7 @@
     <sd-header :activeTab="5"></sd-header>
     <div class="root">
       <div class="wrap">
-        <div id="table">
+        <div class="table">
           <div class="add">
             <input type="text" v-model="addDetail.title" name="title" value placeholder="预约标题">
             <input type="text" v-model="addDetail.content" name="content" value placeholder="发布人">
@@ -11,9 +11,9 @@
             <input type="text" v-model="addDetail.score" name="score" vlaue placeholder="积分">
             <br>
             <span>预约开始时间:</span>
-            <input type="date" v-model="addDetail.start" name="date" value placeholder="结束时间">
+            <el-date-picker v-model="addDetail.interview_time" type="datetime" placeholder="选择开始时间"></el-date-picker>
             <span>预约结束时间:</span>
-            <input type="date" v-model="addDetail.end" name="date" value placeholder="结束时间">
+            <el-date-picker v-model="addDetail.end_time" type="datetime" placeholder="选择结束时间"></el-date-picker>
             <button class="create-invite" @click="adddetail">创建预约</button>
           </div>
           <table cellpadding="0" cellspacing="0">
@@ -38,36 +38,13 @@
                 <td width="6%">{{item.score}}</td>
                 <td width="12%">{{item.interview_time}}</td>
                 <td width="12%">{{item.end_time}}</td>
-                <!-- 如果是教师 -->
-                <!-- <td width="15%">
-                  <span @click="deletelist(item.id,index)" class="delete">删除</span>
-                  <span class="edit" @click="edit(item)">编辑</span>
-                </td> -->
                 <!-- 如果是学生 -->
                 <td width="15%">
-                  <span class="edit" @click="edit(item)">点击预约</span>
+                  <span class="edit" @click="commitInvite(item)">点击预约</span>
                 </td>
               </tr>
             </tbody>
           </table>
-          <!-- <div id="mask" v-if="editlist">
-            <div class="mask">
-              <div class="title">
-                编辑
-                <span @click="editlist=false">X</span>
-              </div>
-              <div class="content">
-                <input type="text" v-model="editDetail.title" name="title" value placeholder="标题">
-                <input type="text" v-model="editDetail.user" name="user" value placeholder="发布人">
-                <input type="date" v-model="editDetail.dates" name="date" value placeholder="发布时间">
-                <br>
-                <div>
-                  <button class="update" @click="update">更新</button>
-                  <button class="cancel" @click="editlist=false">取消</button>
-                </div>
-              </div>
-            </div>
-          </div> -->
         </div>
       </div>
     </div>
@@ -77,102 +54,126 @@
 <script>
 import SdHeader from "~/components/navBar";
 import PageFooter from "~/components/pageFooter";
-import * as api from "~/assets/api";
+import { apiUserDetail } from "~/servers/api/user";
+import {
+  apiCreateInvite,
+  apiGetInvite,
+  apiClickInvite,
+  apiInviteList
+} from "~/servers/api/findTeacher";
+import { get } from "http";
 
 export default {
   data() {
     return {
-      addDetail: {},
+      addDetail: {
+        title: "",
+        content: "",
+        room: "",
+        score: "",
+        interview_time: "",
+        end_time: ""
+      },
       editlist: false,
       editDetail: {},
-      newsList: [
-        {
-          title: "在移动设备开发",
-          content: "张若昀",
-          interview_time: "2018-02-09",
-          room: "45211546",
-          end_time: "2019-01-01",
-          score: "10"
-        }
-      ],
+      newsList: [],
       editid: ""
     };
   },
-  mounted() {
+  created() {
     this.inviteList();
   },
   methods: {
     // 获取邀约列表
-    inviteList() {
-      api.getInviteList().then(res => {});
+    async inviteList() {
+      console.log("走了么");
+      const inviteList = await apiGetInvite("get");
+      this.newsList = inviteList.results;
     },
     // 创建预约列表
-    adddetail() {
+    async adddetail(item) {
       //这里的思路应该是把this.addDetail传给服务端，然后加载列表this.newsList
-      let data = {
-        title: this.addDetail.title,
-        content: this.addDetail.content,
-        interview_time: this.addDetail.start,
-        room: this.addDetail.room,
-        end_time: this.addDetail.end,
-        score: this.addDetail.score
-      };
-      api.createInvite({ ...data }).then(res => {
-      // this.newsList.push({
-      //   title: this.addDetail.title,
-      //   content: this.addDetail.content,
-      //   interview_time: this.addDetail.start,
-      //   room: this.addDetail.room,
-      //   end_time: this.addDetail.end,
-      //   score: this.addDetail.score
-      // });
-      });
-
-      //axios.post('url',this.addDetail).then((res) =>{
-      //若返回正确结果，清空新增输入框的数据
-      //this.addDetail.title = ""
-      //this.addDetail.user = ""
-      //this.addDetail.dates = ""
-      //})
+      const {
+        selector_id,
+        teacher_id,
+        status,
+        room,
+        score,
+        interview_time,
+        end_time
+      } = this.addDetail;
+      const data = await apiCreateInvite(
+        title,
+        content,
+        room,
+        score,
+        interview_time,
+        end_time
+      );
+      this.inviteList();
     },
-    //删除
-    deletelist(id, i) {
-      this.newsList.splice(i, 1);
-      //这边可以传id给服务端进行删除  ID = id
-      //axios.get('url',{ID:id}).then((res) =>{
-      //			加载列表
-      //})
-    },
-    //编辑
-    edit(item) {
-      this.editDetail = {
-        title: item.title,
-        user: item.user,
-        dates: item.dates,
-        id: item.id
-      };
-      this.editlist = true;
-      this.editid = item.id;
-    },
-    //确认更新
-    update() {
-      //编辑的话，也是传id去服务端
-      //axios.get('url',{ID:id}).then((res) =>{
-      //			加载列表
-      //})
-      let _this = this;
-      for (let i = 0; i < _this.newsList.length; i++) {
-        if (_this.newsList[i].id == this.editid) {
-          _this.newsList[i] = {
-            title: _this.editDetail.title,
-            user: _this.editDetail.user,
-            dates: _this.editDetail.dates,
-            id: this.editid
-          };
-          this.editlist = false;
-        }
-      }
+    // 点击预约
+    async commitInvite(item) {
+      const {
+        id: selector_id,
+        owner: teacher_id,
+        status,
+        room,
+        score,
+        interview_time,
+        end_time
+      } = item;
+      const data = await apiClickInvite(
+        selector_id,
+        teacher_id,
+        status,
+        room,
+        score,
+        interview_time,
+        end_time
+      );
+      // 点击预约后，老师显示已预约列表，学生显示预约列表，放到个人信息页中，最后调
+      const clickList = await apiInviteList("get");
+      console.log("clickList", clickList);
     }
+    //删除
+    // deletelist(id, i) {
+    //   this.newsList.splice(i, 1);
+    //这边可以传id给服务端进行删除  ID = id
+    //axios.get('url',{ID:id}).then((res) =>{
+    //			加载列表
+    //})
+    // },
+    //编辑
+    // edit(item) {
+    //   this.editDetail = {
+    //     title: item.title,
+    //     user: item.user,
+    //     dates: item.dates,
+    //     id: item.id
+    //   };
+    //   this.editlist = true;
+    //   this.editid = item.id;
+    // },
+    //确认更新
+    // update() {
+    //编辑的话，也是传id去服务端
+    //axios.get('url',{ID:id}).then((res) =>{
+    //			加载列表
+    //})
+    // let _this = this;
+    // for (let i = 0; i < _this.newsList.length; i++) {
+    //   if (_this.newsList[i].id == this.editid) {
+    //     _this.newsList[i] = {
+    //       title: _this.editDetail.title,
+    //       user: _this.editDetail.user,
+    //       dates: _this.editDetail.dates,
+    //       id: this.editid
+    //     };
+    //     this.editlist = false;
+    //   }
+    // }
+    // }
   },
   components: {
     SdHeader,
@@ -186,7 +187,7 @@ export default {
 }
 .root {
   background: #f5f5f5;
-  height: 90vh;
+  /* height: 90vh; */
   padding-top: 60px;
 }
 .wrap {
@@ -197,15 +198,16 @@ export default {
   margin: 0px auto;
   background: #fff;
   padding: 40px;
+  overflow: auto;
 }
-#table table {
+.table table {
   width: 996px;
   font-size: 15px;
   border: 1px solid #eee;
 }
 
-#table {
-  padding: 0 10px;
+.table {
+  padding-bottom: 100px;
 }
 
 table thead th {

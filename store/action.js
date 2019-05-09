@@ -1,5 +1,4 @@
 import * as types from './mutation-types'
-import * as api from '~/assets/api'
 import axios from 'axios'
 import { apiUserDetail } from '~/servers/api/user'
 
@@ -26,20 +25,21 @@ export default {
         // console.log("<-----------------------------------------------------")
         axios.defaults.headers['token'] = ""
         if (req.headers.cookie && count >= 0) {
-            axios.defaults.headers['token'] = (cookieArr.substr(Number(count) + 6)).split(";")[0]
-            console.log('axios.defaults.headers', axios.defaults.headers['token'])
+            axios.defaults.headers['Authorization'] = `JWT ${(cookieArr.substr(Number(count) + 6)).split(";")[0]}`
+            // console.log('axios.defaults.headers', axios.defaults.headers['token'])
             try {
-                console.log('try')
                 // 请求用户信息
-                // let userInfo = await apiUserDetail('get')
-                // console.log('=================userInfo===============', userInfo)
-                // commit('SET_USER', userInfo.developerInfo)
+                let userInfo = await apiUserDetail('get')
+                commit('SET_USER', userInfo)
+                console.log('set-user', SET_USER)
+                redirect('/')
+
             } catch (error) {
-                // commit('SET_USER', '')
-                // console.log('catch')
+                commit(types.SET_USER, '')
+                console.log('catch', types.SET_USER)    
             }
         } else {
-            // commit('SET_USER', '')
+            commit(types.SET_USER, '')
         }
     },
     // 退出登录

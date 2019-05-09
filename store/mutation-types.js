@@ -1,4 +1,5 @@
 // 用户相关
+export const SET_USER = 'SET_USER'
 
 // 检验登录状态
 export const CHECKOUT_LOGIN_STATUS = 'CHECKOUT_LOGIN_STATUS'

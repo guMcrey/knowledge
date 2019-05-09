@@ -9,25 +9,28 @@ let _options = {
 }
 if (!process.server) {//当不是服务端的时候获取cookie设置header
     _options.headers = {
-        'token': getCookie('token'),
+        'Authorization': `JWT ${getCookie('token')}`,
     }
 }
 const service = axios.create(_options)
 // 请求拦截 设置cookie
 service.interceptors.request.use(function (config) {
     if (!process.server) {
-        config.headers['token'] = getCookie('token')
+        config.headers['Authorization'] = `JWT ${getCookie('token')}`
     }
     // else {
     // 在服务端  设置Referer
     // config.headers['Referer'] = process.env.Referer
-    // }
+    // }    
     return config;
 }, function (error) {
     return Promise.reject(error);
 });
 // 输出方法
 export default function request(url, data = {}, options) {
+    console.log('url', url)
+    console.log('data', data)
+    console.log('options', options)
     const defaultOptions = { //默认参数
         method: "post",//请求方式
         hidetoast: false    // 默认参数不隐藏toast
@@ -39,7 +42,9 @@ export default function request(url, data = {}, options) {
             method
         }
         if (method.toLowerCase() === 'get') {
+            console.log('get请求')
             options.params = data
+            console.log('options.params', options.params)
         } else {
             options.data = data
             console.log('8888888888888', options)
@@ -99,7 +104,7 @@ export default function request(url, data = {}, options) {
                 //     })
                 // }
                 // console.log('error', error)
-                // reject(error)
+                reject(error)
             })
     })
 }

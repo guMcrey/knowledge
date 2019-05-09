@@ -16,6 +16,6 @@ export const apiLogin = (username, password) => request("/login/", { username, p
 
 /**
 * @desc 个人详情页
-* @param {string} token token值
+* @param {string} token token校验
 */
 export const apiUserDetail = (method) => request('/user/detail/', {}, { method })

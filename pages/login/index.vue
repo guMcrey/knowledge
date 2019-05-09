@@ -72,7 +72,7 @@ export default {
       const data = await apiLogin(username, password);
       console.log("token", data.token);
       setCookie("token", data.token, 999999999999);
-      // this.$router.push('/')
+      this.$router.push("/");
       this.$message("登录成功，欢迎访问知学平台~");
     },
     async userInfo() {
@@ -84,22 +84,6 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           this.login();
-
-          // api
-          //   .login({
-          //     username: this.form.username,
-          //     password: this.form.password
-          //   })
-          //   .then(res => {
-          //     this.$message("登录成功");
-          //     // window.localStorage.setItem("USERNAME", this.form.username);
-          //     // this.successLogin(res.data.token);
-          //     setCookie("token", res.data.token, 1000);
-          //     this.$router.push("./");
-          //   })
-          //   .catch(res => {
-          //     this.$message("账号或密码错误");
-          //   });
         } else {
           this.$message("操作有误,请重试！！");
           return false;
