@@ -7,149 +7,52 @@
           <a href="#" target="_self">最新邀约</a>
         </div>
         <div class="newsCenterPanel_inner">
-          <div class="newContentBox odd" @click="openInfo()">
-            <a hidefocus="true" href="#">
-              <div class="time">
-                <p class="day">C语言</p>
-              </div>
-              <div class="bigTitle">
-                <div class="newTitle">提问：展示问题描述</div>
-                <div class="ym">xxx 发布于：2019-1</div>
-                <div class="reward">悬赏积分：10分</div>
-              </div>
-
-              <div class="newTitleIcon"></div>
-              <div class="border"></div>
-              <div class="newContent">提问详情：题目标题</div>
-            </a>
-          </div>
-          <div class="openContent" v-if="showInfo">
-            <div class="content-text">
-              <div class="openContent-option">题目选项A</div>
-              <div class="openContent-option">题目选项B</div>
-              <div class="openContent-option">题目选项C</div>
-              <div class="openContent-option">题目选项D</div>
-              <div class="openContent-info">题目解析</div>
-              <div class="openContent-reply" @click="createReply()">添加评论</div>
-              <div class="open-content" v-if="showCreate">
-                <textarea class="create-input" placeholder="请输入你的观点..."></textarea>
-                <div class="create-button">发送</div>
-              </div>
-              <!-- 评论成功后生成下面的样子 -->
-              <div class="open-content">
-                <div class="openContent-allReply">
-                  <div class="user-avator">用户头像</div>
-                  <div class="middle">
-                    <div class="user-name">用户昵称</div>
-                    <div class="reply-text">发表的回复</div>
-                    <div class="bottom">
-                      <div class="repaly-time">发表于 2019-04-16 13:16:13</div>
-                      <div class="repaly-reply" @click="replyNow()">点击回复</div>
-                    </div>
-                  </div>
-                  <div class="user-grade">用户等级</div>
+          <div v-for="(item, index) in informationList" :key="index">
+            <div class="newContentBox odd" @click="openInfo(item)">
+              <a hidefocus="true" href="#">
+                <div class="time">
+                  <p class="day">{{item.type}}</p>
                 </div>
-                <div class="click-reply" v-if="showReplyNow">
-                  <textarea class="reply-input" placeholder="请输入你的观点..."></textarea>
-                  <div class="reply-button">发送</div>
+                <div class="bigTitle">
+                  <div class="newTitle">{{item.content}}</div>
+                  <div class="ym">{{item.username}} 发布于：{{item.created_time}}</div>
+                  <div class="reward">悬赏积分：{{item.score}}</div>
                 </div>
-              </div>
+                <div class="newTitleIcon"></div>
+                <div class="border"></div>
+                <div class="newContent">{{item.question.title}}</div>
+              </a>
             </div>
-          </div>
-          <div class="newContentBox odd" @click="openInfo()">
-            <a hidefocus="true" href="#">
-              <div class="time">
-                <p class="day">C语言</p>
-              </div>
-              <div class="bigTitle">
-                <div class="newTitle">提问：展示问题描述</div>
-                <div class="ym">xxx 发布于：2019-1</div>
-                <div class="reward">悬赏积分：10分</div>
-              </div>
+            <div class="openContent" v-if="item.checkFlag">
+              <div class="content-text">
+                <div v-for="(sitem, index) in item.question.answers" :key="index">
+                  <div class="openContent-option">{{sitem.select_code}}. {{sitem.content}}</div>
+                </div>
+                <div class="openContent-info">{{item.question.analyzations}}</div>
 
-              <div class="newTitleIcon"></div>
-              <div class="border"></div>
-              <div class="newContent">提问详情：题目标题</div>
-            </a>
-          </div>
-          <div class="openContent" v-if="showInfo">
-            <div class="content-text">
-              <div class="openContent-option">题目选项A</div>
-              <div class="openContent-option">题目选项B</div>
-              <div class="openContent-option">题目选项C</div>
-              <div class="openContent-option">题目选项D</div>
-              <div class="openContent-info">题目解析</div>
-              <div class="openContent-reply" @click="createReply()">添加评论</div>
-              <div class="open-content" v-if="showCreate">
-                <textarea class="create-input" placeholder="请输入你的观点..."></textarea>
-                <div class="create-button">发送</div>
-              </div>
-              <!-- 评论成功后生成下面的样子 -->
-              <div class="open-content">
-                <div class="openContent-allReply">
-                  <div class="user-avator">用户头像</div>
-                  <div class="middle">
-                    <div class="user-name">用户昵称</div>
-                    <div class="reply-text">发表的回复</div>
-                    <div class="bottom">
-                      <div class="repaly-time">发表于 2019-04-16 13:16:13</div>
-                      <div class="repaly-reply" @click="replyNow()">点击回复</div>
+                <div class="openContent-reply" @click="createReply()">添加评论</div>
+                <div class="open-content" v-if="showCreate">
+                  <textarea class="create-input" placeholder="请输入你的观点..." v-model="answerContent"></textarea>
+                  <div class="create-button" @click="createAnswer(item)">发送</div>
+                </div>
+                <!-- 评论成功后生成下面的样子 -->
+                <div class="open-content" v-for="(sitem, index) in item.answers" :key="index">
+                  <div class="openContent-allReply">
+                    <img class="user-avator" src="./img/avator.jpg">
+                    <div class="middle">
+                      <div class="user-name">{{sitem.username}}</div>
+                      <div class="reply-text">{{sitem.content}}</div>
+                      <div class="bottom">
+                        <div class="repaly-time">发表于 {{sitem.created_time}}</div>
+                        <!-- <div class="repaly-reply" @click="replyNow()">点击回复</div> -->
+                      </div>
                     </div>
+                    <div class="user-grade">用户等级</div>
                   </div>
-                  <div class="user-grade">用户等级</div>
-                </div>
-                <div class="click-reply" v-if="showReplyNow">
-                  <textarea class="reply-input" placeholder="请输入你的观点..."></textarea>
-                  <div class="reply-button">发送</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="newContentBox odd" @click="openInfo()">
-            <a hidefocus="true" href="#">
-              <div class="time">
-                <p class="day">C语言</p>
-              </div>
-              <div class="bigTitle">
-                <div class="newTitle">提问：展示问题描述</div>
-                <div class="ym">xxx 发布于：2019-1</div>
-                <div class="reward">悬赏积分：10分</div>
-              </div>
-
-              <div class="newTitleIcon"></div>
-              <div class="border"></div>
-              <div class="newContent">提问详情：题目标题</div>
-            </a>
-          </div>
-          <div class="openContent" v-if="showInfo">
-            <div class="content-text">
-              <div class="openContent-option">题目选项A</div>
-              <div class="openContent-option">题目选项B</div>
-              <div class="openContent-option">题目选项C</div>
-              <div class="openContent-option">题目选项D</div>
-              <div class="openContent-info">题目解析</div>
-              <div class="openContent-reply" @click="createReply()">添加评论</div>
-              <div class="open-content" v-if="showCreate">
-                <textarea class="create-input" placeholder="请输入你的观点..."></textarea>
-                <div class="create-button">发送</div>
-              </div>
-              <!-- 评论成功后生成下面的样子 -->
-              <div class="open-content">
-                <div class="openContent-allReply">
-                  <div class="user-avator">用户头像</div>
-                  <div class="middle">
-                    <div class="user-name">用户昵称</div>
-                    <div class="reply-text">发表的回复</div>
-                    <div class="bottom">
-                      <div class="repaly-time">发表于 2019-04-16 13:16:13</div>
-                      <div class="repaly-reply" @click="replyNow()">点击回复</div>
-                    </div>
+                  <div class="click-reply" v-if="showReplyNow">
+                    <textarea class="reply-input" placeholder="请输入你的观点..."></textarea>
+                    <div class="reply-button">发送</div>
                   </div>
-                  <div class="user-grade">用户等级</div>
-                </div>
-                <div class="click-reply" v-if="showReplyNow">
-                  <textarea class="reply-input" placeholder="请输入你的观点..."></textarea>
-                  <div class="reply-button">发送</div>
                 </div>
               </div>
             </div>
@@ -163,33 +66,96 @@
 <script>
 import PageFooter from "~/components/pageFooter";
 import SdHeader from "~/components/navBar";
+import { apiInformationList, apiCreateAnswer } from "~/servers/api/questions";
+import { apiUserDetail } from "~/servers/api/user";
+
+// 悬赏积分
+const rewardMap = {
+  0: "5分",
+  1: "10分",
+  2: "20分"
+};
+// 问题类型
+const typeMap = {
+  0: "基础",
+  1: "C语言",
+  2: "C++",
+  3: "大数据",
+  4: "计算机",
+  5: "数据库",
+  6: "数据结构",
+  7: "图形学",
+  8: "Java",
+  9: "网络",
+  10: "Python",
+  11: "测试",
+  12: "OS"
+};
+// 选项列表
+const optionMap = {};
 export default {
   data() {
     return {
       showInfo: false, // 展开提问详情
       showCreate: false, // 创建评论
-      showReplyNow: false // 点击回复
+      showReplyNow: false, // 点击回复
+      informationList: [], // 邀约讲解
+      score: "", // 悬赏积分
+      quesitonList: [], // 问题详情
+      answerContent: "", // 回复内容
+      information_id: "" // 邀约信息id
     };
   },
+  mounted() {
+    this.getInformation();
+  },
   methods: {
-    // 点击问题列表
-    openInfo() {
-      this.showInfo = !this.showInfo;
+    // 获取邀约讲解列表
+    async getInformation() {
+      const data = await apiInformationList("get");
+      this.informationList = data.results;
+      this.informationList.forEach(res => {
+        this.$set(res, "checkFlag", false);
+      });
+      this.score = this.informationList.forEach(res => {
+        res.score = rewardMap[res.score];
+        res.type = typeMap[res.type];
+        return res.score, res.type;
+      });
     },
-    // 点击创建评论
+    // 点击问题列表
+    openInfo(item) {
+      // 只显示一个
+      item.checkFlag = !item.checkFlag;
+    },
+    // 展示邀约评论
     createReply() {
-      this.showCreate = !this.showCreate
+      this.showCreate = !this.showCreate;
     },
     // 点击 点击回复
-    replyNow() {
-      this.showReplyNow = !this.showReplyNow
+    // replyNow() {
+    //   this.showReplyNow = !this.showReplyNow;
+    // },
+    // 创建邀约 
+    async createAnswer(item) {
+      const userInfo = await apiUserDetail("get");
+      const owner = userInfo.id;
+      const data = await apiCreateAnswer(
+        owner,
+        item.id,
+        this.answerContent,
+        null,
+        null
+      );
+      this.getInformation()
+      this.$message("评论成功~");
     }
   },
   components: {
     PageFooter,
     SdHeader
   }
-}
+};
 </script>
 <style scoped>
 * {
@@ -229,7 +195,7 @@ a {
 .newsCenterPanel .title a {
   display: block;
   width: 100%;
-   color: #f5ad1b;
+  color: #f5ad1b;
   text-align: center;
 }
 .newsCenterPanel_inner {
@@ -258,7 +224,7 @@ a {
   float: left;
   line-height: 44px;
   height: 50px;
-  font-size: 16px;
+  font-size: 18px;
   color: #333;
   /* width: 400px; */
   /* margin-right: 300px; */
@@ -267,8 +233,8 @@ a {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.newTitle{
-  width: 400px;
+.newTitle {
+  width: 280px;
   text-align: left;
 }
 .reward {
@@ -303,7 +269,7 @@ a {
   float: left;
   /* height: 50px; */
   width: 620px;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 28px;
   color: #b0b0b0;
   margin-bottom: 50px;
@@ -329,13 +295,16 @@ a {
 }
 .newContentBox .time .day {
   line-height: 34px;
-  font-size: 16px;
+  font-size: 18px;
   color: #4c67e8;
   padding: 6px 0 0 0;
 }
 .newContentBox .time .ym {
-  font-size: 12px;
+  font-size: 18px;
   color: #f5f5f5;
+}
+.ym {
+  font-size: 14px;
 }
 .newContentBox a:hover .time {
   background: #4a68ec;
@@ -368,7 +337,7 @@ a {
   padding-left: 65px;
 }
 .openContent-option {
-  font-size: 15px;
+  font-size: 16px;
   color: #333;
   line-height: 30px;
 }
@@ -394,12 +363,12 @@ a {
   line-height: 20px;
   color: #fff;
   font-size: 14px;
-   border-radius: 2px;
+  border-radius: 2px;
 }
 .create-input {
   width: 610px;
   height: 40px;
-   border-radius: 3px;
+  border-radius: 3px;
 }
 .create-button {
   background: #f5ad1b;
@@ -418,7 +387,7 @@ a {
   width: 650px;
   padding: 20px;
   margin-bottom: 30px;
-   border-radius: 2px;
+  border-radius: 2px;
 }
 
 .openContent-allReply {
@@ -430,7 +399,6 @@ a {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-
 }
 .middle {
   width: 480px;
@@ -462,7 +430,6 @@ a {
 .repaly-reply {
   color: #f5ad1b;
   font-weight: bold;
-  
 }
 .user-grade {
   background: #b5bcf3;
@@ -471,19 +438,19 @@ a {
   text-align: center;
   color: #fff;
   font-size: 12px;
-   border-radius: 2px;  
+  border-radius: 2px;
 }
 .click-reply {
   padding: 10px;
   margin: 20px auto;
   width: 600px;
   background-color: #f5f5f5;
-   border-radius: 2px;
+  border-radius: 2px;
 }
 .reply-input {
   width: 580px;
   height: 40px;
-   border-radius: 3px;
+  border-radius: 3px;
 }
 .reply-button {
   background: #f5ad1b;
@@ -496,6 +463,6 @@ a {
   line-height: 20px;
   color: #fff;
   font-size: 14px;
-   border-radius: 2px;
+  border-radius: 2px;
 }
 </style>

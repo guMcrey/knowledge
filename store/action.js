@@ -1,8 +1,14 @@
 import * as types from './mutation-types'
 import axios from 'axios'
 import { apiUserDetail } from '~/servers/api/user'
+import { apiSelectQuestion } from '../servers/api/questions'
 
 export default {
+    // 获取题目列表
+    async getSelectQuestion({commit, state}) {
+        const data = await apiSelectQuestion(1, 'get')
+        state.itemDetail = data.results
+    },
     addNum({ commit, state }, id) {
         //点击下一题，记录答案id，判断是否是最后一题，如果不是则跳转下一题
         commit('REMBER_ANSWER', id);

@@ -2,10 +2,6 @@
   <div class="root">
     <section>
       <sd-header :activeTab="2"></sd-header>
-      <!-- <header class="top_tips">
-      <span class="num_tip" v-if="fatherComponent == 'home'">{{level}}</span>
-      <span class="num_tip" v-if="fatherComponent == 'item'">题目{{itemNum}}</span>
-      </header>-->
       <div class="bigbox">
         <div class="begin" v-if="fatherComponent == 'home'">
           <div class="topic">
@@ -14,7 +10,8 @@
             <div class="topic-star">题目难度：</div>
           </div>
           <!-- <h2>请认真完成测试题。准备好了吗？</h2> -->
-          <a href="/exercise/item" class="start button_style" @click="getQuestionList()"></a>
+          <!-- <a href="/exercise/item" class="start button_style" @click="getQuestionList()"></a> -->
+          <a class="start button_style" @click="getSelectQuestion()"></a>
         </div>
       </div>
       <div v-if="fatherComponent == 'home'">
@@ -23,7 +20,7 @@
       <div v-if="fatherComponent == 'item'">
         <div class="item_back item_container_style">
           <div class="item_list_container" v-if="itemDetail.length > 0">
-            <header class="item_title">{{itemDetail[itemNum-1].topic_name}}</header>
+            <header class="item_title">{{itemDetail[itemNum-1].title}}</header>
             <ul>
               <li
                 v-for="(item, index) in itemDetail[itemNum-1].topic_answer"
@@ -52,7 +49,8 @@
 import PageFooter from "~/components/pageFooter";
 import { mapState, mapActions } from "vuex";
 import SdHeader from "~/components/navBar";
-import * as api from '~/assets/api'
+import * as api from "~/assets/api";
+import { apiSelectQuestion } from '~/servers/api/questions'
 
 export default {
   name: "itemcontainer",
@@ -73,11 +71,12 @@ export default {
   methods: {
     ...mapActions(["addNum", "initializeData"]),
     // 点击开始
-    // getQuestionList() {
-    //   api.getSelectInfo().then(res => {
-    //     console.log(res.data.results)
-    //   })
-    // },
+    async getSelectQuestion() {
+      const data = await apiSelectQuestion(this.$route.query.type, "get");
+      this.itemDetail = data.results;
+      window.location.href = `/exercise/item/?type=${this.$route.query.type}`;
+      console.log("data9999", this.itemDetail);
+    },
     //点击下一题
     nextItem() {
       if (this.choosedNum !== null) {
@@ -115,7 +114,7 @@ export default {
       } else {
         alert("您还没有选择答案哦");
       }
-    }
+    },
   },
   created() {
     //初始化信息
@@ -123,7 +122,7 @@ export default {
     // document.body.style.backgroundImage = 'url(./static/img/1-1.jpg)';
   },
   mounted() {
-    console.log(this.itemDetail);
+    // this.getSelectQuestion()
   },
   components: {
     SdHeader,
@@ -157,14 +156,13 @@ export default {
   font-size: 18px;
   color: #6c6c6c;
   font-size: 18px;
- 
 }
 .topic-star {
   font-size: 16px;
-   color: #6c6c6c;
-   	width: 230px;
-	height: 55px;
-	cursor: pointer;
+  color: #6c6c6c;
+  width: 230px;
+  height: 55px;
+  cursor: pointer;
   background-image: url(../images/icons.jpg);
   background-repeat: no-repeat;
   background-position: 70px -1px;

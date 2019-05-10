@@ -14,7 +14,7 @@
         <div v-if="fatherComponent == 'item'" class="option">
           <div class="item_back item_container_style">
             <div class="item_list_container" v-if="itemDetail.length > 0">
-              <header class="item_title">{{itemDetail[itemNum-1].topic_name}}：</header>
+              <header class="item_title">{{itemDetail[itemNum-1].title}}：</header>
               <div class="view">
                 <p class="content-text" @click="viewContent()">查看解析</p>
                 <p class="question" @click="haveQuestion()">重答</p>
@@ -22,8 +22,8 @@
               </div>
               <ul>
                 <li
-                  v-for="(item, index) in itemDetail[itemNum-1].topic_answer"
-                  @click="choosed(index, item.topic_answer_id)"
+                  v-for="(item, index) in itemDetail[itemNum-1].answers"
+                  @click="choosed(index, item.select_code)"
                   class="item_list"
                   :key="index"
                 >
@@ -31,15 +31,20 @@
                     class="option_style"
                     v-bind:class="{'has_choosed':choosedNum==index}"
                   >{{chooseType(index)}}</span>
-                  <span class="option_detail">{{item.answer_name}}</span>
+                  <span class="option_detail">{{item.content}}</span>
                 </li>
-                <p class="content1" v-if="getContent">{{itemDetail[itemNum-1].view_content}}</p>
+                <p class="content1" v-if="getContent">{{itemDetail[itemNum-1].analyzations}}</p>
                 <div v-if="showInvite">
                   <textarea class="content2" placeholder="请将疑惑用简短的话描述下吧~~" v-model="textContent"></textarea>
                   <div class="integral">
                     <span class="reward">悬赏积分:</span>
-                    <span class="fen" v-for="(item, index) in reward" :key="index">
-                      <span :class="{'fen-choosed':choosedFen==index}">{{item.jifen}}</span>
+                    <span
+                      class="fen"
+                      v-for="(item, index) in reward"
+                      :key="index"
+                      @click="choosedReward(index)"
+                    >
+                      <div :class="{'fen-choosed':choosedFen==index}">{{item.jifen}}</div>
                     </span>
                   </div>
                   <div class="post-question" @click="postInvite">发布邀约</div>
@@ -60,6 +65,13 @@
 import PageFooter from "~/components/pageFooter";
 import SdHeader from "~/components/navBar";
 import { mapState, mapActions } from "vuex";
+import {
+  apiSelectQuestion,
+  apiSelectAnswer,
+  apiCreateInvite
+} from "~/servers/api/questions";
+import { apiUserDetail } from "~/servers/api/user";
+
 export default {
   name: "itemcontainer",
   data() {
@@ -71,19 +83,39 @@ export default {
       isTrue: true, //选择答案是正确
       showInvite: false, // 显示邀约框
       textContent: "",
-      choosedFen: null, // 选中积分的索引
+      choosedFen: 0, // 选中积分的索引
       // 悬赏积分列表
-      reward: [{ id: 1, jifen: 1 }, { id: 1, jifen: 5 }, { id: 1, jifen: 10 }]
+      reward: [
+        { id: 1, jifen: "5分" },
+        { id: 1, jifen: "10分" },
+        { id: 1, jifen: "20分" }
+      ],
+      type: this.$route.query.type,
+      itemDetail: [], // 题目内容
+      question_id: "", // 当前题目id
+      created_time: null, // 创建邀约时间
+      updated_time: null  // 创建邀约更新时间
     };
   },
   props: ["fatherComponent"],
   computed: mapState([
     "itemNum", //第几题
     "level", //第几周
-    "itemDetail", //题目详情
+    // "itemDetail", //题目详情
     "timer" //计时器
   ]),
+  mounted() {
+    this.getSelectQuestion();
+  },
   methods: {
+    // 获取选择题信息
+    async getSelectQuestion() {
+      const data = await apiSelectQuestion(this.$route.query.type, "get");
+      this.itemDetail = data.results;
+      this.itemDetail.answers = data.results.answers;
+      this.question_id = this.itemDetail[this.itemNum - 1].id;
+      console.log("data9999", this.question_id);
+    },
     ...mapActions(["addNum", "initializeData"]),
     //点击下一题
     nextItem() {
@@ -94,7 +126,7 @@ export default {
         //保存答案, 题目索引加一，跳到下一题
         this.addNum(this.choosedId);
       } else {
-        alert("您还没有选择答案哦");
+        this.$message("您还没有选择答案哦");
       }
     },
     //索引0-3对应答案A-B
@@ -114,11 +146,15 @@ export default {
     choosed(type, id) {
       this.choosedNum = type;
       this.choosedId = id;
-      if (this.choosedNum != 1) {
+      if (this.choosedId != this.itemDetail[this.itemNum - 1].correct_code) {
         this.$message("哎呀~，回答错误啦😝");
       } else {
         this.$message("真聪明，回答正确!");
       }
+    },
+    // 选中的积分信息
+    choosedReward(index) {
+      this.choosedFen = index;
     },
     // 查看解析
     viewContent() {
@@ -133,17 +169,26 @@ export default {
       this.showInvite = !this.showInvite;
     },
     // 发布邀约
-    postInvite() {
+    async postInvite() {
       if (this.textContent == "") {
-        alert("请输入邀约内容");
+        this.$message("请输入邀约内容");
         return;
       } else {
-        alert("发布邀约成功");
+        const userInfo = await apiUserDetail("get");
+        const owner = userInfo.id;
+        const data = await apiCreateInvite(
+          Number(this.$route.query.type),
+          owner,
+          this.choosedFen,
+          this.textContent,
+          this.question_id,
+          this.created_time, 
+          this.updated_time
+        );
+        console.log("创建邀约", data);
+        this.$message("发布邀约成功,您可到信息广场查看~");
       }
       console.log(this.textContent);
-      const itemObj = {
-        textContent: this.textContent
-      };
     },
     //到达最后一题，交卷，请空定时器，跳转分数页面
     submitAnswer() {
@@ -180,7 +225,7 @@ export default {
   box-shadow: 0 2px 10px #d9d9d9, inset 0 10px 1px #f1f1f1;
   display: flex;
   justify-content: space-around;
-  max-width: 1080px;
+  max-width: 1180px;
   margin: 80px auto;
   background: #fff;
   box-shadow: 0 1px 1px #d9d9d9, inset 0 1px 1px #f1f1f1;
@@ -365,80 +410,26 @@ export default {
   width: 280px;
   display: flex;
   justify-content: space-between;
-  margin-top: 10px;
+  margin-top: 30px;
   .reward {
     font-size: 16px;
     color: #333;
   }
   .fen {
-    // background: #007FFF;
     width: 64px;
     text-align: center;
     font-size: 15px;
     border-radius: 50px;
     border: 1px solid #007fff;
   }
-  .fen-choosed {
-    background: #007fff;
-    width: 64px;
-    color: #fff;
-    text-align: center;
-    font-size: 15px;
-    border-radius: 50px;
-    border: 1px solid #007fff;
-  }
+}
+.fen-choosed {
+  background: #007fff;
+  width: 64px;
+  color: #fff;
+  text-align: center;
+  border-radius: 50px;
+  border: 1px solid #007fff;
 }
 </style>
-
-
-// 1. sort
-var arr = [1,2,3,4,5];
-arr.sort(function(a,b) {
-  return a-b;
-})
-var min = arr[0];
-var max = arr[arr.length - 1]
-
-// 2. 假设法
-var arr = [1,5,3,2,4]
-var max = arr[0];
-for(var i=0;i<arr.length;i++){
-  var cur = arr[i];
-  cur>max?max=cur:null;
-}
-console.log(max)
-
-// 3. 使用Math中的min，max方法
-var arr = [1,5,3,2,4];
-var max = Math.max.apply(null, arr);
-var min = Math.min.apply(null, arr);
-console.log(max,min)
-
-// 快排
-function quickSort(arr) {
-  if (arr.length <= 1) {
-    return arr;
-  }
-  var left = [];
-  var base = arr[0];
-  var right = [];
-  for(var i=1;i<arr.length;i++) {
-    if (arr[i]>base) {
-      right.push(arr[i]);
-    } else {
-      left.push(arr[i]);
-    }
-  }
-  return quickSort(left).concat(base,quick(right));
-}
-quickSort([1,3,2,4])
-
-// 深拷贝
-function deepClone(src) {
-   var ret = {}
-  for(var k in src) {
-    ret[key] = typeof src[key] ==='object' ? deepClone(src[key]) : src[key]
-  }
-  return ret
-}
 

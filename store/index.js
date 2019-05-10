@@ -4,7 +4,6 @@ import mutations from './mutations'
 import actions from './action'
 import state1 from './state'
 
-
 Vue.use(Vuex)
 const createSate = () => {
     return new Vuex.Store({

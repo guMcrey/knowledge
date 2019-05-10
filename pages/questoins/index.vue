@@ -82,10 +82,10 @@ export default {
   },
   methods: {
     routeTo(item, index) {
-      api.getSelectInfo({type: index + 1}).then(res => {
-        console.log(res.data.result)
-      })
-      this.$router.push(`/exercise?channel=${item.questionTitle}&id=${item.questionNumber}`)
+      // api.getSelectInfo({type: index + 1}).then(res => {
+      //   console.log(res.data.result)
+      // })
+      this.$router.push(`/exercise?type=${item.id}&channel=${item.questionTitle}&id=${item.questionNumber}`)
     }
   },
   components: {
