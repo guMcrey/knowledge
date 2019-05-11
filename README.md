@@ -11,7 +11,8 @@
 
 > 注意：所有功能需在本地部署成功后台才能使用，具体部署步骤见下文~~
 
-``` bash
+```bash
+
 # install dependencies
 $ npm install # Or yarn
 
@@ -24,9 +25,12 @@ $ npm start
 
 For detailed explanation on how things work, checkout the [Nuxt.js docs](https://github.com/nuxt/nuxt.js).
 
+```bash
 
 ## 后端环境部署及启动步骤
+
 ``` bash 
+
 # 安装python3.7 
 $ https://www.liaoxuefeng.com/wiki/1016959663602400/1016959856222624
 
@@ -63,3 +67,5 @@ $ exit
 $ python manage.py makemigrations
 $ python manage.py migrate
 $ python manage.py runserver
+
+```bash
