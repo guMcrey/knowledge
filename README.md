@@ -25,7 +25,7 @@ $ npm start
 
 For detailed explanation on how things work, checkout the [Nuxt.js docs](https://github.com/nuxt/nuxt.js).
 
-```bash
+```
 
 ## 后端环境部署及启动步骤
 
@@ -68,4 +68,4 @@ $ python manage.py makemigrations
 $ python manage.py migrate
 $ python manage.py runserver
 
-```bash
+```
