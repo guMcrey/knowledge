@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { getCookie, setCookie } from "~/assets/js/cookie.js"
+import Vue from 'vue';
 
 axios.defaults.timeout = 10000;   // 请求超时
 axios.defaults.withCredentials = false;
@@ -42,12 +43,9 @@ export default function request(url, data = {}, options) {
             method
         }
         if (method.toLowerCase() === 'get') {
-            console.log('get请求')
             options.params = data
-            console.log('options.params', options.params)
         } else {
             options.data = data
-            console.log('8888888888888', options)
         }
         service(options)
             .then(res => {
@@ -64,18 +62,18 @@ export default function request(url, data = {}, options) {
                 //         return
                 //     }
                 // }
-                // if (res.data.retCode === "LOGOUT") {
-                //     // 强制登出
-                //     if (process.browser) {
-                //         Vue.prototype.$toast.error({
-                //             duration: 1500,
-                //             message: res.data.tooltip || res.data.retInfo
-                //         })
-                //         setCookie('jkyy', '', 0)
-                //         Vue.prototype.$loginRegister.show()
-                //         return
-                //     }
-                // }
+                if (res.data === "Invalid Authorization header. No credentials provided.") {
+                    // 强制登出
+                    if (process.browser) {
+                        // Vue.prototype.$toast.error({
+                        //     duration: 1500,
+                        //     message: res.data.tooltip || res.data.retInfo
+                        // })
+                        setCookie('token', '', 0)
+                        // Vue.prototype.$loginRegister.show()
+                        return
+                    }
+                }
                 resolve(res.data)
                 // if (res.data.retCode === "SUCCESS") {
                 //     resolve(res.data)

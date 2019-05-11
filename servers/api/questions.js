@@ -35,3 +35,13 @@ export const apiInformationList = (method) => request('/list/informations/', {},
  * @param {string} updated_time 邀约回答更新时间
  */
 export const apiCreateAnswer = (owner, information_id, content, created_time, updated_time) => request('create/information/comment/', { owner, information_id, content, created_time, updated_time })
+
+/**
+ * @desc 用户选择题操作记录
+ * @param {number} question_id 当前题目id
+ * @param {string} answer_id 选择的选型id
+ * @param {string} user_id 用户id
+ * @param {string} score 积分
+ * @param {string} is_correct 选择是否正确
+ */
+export const apiSelectBehavior = (question_id, answer_id, user_id, score, is_correct) => request('/create/select/operation/', { question_id, answer_id, user_id, score, is_correct })

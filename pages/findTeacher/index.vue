@@ -26,10 +26,10 @@
                 <th>积分</th>
                 <th>开始时间</th>
                 <th>结束时间</th>
-                <th>操作</th>
+                <th>状态</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody v-loading="loading">
               <tr v-for="(item,index) in newsList" :key="index">
                 <td width="6%">{{index+1}}</td>
                 <td>{{item.title}}</td>
@@ -39,8 +39,8 @@
                 <td width="12%">{{item.interview_time}}</td>
                 <td width="12%">{{item.end_time}}</td>
                 <!-- 如果是学生 -->
-                <td width="15%">
-                  <span class="edit" @click="commitInvite(item)">点击预约</span>
+                <td width="15%" v-if="!typeUser">
+                  <span class="edit" @click="commitInvite(item)">{{item.statusName}}</span>
                 </td>
               </tr>
             </tbody>
@@ -63,12 +63,17 @@ import {
 } from "~/servers/api/findTeacher";
 import { get } from "http";
 
+const statusMap = {
+  1: '点击预约',
+  0: '已预约'
+}
 export default {
   data() {
     return {
       addDetail: {
         title: "",
         content: "",
+        status: 1,
         room: "",
         score: "",
         interview_time: "",
@@ -77,30 +82,42 @@ export default {
       editlist: false,
       editDetail: {},
       newsList: [],
-      editid: ""
+      editid: "",
+      loading: false,
+      statusName: '点击预约',
+      typeUser: ''  // 用户身份
     };
   },
   created() {
     this.inviteList();
+    this.userInfo()
   },
   methods: {
+    // 获取用户信息
+    async userInfo() {
+      const data = await apiUserDetail('get')
+      this.typeUser = data.type
+      console.log('data', data)
+    },
     // 获取邀约列表
     async inviteList() {
-      console.log("走了么");
       const inviteList = await apiGetInvite("get");
       this.newsList = inviteList.results;
+      this.newsList.forEach(res => {
+        this.$set(res, "statusName", '点击预约');
+      })
+      this.statusName = statusMap[this.status]
     },
     // 创建预约列表
     async adddetail(item) {
       //这里的思路应该是把this.addDetail传给服务端，然后加载列表this.newsList
       const {
-        selector_id,
-        teacher_id,
-        status,
+        title,
+        content,
         room,
         score,
         interview_time,
-        end_time
+        end_time,
       } = this.addDetail;
       const data = await apiCreateInvite(
         title,
@@ -132,9 +149,10 @@ export default {
         interview_time,
         end_time
       );
+      item.statusName = statusMap[item.status]
+      this.$message('预约成功！记录信息请到个人详情页查看~')
       // 点击预约后，老师显示已预约列表，学生显示预约列表，放到个人信息页中，最后调
       const clickList = await apiInviteList("get");
-      console.log("clickList", clickList);
     }
     //删除
     // deletelist(id, i) {
@@ -187,7 +205,7 @@ export default {
 }
 .root {
   background: #f5f5f5;
-  /* height: 90vh; */
+  min-height: 100vh;
   padding-top: 60px;
 }
 .wrap {
@@ -199,6 +217,7 @@ export default {
   background: #fff;
   padding: 40px;
   overflow: auto;
+  height: 100vh;
 }
 .table table {
   width: 996px;

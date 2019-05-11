@@ -5,8 +5,8 @@
       <div class="bigbox">
         <div class="begin" v-if="fatherComponent == 'home'">
           <div class="topic">
-            <div class="topic-title">课程题目：C语言程序设计</div>
-            <div class="topic-number">（共20题）</div>
+            <div class="topic-title">课程题目：{{this.$route.query.channel}}</div>
+            <div class="topic-number">（共{{this.$route.query.id}}题）</div>
             <div class="topic-star">题目难度：</div>
           </div>
           <!-- <h2>请认真完成测试题。准备好了吗？</h2> -->
@@ -136,12 +136,12 @@ export default {
   background: #f5f5f5;
 }
 .topic {
-  margin-top: 180px;
+  margin-top: 230px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  height: 200px;
+  height: 250px;
   line-height: 40px;
   background: #f5f5f5;
   border-radius: 10px;
@@ -149,7 +149,7 @@ export default {
 .topic-title {
   font-size: 18px;
   color: #6c6c6c;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: bold;
 }
 .topic-number {
@@ -158,7 +158,7 @@ export default {
   font-size: 18px;
 }
 .topic-star {
-  font-size: 16px;
+  font-size: 18px;
   color: #6c6c6c;
   width: 230px;
   height: 55px;
@@ -176,8 +176,7 @@ export default {
   box-shadow: 0 1px 1px #d9d9d9, inset 0 1px 1px #f1f1f1;
   .begin {
     width: 680px;
-    height: 300px;
-    height: 690px;
+    height: 778px;
     border-radius: 20px;
     h2 {
       margin-top: 20px;

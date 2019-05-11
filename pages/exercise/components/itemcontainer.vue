@@ -23,7 +23,7 @@
               <ul>
                 <li
                   v-for="(item, index) in itemDetail[itemNum-1].answers"
-                  @click="choosed(index, item.select_code)"
+                  @click="choosed(index, item.select_code, item.id)"
                   class="item_list"
                   :key="index"
                 >
@@ -68,7 +68,8 @@ import { mapState, mapActions } from "vuex";
 import {
   apiSelectQuestion,
   apiSelectAnswer,
-  apiCreateInvite
+  apiCreateInvite,
+  apiSelectBehavior
 } from "~/servers/api/questions";
 import { apiUserDetail } from "~/servers/api/user";
 
@@ -94,7 +95,11 @@ export default {
       itemDetail: [], // 题目内容
       question_id: "", // 当前题目id
       created_time: null, // 创建邀约时间
-      updated_time: null  // 创建邀约更新时间
+      updated_time: null, // 创建邀约更新时间
+      totalScore: 0, // 总分
+      owner: "", // 用户id
+      is_correct: "", // 答案是否正确
+      answers_id: "" // 获取当前选中id
     };
   },
   props: ["fatherComponent"],
@@ -108,6 +113,18 @@ export default {
     this.getSelectQuestion();
   },
   methods: {
+    // 记录用户操作行为
+    async recordSelectBehavior() {
+      const userInfo = await apiUserDetail("get");
+      this.owner = userInfo.id;
+      const data = await apiSelectBehavior(
+        this.question_id,
+        this.answers_id,
+        this.owner,
+        5,
+        this.is_correct
+      );
+    },
     // 获取选择题信息
     async getSelectQuestion() {
       const data = await apiSelectQuestion(this.$route.query.type, "get");
@@ -128,6 +145,7 @@ export default {
       } else {
         this.$message("您还没有选择答案哦");
       }
+      this.recordSelectBehavior()
     },
     //索引0-3对应答案A-B
     chooseType: type => {
@@ -143,13 +161,17 @@ export default {
       }
     },
     //选中的答案信息
-    choosed(type, id) {
+    choosed(type, id, answers_id) {
+      this.answers_id = answers_id;
       this.choosedNum = type;
       this.choosedId = id;
       if (this.choosedId != this.itemDetail[this.itemNum - 1].correct_code) {
         this.$message("哎呀~，回答错误啦😝");
+        this.is_correct = false;
       } else {
         this.$message("真聪明，回答正确!");
+        this.is_correct = true;
+        this.totalScore += 10;
       }
     },
     // 选中的积分信息
@@ -175,14 +197,14 @@ export default {
         return;
       } else {
         const userInfo = await apiUserDetail("get");
-        const owner = userInfo.id;
+        this.owner = userInfo.id;
         const data = await apiCreateInvite(
           Number(this.$route.query.type),
-          owner,
+          this.owner,
           this.choosedFen,
           this.textContent,
           this.question_id,
-          this.created_time, 
+          this.created_time,
           this.updated_time
         );
         console.log("创建邀约", data);
@@ -193,11 +215,11 @@ export default {
     //到达最后一题，交卷，请空定时器，跳转分数页面
     submitAnswer() {
       if (this.choosedNum !== null) {
+        this.recordSelectBehavior()
         this.addNum(this.choosedId);
-        clearInterval(this.timer);
-        this.$router.push("score");
+        window.location.href = `/exercise/score/?totalScore=${this.totalScore}`;
       } else {
-        alert("您还没有选择答案哦");
+        this.$message("您还没有选择答案哦");
       }
     }
   },

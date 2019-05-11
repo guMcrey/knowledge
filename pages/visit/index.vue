@@ -70,7 +70,7 @@
                 </div>
               </div>
             </div>
-            <div class="pageType">
+            <!-- <div class="pageType">
                   <ul class="pagination">
                     <li class="disabled">
                       <dl>上一页</dl>
@@ -93,7 +93,7 @@
                       <b>43</b>条数据
                     </li>
                   </ul>
-                </div>
+                </div> -->
           </div>
         </div>
       </div>
@@ -104,7 +104,7 @@
 <script>
 import SdHeader from "~/components/navBar";
 import PageFooter from "~/components/pageFooter";
-import { apiCheckInfo, apiCreateAnswer } from "~/servers/api/discuss";
+import { apiCheckInfo, apiCreateAnswer, apiNomalBehavior } from "~/servers/api/discuss";
 import { apiUserDetail } from "~/servers/api/user";
 
 const scoreMap = {
@@ -150,6 +150,8 @@ export default {
         this.created_time,
         this.updated_time
       );
+      this.getQuestionInfo()
+      console.log('chuangjianwenti', data)
     }
   },
   components: {

@@ -11,32 +11,14 @@
               </div>
               <div class="right">
                 <div class="username">昵称: {{nickname}}</div>
-                <div class="grade">等级: V4</div>
-                <div class="score">积分: 20</div>
+                <div class="grade">性别: {{gender}}</div>
+                <div class="score">积分: {{score}}</div>
               </div>
             </div>
 
             <div class="user-info">
               <div class="nick-level">
-                <div class="nick" v-text="nick"></div>
-                <div :class="'level level'+levelClass">
-                  <i :class="'icons icon_level_'+levelClass"></i>
-                  <span v-text="level"></span>
-                </div>
-              </div>
-
-              <div class="uid" v-text="'ID:'+uid"></div>
-
-              <div class="wealth">
-                <div class="w-star">
-                  <span v-text="starNumber"></span>
-                  <i class="icons star-sm"></i>
-                </div>
-                <span class="cut">|</span>
-                <div class="w-diamond">
-                  <span v-text="diamondNumber"></span>
-                  <i class="icons diamond-sm"></i>
-                </div>
+                <div class="nick"></div>
               </div>
             </div>
           </div>
@@ -55,8 +37,97 @@
           </div>
         </div>
         <div class="tab-content">
+          <!-- <div v-for="(m,index) in tabMain" v-show="cur==index" :key="index">
+            <table cellpadding="0" cellspacing="0">
+              <thead>
+                <tr>
+                  <th>序号</th>
+                  <th>标题</th>
+                  <th>发布人</th>
+                  <th>上课房间</th>
+                  <th>积分</th>
+                  <th>开始时间</th>
+                  <th>结束时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td width="6%">{{index+1}}</td>
+          <td>{{m.title}}</td>-->
+          <!-- <td width="10%">{{m.content}}</td>
+                <td width="10%">{{item.room}}</td>
+                <td width="6%">{{item.score}}</td>
+                <td width="12%">{{item.interview_time}}</td>
+                <td width="12%">{{item.end_time}}</td>
+                <td width="15%">
+                  <span class="edit" @click="commitInvite(item)" v-if="item.status == 0">点击预约</span>
+                  <span class="edit" @click="commitInvite(item)" v-else>{{item.status}}</span>
+          </td>-->
+          <!-- </tr>
+              </tbody>
+            </table>
+            <div id="table">{{m.id}}</div>
+          </div>-->
+          <!-- 我的预约 -->
           <div v-for="(m,index) in tabMain" v-show="cur==index" :key="index">
-            <div id="table">{{m}}</div>
+            <div>222222{{m.title}}</div>
+            <table cellpadding="0" cellspacing="0" v-if="m.checkFlag==2">
+              <thead>
+                <tr>
+                  <th>序号</th>
+                  <th>发布人</th>
+                  <th>上课房间</th>
+                  <th>预约人</th>
+                  <th>状态</th>
+                </tr>
+              </thead>
+              <tbody v-for="(item,index) in myReadList" :key="index">
+                <tr>
+                  <td>{{index+1}}</td>
+                  <td>{{item.teacher_name}}</td>
+                  <td>{{item.room}}</td>
+                  <td>{{item.selector_name}}</td>
+                  <td>{{item.status}}</td>
+                </tr>
+              </tbody>
+            </table>
+            <table cellpadding="0" cellspacing="0" v-if="m.checkFlag==1">
+              <thead>
+                <tr>
+                  <th>序号</th>
+                  <th>问题id</th>
+                  <th>回答id</th>
+                  <th>奖励积分</th>
+                </tr>
+              </thead>
+              <tbody v-for="(item,index) in normalList" :key="index">
+                <tr>
+                  <td>{{index+1}}</td>
+                  <td>{{item.question_id}}</td>
+                  <td>{{item.answer_id}}</td>
+                  <td>{{item.score}}</td>
+                </tr>
+              </tbody>
+            </table>
+             <table cellpadding="0" cellspacing="0" v-if="m.checkFlag==0">
+              <thead>
+                <tr>
+                  <th>序号</th>
+                  <th>问题id</th>
+                  <th>回答id</th>
+                  <th>奖励积分</th>
+                </tr>
+              </thead>
+              <tbody v-for="(item,index) in normalList" :key="index">
+                <tr>
+                  <td>{{index+1}}</td>
+                  <td>{{item.question_id}}</td>
+                  <td>{{item.answer_id}}</td>
+                  <td>{{item.score}}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -68,76 +139,68 @@
 import SdHeader from "~/components/navBar";
 import PageFooter from "~/components/pageFooter";
 import * as api from "~/assets/api";
-import { apiUserDetail } from "~/servers/api/user";
+import { apiUserDetail, apiGetSelectRecord, apiGetNomalRecord } from "~/servers/api/user";
+import { apiInviteList } from "~/servers/api/findTeacher";
+
+// 状态
+const statusMap = {
+  0: "已预约",
+  1: "可预约"
+};
 
 export default {
   data() {
     return {
-      tabTitle: ["我的试卷", "我的回复", "发布的帖子", "我的预约"],
-      tabMain: ["内容一", "内容二", "内容三", "内容四"],
+      tabTitle: ["我的试卷", "我的回复", "我的预约"],
+      tabMain: [{title: "内容一", checkFlag: 0}, {title: "内容二", checkFlag: 1}, {title: "内容三", checkFlag: 2}, {title: "内容四", checkFlag: 3}],
       cur: 0, //默认选中第一个tab
       addDetail: {},
       editlist: false,
       editDetail: {},
-      newsList: [
-        {
-          title: "在移动设备开发",
-          user: "张若昀",
-          dates: "2018-02-09",
-          id: "45211546"
-        },
-        {
-          title: "图形及特效特性",
-          user: "张若昀",
-          dates: "2018-02-09",
-          id: "61341341"
-        },
-        {
-          title: "设备兼容特性",
-          user: "张若昀",
-          dates: "2018-02-09",
-          id: "62451431"
-        },
-        {
-          title: "W3C将致力于开发用于实时通信",
-          user: "张若昀",
-          dates: "2018-02-09",
-          id: "62345213"
-        },
-        {
-          title: "全新的表单输入对象",
-          user: "张若昀",
-          dates: "2018-02-09",
-          id: "23322445"
-        }
-      ],
+      newsList: [],
       editid: "",
-      nickname: ""
+      nickname: "", // 用户账号
+      score: "", // 用户积分
+      gender: {
+        female: "女",
+        male: "男"
+      }, // 用户性别
+      myReadList: [], // 我的预约
+      normalList: [], // 我发布的帖子
     };
   },
   mounted() {
     this.getUserInfo();
-    this.userInfo();
     this.selectQuesiotn();
+    this.normalRecord()
+    // 我的预约
+    this.inviteList();
   },
   methods: {
     // 获取用户信息
-    getUserInfo() {
-      // 昵称
-      // this.nickname = window.localStorage.getItem('USERNAME')
-      // 用户等级
-      // 积分
-    },
-    // 发布的帖子
-    async userInfo() {
-      const username = this.nickname;
-      const data = await apiUserDetail();
-      console.log("data", data);
+    async getUserInfo() {
+      const data = await apiUserDetail("get");
+      console.log(data);
+      this.nickname = data.username;
+      this.score = data.score;
+      this.gender = data.gender;
     },
     // 我的试卷
-    selectQuesiotn() {
-      api.selectQustionList().then(res => {
-        console.log("通了");
+    async selectQuesiotn() {
+      const data = await apiGetSelectRecord('get')
+      console.log(data)
+    },
+    // 我的回复
+    async normalRecord() {
+      const normal = await apiGetNomalRecord('get')
+      this.normalList = normal.results
+    },
+    // 我的预约
+    async inviteList() {
+      const clickList = await apiInviteList("get");
+      this.myReadList = clickList.results;
+      this.myReadList.forEach(res => {
+        res.status = statusMap[res.status];
       });
     }
   },
@@ -339,5 +402,33 @@ ul li {
 }
 .menu-link:hover {
   background: rgba(245, 173, 27, 0.6);
+}
+table thead th {
+  width: 806px;
+  font-size: 15px;
+  border: 1px solid #eee;
+  background: rgba(76, 103, 232, 0.1);
+  padding: 10px;
+  text-align: center;
+}
+tbody td {
+  border-bottom: 1px solid #eee;
+  border-right: 1px solid #eee;
+  text-align: center;
+}
+table thead th {
+  background: rgba(76, 103, 232, 0.1);
+  padding: 10px;
+}
+
+table tbody td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  border-right: 1px solid #eee;
+}
+
+table tbody td span {
+  margin: 0 10px;
+  cursor: pointer;
 }
 </style>

@@ -6,7 +6,7 @@
         <div class="message">用户登录</div>
         <div class="darkbannerwrap"></div>
 
-        <el-form :model="form" status-icon :rules="rules" ref="form">
+        <el-form :model="form" status-icon :rules="rules" ref="form" class="el-form">
           <el-form-item label="用户名" prop="username">
             <el-input type="text" v-model="form.username" placeholder="请输入用户名"></el-input>
           </el-form-item>
@@ -27,8 +27,8 @@
             >登录</el-button>
           </el-form-item>
           <div class="to-register">
-            <a class="to-register" href="/register">还没有账号？去注册 →</a>
-          </div>
+          <a class="to-register" href="/register">还没有账号？去注册 →</a>
+        </div>
         </el-form>
       </div>
     </div>
@@ -142,6 +142,7 @@ export default {
   height: 10px;
   margin: 0 0 20px -58px;
   position: relative;
+  background: url(../imgs/aiwrap.png)
 }
 
 .login input[type="text"],

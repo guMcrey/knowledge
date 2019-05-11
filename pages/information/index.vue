@@ -165,6 +165,7 @@ export default {
 }
 .root {
   background: #f5f5f5;
+  min-height: 80vh;
 }
 ul {
   list-style: none;
@@ -204,6 +205,7 @@ a {
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  /* min-height: 80vh; */
   /* margin: 0 auto; */
 }
 .newsCenterPanel_inner .newContentBox {

@@ -19,3 +19,13 @@ export const apiLogin = (username, password) => request("/login/", { username, p
 * @param {string} token token校验
 */
 export const apiUserDetail = (method) => request('/user/detail/', {}, { method })
+
+/**
+ * @desc 获取选择题问题操作记录
+ */
+export const apiGetSelectRecord = (method) => request('/list/select/operations/', {}, { method })
+
+/**
+ * @desc 普通问题操作记录列表
+ */
+export const apiGetNomalRecord = (method) => request('/list/normal/operations/', {}, { method })

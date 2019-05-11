@@ -6,7 +6,7 @@
         <div class="ask-button" @click="askQuestion()">我有问题，我要提问！</div>
       </div>
       <div class="ask_main" @click="viewDetail(item.id)" v-for="(item,index) in questionList" :key="index">
-        <div class="amIn">
+        <div class="amIn" v-loading="loading">
           <div class="AskItemList">
             <div class="top">
               <div class="info">
@@ -67,7 +67,8 @@ export default {
   data() {
     return {
       type: '', // 问题列表
-      questionList: [] // 问题列表
+      questionList: [], // 问题列表
+      loading: false
     };
   },
   created() {
@@ -77,7 +78,6 @@ export default {
     async getQuestionList() {
       // 获取个人详情
       const userInfo = await apiUserDetail("get")
-      
       // 获取问题列表
       const data = await apiGetQuestionList("get");
       this.questionList = data.results;
@@ -104,6 +104,7 @@ export default {
 <style scoped>
 .root {
   background: #f5f5f5;
+  min-height: 100vh;
   padding-top: 60px;
 }
 .ask-button {

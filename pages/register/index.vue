@@ -141,6 +141,7 @@ export default {
   height: 10px;
   margin: 0 0 20px -58px;
   position: relative;
+  background: url(../imgs/aiwrap.png)
 }
 
 .login input[type="text"],

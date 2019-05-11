@@ -4,7 +4,7 @@
     <div class="wrap">
       <div class="your_scores_container">
         <header class="your_scores">
-          <span class="score_num">{{score}}</span>
+          <span class="score_num">{{this.$route.query.totalScore}}</span>
           <span class="fenshu">分！</span>
         </header>
         <div class="result_tip">{{scoreTips}}</div>
@@ -95,10 +95,10 @@ export default {
   display: flex;
   justify-content: space-around;
   flex-direction: column;
-  max-width: 1080px;
+  max-width: 1180px;
   margin: 0px auto;
   background: #fff;
-  padding: 145px;
+  padding: 190px;
 }
 .your_scores_container {
   width: 19.7rem;

@@ -55,7 +55,7 @@ export default {
         {
           text: "首页",
           path: "/",
-          flag: false
+          flag: true
         },
         {
           text: "项目概况",
@@ -93,10 +93,21 @@ export default {
   },
   mounted() {
     this.hasToken = getCookie("token");
+    console.log('token', this.hasToken)
+    if (!this.hasToken) {
+      // this.$router.push('/login')
+    }
   },
   methods: {
     handleCommand(command) {
-      this.$router.push("./myDetail");
+      if(command === 'a') {
+        this.$router.push("./myDetail");
+      } else {
+        // 清空token
+        this.hasToken = ''
+        setCookie('token', '', 0)
+        this.$router.push('./login')
+      }
     }
   },
   ...mapMutations(["TOGGLE_LOADING_STATUS", "CHECKOUT_LOGIN_STATUS"])
