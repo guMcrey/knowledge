@@ -19,9 +19,10 @@
             <div class="item_list_container" v-if="itemDetail.length > 0">
               <header class="item_title">{{itemNum}}. {{itemDetail[itemNum-1].title}}：</header>
               <div class="view">
-                <p class="content-text" @click="viewContent()">查看解析</p>
-                <p class="question" @click="haveQuestion()">重答</p>
-                <p class="question" @click="invite()">邀约讲解</p>
+                <div class="content-text" @click="viewContent()">查看解析</div>
+                <div class="question" @click="haveQuestion()">重答</div>
+                <div class="question" @click="invite()">邀约讲解</div>
+                <div class="question" @click="createNode=true">添加笔记</div>
               </div>
               <ul>
                 <li
@@ -57,6 +58,15 @@
           </div>
         </div>
       </div>
+       <el-dialog title="" width="1000px" :visible="createNode" :before-close="createNodeClose">
+      <p class="nodeContent">请添加笔记内容：</p>
+      <el-input type="textarea" :rows="4" placeholder="请输入内容..." v-model="nodeText">
+      </el-input>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="createNodeClose">取 消</el-button>
+        <el-button type="primary" @click="nodeConfirm">确 定</el-button>
+      </span>
+    </el-dialog>
       <span class="next_item button_style" @click="nextItem" v-if="itemNum < itemDetail.length"></span>
       <span class="submit_item button_style" v-else @click="submitAnswer"></span>
     </section>
@@ -104,7 +114,9 @@ export default {
       is_correct: "", // 答案是否正确
       answers_id: "", // 获取当前选中id
       callinTime: "0:0:0",
-      loading: false  // 加载
+      loading: false,  // 加载
+      createNode: false,  // 添加笔记
+      nodeText: ""  // 笔记内容
     };
   },
   props: ["fatherComponent"],
@@ -186,6 +198,46 @@ export default {
         });
       }
       this.recordSelectBehavior();
+    },
+    // 添加笔记
+    createNodeClose() {
+      this.nodeText = ''
+      this.createNode = false
+    },
+    // 点击添加笔记的确认按钮
+    nodeConfirm() {
+      //提交回访内容
+      let nodeText = this.nodeText
+      if (nodeText) {
+        if (nodeText.length > 500) {
+          this.$notify({
+            title: '警告',
+            message: `笔记内容只能输入500个字哦~~`,
+            type: 'warning'
+          })
+          return
+        }
+        // this.$api.caseTrial
+        //   .addReturnVisit({
+        //     refuseApplyId: this.currentId,
+        //     content: hasReturnVisitStr
+        //   })
+        //   .then(() => {
+            this.$notify({
+              title: '成功',
+              message: '添加笔记成功,您可到个人详情页查看~',
+              type: 'success'
+            })
+            this.createNode = false
+            this.nodeText = ''
+          // })
+        return
+      }
+      this.$notify({
+        title: '失败',
+        message: `请填写笔记内容`,
+        type: 'error'
+      })
     },
     //索引0-3对应答案A-B
     chooseType: type => {
@@ -302,6 +354,10 @@ export default {
 .root {
   background: #f5f5f5;
 }
+.nodeContent {
+  font-size: 15px;
+  margin: 20px 20px 20px 0;
+}
 .timer {
   width: 80px;
   height: 80px;
@@ -309,6 +365,7 @@ export default {
   background: rgba(245, 173, 27, 0.8);
   margin: auto;
   margin-top: 20px;
+  box-shadow: 0 1px 10px rgba(245, 173, 27, 0.8);
 }
 .showTime {
   font-size: 23px;

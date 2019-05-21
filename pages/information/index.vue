@@ -29,35 +29,45 @@
                   <div class="openContent-option">{{sitem.select_code}}. {{sitem.content}}</div>
                 </div>
                 <div class="openContent-info">{{item.question.analyzations}}</div>
-
-                <div class="vice-info" @click="createReply()">
-                  <a class="MydaBut">
-                    <i>答</i>
-                    <span>我来答</span>
-                  </a>
+                <div class="vice">
+                  <div class="vice-info" @click="createReply()">
+                    <a class="MydaBut">
+                      <i>答</i>
+                      <span>我来答</span>
+                    </a>
+                  </div>
+                  <div class="vice-reply" @click="showReplyFlag()">
+                    <a class="MydaBut2">
+                      <i>查</i>
+                      <span>我要看</span>
+                    </a>
+                  </div>
                 </div>
+
                 <div class="open-content" v-if="showCreate">
                   <textarea class="create-input" placeholder="请输入你的观点..." v-model="answerContent"></textarea>
                   <div class="create-button" @click="createAnswer(item)">发送</div>
                 </div>
                 <!-- 评论成功后生成下面的样子 -->
-                <div class="open-content" v-for="(sitem, index) in item.answers" :key="index">
-                  <div class="openContent-allReply">
-                    <img class="user-avator" src="./img/avator.jpg">
-                    <div class="middle">
-                      <div class="user-name">{{sitem.username}}</div>
-                      <div class="reply-text">{{sitem.content}}</div>
-                      <div class="bottom">
-                        <div class="repaly-time">发表于 {{sitem.created_time}}</div>
-                        <!-- <div class="repaly-reply" @click="replyNow()">点击回复</div> -->
+                <div v-if="showReplyList">
+                  <div class="open-content" v-for="(sitem, index) in item.answers" :key="index">
+                    <div class="openContent-allReply">
+                      <img class="user-avator" src="./img/avator.jpg">
+                      <div class="middle">
+                        <div class="user-name">{{sitem.username}}</div>
+                        <div class="reply-text">{{sitem.content}}</div>
+                        <div class="bottom">
+                          <div class="repaly-time">发表于 {{sitem.created_time}}</div>
+                          <!-- <div class="repaly-reply" @click="replyNow()">点击回复</div> -->
+                        </div>
                       </div>
+                      <div class="user-grade">用户等级</div>
                     </div>
-                    <div class="user-grade">用户等级</div>
                   </div>
                   <div class="click-reply" v-if="showReplyNow">
-                    <textarea class="reply-input" placeholder="请输入你的观点..."></textarea>
-                    <div class="reply-button">发送</div>
-                  </div>
+                      <textarea class="reply-input" placeholder="请输入你的观点..."></textarea>
+                      <div class="reply-button">发送</div>
+                    </div>
                 </div>
               </div>
             </div>
@@ -108,7 +118,8 @@ export default {
       score: "", // 悬赏积分
       quesitonList: [], // 问题详情
       answerContent: "", // 回复内容
-      information_id: "" // 邀约信息id
+      information_id: "", // 邀约信息id
+      showReplyList: false // 展示评论
     };
   },
   mounted() {
@@ -141,6 +152,10 @@ export default {
     // replyNow() {
     //   this.showReplyNow = !this.showReplyNow;
     // },
+    // 显示回复列表
+    showReplyFlag() {
+      this.showReplyList = !this.showReplyList
+    },
     // 创建邀约
     async createAnswer(item) {
       const userInfo = await apiUserDetail("get");
@@ -153,11 +168,11 @@ export default {
         null
       );
       this.getInformation();
-      this.showCreate = false
+      this.showCreate = false;
       this.$notify({
-        title: '成功',
+        title: "成功",
         message: "添加回答成功~",
-        type: 'success'
+        type: "success"
       });
     }
   },
@@ -183,8 +198,18 @@ ul {
 a {
   text-decoration: none;
 }
+.vice {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
 .vice-info {
-  width: 100%;
+  /* width: 30%; */
+  height: 42px;
+  margin: 20px;
+}
+.vice-reply {
+  /* width: 30%; */
   height: 42px;
   margin: 20px;
 }
@@ -192,14 +217,45 @@ a {
   display: block;
   height: 40px;
   padding: 0 15px;
-  background-color: rgba(245, 173, 27, .8);
+  background-color: rgba(245, 173, 27, 0.7);
+  float: left;
+  border-radius: 4px;
+  cursor: pointer;
+  /* margin-right: 100px; */
+}
+.MydaBut2 {
+  display: block;
+  height: 40px;
+  padding: 0 15px;
+  background-color: #9cadf5;
   float: right;
   border-radius: 4px;
   cursor: pointer;
-  margin-right: 100px;
+  margin-right: 67px;
+}
+.MydaBut2 i {
+  /* display: block; */
+  width: 28px;
+  height: 28px;
+  float: left;
+  background-color: #fff;
+  border-radius: 18px;
+  margin-top: 5px;
+  margin-right: 12px;
+  font: 16px/28px "microsoft yahei";
+  color: #9cadf5;
+  text-align: center;
+}
+.MydaBut2 span {
+  /* display: block; */
+  height: 28px;
+  float: left;
+  font: 16px/28px "microsoft yahei";
+  color: #fff;
+  margin-top: 5px;
 }
 .MydaBut i {
-  display: block;
+  /* display: block; */
   width: 28px;
   height: 28px;
   float: left;
@@ -212,7 +268,7 @@ a {
   text-align: center;
 }
 .MydaBut span {
-  display: block;
+  /* display: block; */
   height: 28px;
   float: left;
   font: 16px/28px "microsoft yahei";
@@ -417,7 +473,7 @@ a {
   width: 610px;
   height: 40px;
   border-radius: 5px;
-  font: 15px/1 Lucida Grande,Helvetica,Arial,Verdana,sans-serif;
+  font: 15px/1 Lucida Grande, Helvetica, Arial, Verdana, sans-serif;
   padding: 10px;
 }
 .create-button {
@@ -437,8 +493,11 @@ a {
   background: #fff;
   width: 650px;
   padding: 20px;
-  margin-bottom: 30px;
+  margin-bottom: 3px;
   border-radius: 2px;
+}
+.open-content:last-child {
+  margin-bottom: 30px;
 }
 
 .openContent-allReply {

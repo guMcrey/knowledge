@@ -215,7 +215,7 @@ export default {
   // background: #fff;
   float:left;
   margin-left: 120px;
-  box-shadow: 0 1px 1px #d9d9d9, inset 0 1px 1px #f1f1f1;
+  box-shadow: 0 2px 2px #d9d9d9, inset 0 2px 2px #f1f1f1;
 }
 .topic {
   margin-top: 190px;
