@@ -30,7 +30,12 @@
                 </div>
                 <div class="openContent-info">{{item.question.analyzations}}</div>
 
-                <div class="openContent-reply" @click="createReply()">添加评论</div>
+                <div class="vice-info" @click="createReply()">
+                  <a class="MydaBut">
+                    <i>答</i>
+                    <span>我来答</span>
+                  </a>
+                </div>
                 <div class="open-content" v-if="showCreate">
                   <textarea class="create-input" placeholder="请输入你的观点..." v-model="answerContent"></textarea>
                   <div class="create-button" @click="createAnswer(item)">发送</div>
@@ -136,7 +141,7 @@ export default {
     // replyNow() {
     //   this.showReplyNow = !this.showReplyNow;
     // },
-    // 创建邀约 
+    // 创建邀约
     async createAnswer(item) {
       const userInfo = await apiUserDetail("get");
       const owner = userInfo.id;
@@ -147,8 +152,13 @@ export default {
         null,
         null
       );
-      this.getInformation()
-      this.$message("评论成功~");
+      this.getInformation();
+      this.showCreate = false
+      this.$notify({
+        title: '成功',
+        message: "添加回答成功~",
+        type: 'success'
+      });
     }
   },
   components: {
@@ -172,6 +182,42 @@ ul {
 }
 a {
   text-decoration: none;
+}
+.vice-info {
+  width: 100%;
+  height: 42px;
+  margin: 20px;
+}
+.MydaBut {
+  display: block;
+  height: 40px;
+  padding: 0 15px;
+  background-color: rgba(245, 173, 27, .8);
+  float: right;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 100px;
+}
+.MydaBut i {
+  display: block;
+  width: 28px;
+  height: 28px;
+  float: left;
+  background-color: #fff;
+  border-radius: 18px;
+  margin-top: 5px;
+  margin-right: 12px;
+  font: 16px/28px "microsoft yahei";
+  color: rgba(245, 173, 27);
+  text-align: center;
+}
+.MydaBut span {
+  display: block;
+  height: 28px;
+  float: left;
+  font: 16px/28px "microsoft yahei";
+  color: #fff;
+  margin-top: 5px;
 }
 .newsCenterPanel {
   box-shadow: 0 2px 10px #d9d9d9, inset 0 10px 1px #f1f1f1;
@@ -357,9 +403,9 @@ a {
 .openContent-reply {
   background: #f5ad1b;
   margin-left: 570px;
-  width: 67px;
-  height: 20px;
-  margin-top: 10px;
+  width: 87px;
+  height: 50px;
+  margin-top: 30px;
   margin-bottom: 10px;
   text-align: center;
   line-height: 20px;
@@ -370,19 +416,22 @@ a {
 .create-input {
   width: 610px;
   height: 40px;
-  border-radius: 3px;
+  border-radius: 5px;
+  font: 15px/1 Lucida Grande,Helvetica,Arial,Verdana,sans-serif;
+  padding: 10px;
 }
 .create-button {
   background: #f5ad1b;
   margin-left: 560px;
-  width: 50px;
-  height: 20px;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  width: 52px;
+  height: 25px;
+  margin-top: 20px;
+  margin-right: 5px;
   text-align: center;
-  line-height: 20px;
+  line-height: 25px;
   color: #fff;
   font-size: 14px;
+  border-radius: 5px;
 }
 .open-content {
   background: #fff;

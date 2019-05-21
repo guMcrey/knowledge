@@ -2,6 +2,7 @@
   <div class="root">
     <sd-header :activeTab="2"></sd-header>
     <div class="wrap">
+      <div class="total_time">共用时：{{this.$route.query.timer}}</div>
       <div class="your_scores_container">
         <header class="your_scores">
           <span class="score_num">{{this.$route.query.totalScore}}</span>
@@ -12,7 +13,7 @@
       <div class="share_button" @click="showCover"></div>
     </div>
 
-    <page-footer class="heigh"></page-footer>
+    <page-footer></page-footer>
   </div>
 </template>
 
@@ -99,6 +100,14 @@ export default {
   margin: 0px auto;
   background: #fff;
   padding: 190px;
+}
+.total_time {
+  margin-bottom: 45px;
+  font-family: Tahoma, Helvetica, Arial;
+  color: #a51d31;
+  font-size: 30px;
+  font-weight: bold;
+  text-align: center;
 }
 .your_scores_container {
   width: 19.7rem;

@@ -72,6 +72,12 @@
           <!-- 我的预约 -->
           <div v-for="(m,index) in tabMain" v-show="cur==index" :key="index">
             <div>222222{{m.title}}</div>
+            <el-form v-if="m.checkFlag==3">
+              <el-form-item style="text-align:center">
+                <el-label>姓名：</el-label>
+                <el-input style="width:50%" type="text" placeholder="请填写xxx" required></el-input>
+              </el-form-item>
+            </el-form>
             <table cellpadding="0" cellspacing="0" v-if="m.checkFlag==2">
               <thead>
                 <tr>
@@ -151,8 +157,8 @@ const statusMap = {
 export default {
   data() {
     return {
-      tabTitle: ["我的试卷", "我的回复", "我的预约"],
-      tabMain: [{title: "内容一", checkFlag: 0}, {title: "内容二", checkFlag: 1}, {title: "内容三", checkFlag: 2}, {title: "内容四", checkFlag: 3}],
+      tabTitle: ["我的试卷", "我的回复", "我的预约","完善信息"],
+      tabMain: [{title: "内容一", checkFlag: 0}, {title: "内容二", checkFlag: 1}, {title: "内容三", checkFlag: 2}, {title: "内容四", checkFlag: 3}, {title:"内容五", checkFlag: 4}],
       cur: 0, //默认选中第一个tab
       addDetail: {},
       editlist: false,

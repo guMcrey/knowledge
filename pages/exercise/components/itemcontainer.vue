@@ -13,8 +13,11 @@
         </div>
         <div v-if="fatherComponent == 'item'" class="option">
           <div class="item_back item_container_style">
+            <div class="timer">
+              <div class="showTime">{{callinTime}}</div>
+            </div>
             <div class="item_list_container" v-if="itemDetail.length > 0">
-              <header class="item_title">{{itemDetail[itemNum-1].title}}：</header>
+              <header class="item_title">{{itemNum}}. {{itemDetail[itemNum-1].title}}：</header>
               <div class="view">
                 <p class="content-text" @click="viewContent()">查看解析</p>
                 <p class="question" @click="haveQuestion()">重答</p>
@@ -99,20 +102,45 @@ export default {
       totalScore: 0, // 总分
       owner: "", // 用户id
       is_correct: "", // 答案是否正确
-      answers_id: "" // 获取当前选中id
+      answers_id: "", // 获取当前选中id
+      callinTime: "0:0:0",
+      loading: false  // 加载
     };
   },
   props: ["fatherComponent"],
   computed: mapState([
     "itemNum", //第几题
     "level", //第几周
-    // "itemDetail", //题目详情
-    "timer" //计时器
   ]),
   mounted() {
     this.getSelectQuestion();
+    this.start(true);
   },
   methods: {
+    // 计时器
+    start(bolean) {
+      let _this = this;
+      let hour, minute, second;
+      hour = minute = second = 0;
+      if (bolean === true) {
+        _this.timer = setInterval(function() {
+          if (second >= 0) {
+            second = second + 1;
+          }
+          if (second >= 60) {
+            second = 0;
+            minute = minute + 1;
+          }
+          if (minute >= 60) {
+            minute = 0;
+            hour = hour + 1;
+          }
+          _this.callinTime = hour + ":" + minute + ":" + second;
+        }, 1000);
+      } else {
+        window.clearInterval(_this.timer);
+      }
+    },
     // 记录用户操作行为
     async recordSelectBehavior() {
       const userInfo = await apiUserDetail("get");
@@ -127,11 +155,19 @@ export default {
     },
     // 获取选择题信息
     async getSelectQuestion() {
-      const data = await apiSelectQuestion(this.$route.query.type, "get");
-      this.itemDetail = data.results;
-      this.itemDetail.answers = data.results.answers;
-      this.question_id = this.itemDetail[this.itemNum - 1].id;
-      console.log("data9999", this.question_id);
+      // 顺序答题
+      const exam = this.$route.query.exam;
+      console.log('exam', exam)
+      if (exam == "顺序答题（选择题）") {
+        const data = await apiSelectQuestion(this.$route.query.type, "get");
+        this.itemDetail = data.results;
+        this.itemDetail.answers = data.results.answers;
+        this.question_id = this.itemDetail[this.itemNum - 1].id;
+        console.log("data9999", this.question_id); 
+        } []
+        // else if (exam == '乱序答题（选择题）') {
+          
+        // }
     },
     ...mapActions(["addNum", "initializeData"]),
     //点击下一题
@@ -143,9 +179,13 @@ export default {
         //保存答案, 题目索引加一，跳到下一题
         this.addNum(this.choosedId);
       } else {
-        this.$message("您还没有选择答案哦");
+        this.$notify({
+          title: "失败",
+          message: "您还没有选择答案哦",
+          type: "warning"
+        });
       }
-      this.recordSelectBehavior()
+      this.recordSelectBehavior();
     },
     //索引0-3对应答案A-B
     chooseType: type => {
@@ -166,10 +206,18 @@ export default {
       this.choosedNum = type;
       this.choosedId = id;
       if (this.choosedId != this.itemDetail[this.itemNum - 1].correct_code) {
-        this.$message("哎呀~，回答错误啦😝");
+        this.$notify({
+          title: "错误",
+          message: "哎呀~，回答错误啦😝",
+          type: "error"
+        });
         this.is_correct = false;
       } else {
-        this.$message("真聪明，回答正确!");
+        this.$notify({
+          title: "正确",
+          message: "真聪明，回答正确!",
+          type: "success"
+        });
         this.is_correct = true;
         this.totalScore += 10;
       }
@@ -193,7 +241,11 @@ export default {
     // 发布邀约
     async postInvite() {
       if (this.textContent == "") {
-        this.$message("请输入邀约内容");
+        this.$notify({
+          title: "失败",
+          message: "邀约内容不能为空哦~",
+          type: "warning"
+        });
         return;
       } else {
         const userInfo = await apiUserDetail("get");
@@ -208,18 +260,29 @@ export default {
           this.updated_time
         );
         console.log("创建邀约", data);
-        this.$message("发布邀约成功,您可到信息广场查看~");
+        this.$notify({
+          title: "成功",
+          message: "发布邀约成功,您可到信息广场查看~",
+          type: "success"
+        });
       }
       console.log(this.textContent);
     },
     //到达最后一题，交卷，请空定时器，跳转分数页面
     submitAnswer() {
+      this.loading = true
       if (this.choosedNum !== null) {
-        this.recordSelectBehavior()
+        this.recordSelectBehavior();
         this.addNum(this.choosedId);
-        window.location.href = `/exercise/score/?totalScore=${this.totalScore}`;
+        this.$router.push(`/exercise/score/?totalScore=${
+          this.totalScore
+        }&timer=${this.callinTime}`)
       } else {
-        this.$message("您还没有选择答案哦");
+        this.$notify({
+          title: "失败",
+          message: "您还没有选择答案哦",
+          type: "warning"
+        });
       }
     }
   },
@@ -238,6 +301,21 @@ export default {
 <style lang="less">
 .root {
   background: #f5f5f5;
+}
+.timer {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(245, 173, 27, 0.8);
+  margin: auto;
+  margin-top: 20px;
+}
+.showTime {
+  font-size: 23px;
+  color: #fff;
+  font-weight: bold;
+  line-height: 80px;
+  text-align: center;
 }
 .heigh {
   // position: relative;

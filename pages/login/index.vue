@@ -27,8 +27,8 @@
             >登录</el-button>
           </el-form-item>
           <div class="to-register">
-          <a class="to-register" href="/register">还没有账号？去注册 →</a>
-        </div>
+            <a class="to-register" href="/register">还没有账号？去注册 →</a>
+          </div>
         </el-form>
       </div>
     </div>
@@ -71,9 +71,14 @@ export default {
       const { username, password } = this.form;
       const data = await apiLogin(username, password);
       console.log("token", data.token);
-      setCookie("token", data.token, 999999999999);
+      setCookie("token", data.token, 86400000);
       this.$router.push("/");
-      this.$message("登录成功，欢迎访问知学平台~");
+      this.$notify({
+        title: "成功",
+        message: "登录成功，欢迎访问知学平台~",
+        type: "success"
+      });
+      // this.$message("登录成功，欢迎访问知学平台~");
     },
     async userInfo() {
       const userInfo = await apiUserDetail("get");
@@ -142,7 +147,7 @@ export default {
   height: 10px;
   margin: 0 0 20px -58px;
   position: relative;
-  background: url(../imgs/aiwrap.png)
+  background: url(../imgs/aiwrap.png);
 }
 
 .login input[type="text"],

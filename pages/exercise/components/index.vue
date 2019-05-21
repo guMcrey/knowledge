@@ -2,18 +2,30 @@
   <div class="root">
     <section>
       <sd-header :activeTab="2"></sd-header>
-      <div class="bigbox">
-        <div class="begin" v-if="fatherComponent == 'home'">
-          <div class="topic">
-            <div class="topic-title">课程题目：{{this.$route.query.channel}}</div>
-            <div class="topic-number">（共{{this.$route.query.id}}题）</div>
-            <div class="topic-star">题目难度：</div>
+      <div class="wrap">
+        <div class="aside" v-if="fatherComponent == 'home'">
+          <ul class="menu">
+            <li class="menu-li" v-for="(title,index) in menuList" @click="cur=index"
+                :class="{active:cur==index}"
+                :key="index">{{title}}</li>
+          </ul>
+        </div>
+        <div class="bigbox" v-for="(m,index) in tab" v-show="cur==index" :key="index">
+          <div class="begin" v-if="fatherComponent == 'home'" >
+            <div >{{m.title}}</div>
+            <div class="topic">
+              <div class="topic-title">课程题目：{{m.channel}}</div>
+              <div class="topic-number">题型：<span class="grade">{{m.exam}}</span></div>
+              <div class="topic-number">（共{{m.type}}题）</div>
+              <div class="topic-star">题目难度：<span class="grade">{{desc}}</span>（积分：<span class="grade">{{score}}</span>）</div>
+            </div>
+            <!-- <h2>请认真完成测试题。准备好了吗？</h2> -->
+            <!-- <a href="/exercise/item" class="start button_style" @click="getQuestionList()"></a> -->
+            <a class="start button_style" @click="getSelectQuestion()"></a>
           </div>
-          <!-- <h2>请认真完成测试题。准备好了吗？</h2> -->
-          <!-- <a href="/exercise/item" class="start button_style" @click="getQuestionList()"></a> -->
-          <a class="start button_style" @click="getSelectQuestion()"></a>
         </div>
       </div>
+
       <div v-if="fatherComponent == 'home'">
         <div class="home_logo item_container_style"></div>
       </div>
@@ -50,7 +62,9 @@ import PageFooter from "~/components/pageFooter";
 import { mapState, mapActions } from "vuex";
 import SdHeader from "~/components/navBar";
 import * as api from "~/assets/api";
-import { apiSelectQuestion } from '~/servers/api/questions'
+import { apiSelectQuestion } from "~/servers/api/questions";
+import { apiUserDetail } from "~/servers/api/user";
+import img from '../images/icons.jpg'
 
 export default {
   name: "itemcontainer",
@@ -58,7 +72,14 @@ export default {
     return {
       itemId: null, //题目ID
       choosedNum: null, //选中答案索引
-      choosedId: null //选中答案id
+      choosedId: null, //选中答案id
+      menuList: [
+        "顺序答题", "乱序答题", "文本题"
+      ],
+      cur: 0,  // 默认选中第一个
+      tab: [{title: "内容一", checkFlag: 0, channel: this.$route.query.channel, type: this.$route.query.id, exam: '顺序答题（选择题）'}, {title: "内容二", checkFlag: 1, channel: this.$route.query.channel, type: this.$route.query.id,  exam: '乱序答题（选择题）'}, {title: "内容三", checkFlag: 2, channel: this.$route.query.channel, type:this.$route.query.id,  exam: '文本题'}],
+      score: '', // 用户积分
+      desc: ''  // 题目描述
     };
   },
   props: ["fatherComponent"],
@@ -66,15 +87,45 @@ export default {
     "itemNum", //第几题
     "level", //第几周
     "itemDetail", //题目详情
-    "timer" //计时器
   ]),
   methods: {
     ...mapActions(["addNum", "initializeData"]),
+    // 获取用户信息
+    async getUserInfo() {
+      const userInfo = await apiUserDetail("get");
+      this.score = userInfo.score
+      // 分数对应不同等级
+      switch (parseInt(this.score/1000)) {
+        case 0:
+        this.desc = '简单'
+         break
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        this.desc = '容易'
+         break
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+        this.desc ='一般'
+         break
+        case 10:
+        this.desc = '较难'
+         break
+        default:
+        this.desc = '极难'
+        break
+      }
+      console.log('userInfo', this.score / 1000)
+    },
     // 点击开始
     async getSelectQuestion() {
       const data = await apiSelectQuestion(this.$route.query.type, "get");
       this.itemDetail = data.results;
-      window.location.href = `/exercise/item/?type=${this.$route.query.type}`;
+      window.location.href = `/exercise/item/?type=${this.$route.query.type}&exam=${this.tab[this.cur].exam}`;
       console.log("data9999", this.itemDetail);
     },
     //点击下一题
@@ -109,12 +160,11 @@ export default {
     submitAnswer() {
       if (this.choosedNum !== null) {
         this.addNum(this.choosedId);
-        clearInterval(this.timer);
         this.$router.push("score");
       } else {
         alert("您还没有选择答案哦");
       }
-    },
+    }
   },
   created() {
     //初始化信息
@@ -122,7 +172,7 @@ export default {
     // document.body.style.backgroundImage = 'url(./static/img/1-1.jpg)';
   },
   mounted() {
-    // this.getSelectQuestion()
+    this.getUserInfo()
   },
   components: {
     SdHeader,
@@ -135,13 +185,45 @@ export default {
 .root {
   background: #f5f5f5;
 }
+.grade {
+  color: #A31E31;
+}
+.menu {
+  padding-top: 140px;
+}
+.menu-li {
+  font-size: 17px;
+  color: #A31E31;
+  font-weight: bold;
+  list-style-type: none;
+  text-align: center;
+  cursor: pointer;
+  line-height: 80px;
+  transition: all 0.4s;
+  border-bottom: 1px solid #f5f5f5;
+}
+.menu-li:hover {
+  background: rgba(245, 173, 27, 0.6);
+  color: #fff;
+}
+.aside {
+  width: 160px;
+  height: 450px;
+  // background: rgba(245,173,27,.5);
+  background: url(../images/aside-bg.jpg);
+  background-position: 0px -245px;
+  // background: #fff;
+  float:left;
+  margin-left: 120px;
+  box-shadow: 0 1px 1px #d9d9d9, inset 0 1px 1px #f1f1f1;
+}
 .topic {
-  margin-top: 230px;
+  margin-top: 190px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  height: 250px;
+  height: 300px;
   line-height: 40px;
   background: #f5f5f5;
   border-radius: 10px;
@@ -160,18 +242,18 @@ export default {
 .topic-star {
   font-size: 18px;
   color: #6c6c6c;
-  width: 230px;
-  height: 55px;
+  // width: 230px;
+  // height: 55px;
   cursor: pointer;
-  background-image: url(../images/icons.jpg);
+  // background-image: url(../images/icons.jpg);
   background-repeat: no-repeat;
-  background-position: 70px -1px;
+  // background-position: 70px -1px;
 }
 .bigbox {
   display: flex;
   justify-content: space-around;
-  max-width: 1080px;
-  margin: 0px auto;
+  max-width: 1020px;
+  // margin: 0px auto;
   background: #fff;
   box-shadow: 0 1px 1px #d9d9d9, inset 0 1px 1px #f1f1f1;
   .begin {
@@ -219,9 +301,9 @@ export default {
   left: 18rem;
 }
 .home_logo {
-  background-image: url(../images/1-2.png);
-  background-size: 14.142rem 100%;
-  background-position: left center;
+  // background-image: url(../images/1-2.png);
+  // background-size: 14.142rem 100%;
+  // background-position: left center;
 }
 .item_back {
   padding-top: 195px;
@@ -236,7 +318,6 @@ export default {
   position: absolute;
   // top: 16.5rem;
   left: 50%;
-  margin-left: -3.4rem;
   background-repeat: no-repeat;
 }
 .start {

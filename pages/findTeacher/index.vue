@@ -64,9 +64,9 @@ import {
 import { get } from "http";
 
 const statusMap = {
-  1: '点击预约',
-  0: '已预约'
-}
+  1: "点击预约",
+  0: "已预约"
+};
 export default {
   data() {
     return {
@@ -84,29 +84,29 @@ export default {
       newsList: [],
       editid: "",
       loading: false,
-      statusName: '点击预约',
-      typeUser: ''  // 用户身份
+      statusName: "点击预约",
+      typeUser: "" // 用户身份
     };
   },
   created() {
     this.inviteList();
-    this.userInfo()
+    this.userInfo();
   },
   methods: {
     // 获取用户信息
     async userInfo() {
-      const data = await apiUserDetail('get')
-      this.typeUser = data.type
-      console.log('data', data)
+      const data = await apiUserDetail("get");
+      this.typeUser = data.type;
+      console.log("data", data);
     },
     // 获取邀约列表
     async inviteList() {
       const inviteList = await apiGetInvite("get");
       this.newsList = inviteList.results;
       this.newsList.forEach(res => {
-        this.$set(res, "statusName", '点击预约');
-      })
-      this.statusName = statusMap[this.status]
+        this.$set(res, "statusName", "点击预约");
+      });
+      this.statusName = statusMap[this.status];
     },
     // 创建预约列表
     async adddetail(item) {
@@ -117,7 +117,7 @@ export default {
         room,
         score,
         interview_time,
-        end_time,
+        end_time
       } = this.addDetail;
       const data = await apiCreateInvite(
         title,
@@ -149,8 +149,8 @@ export default {
         interview_time,
         end_time
       );
-      item.statusName = statusMap[item.status]
-      this.$message('预约成功！记录信息请到个人详情页查看~')
+      item.statusName = statusMap[item.status];
+      this.$message("预约成功！记录信息请到个人详情页查看~");
       // 点击预约后，老师显示已预约列表，学生显示预约列表，放到个人信息页中，最后调
       const clickList = await apiInviteList("get");
     }
