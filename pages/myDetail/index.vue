@@ -28,11 +28,11 @@
               <li
                 class="menu-link"
                 tag="li"
-                v-for="(title,index) in tabTitle"
-                @click="cur=index"
+                v-for="(title,index) in entryDisplay"
+                @click="cur=title.id"
                 :class="{active:cur==index}"
                 :key="index"
-              >{{title}}</li>
+              >{{title.tab}}</li>
             </ul>
           </div>
         </div>
@@ -171,7 +171,92 @@
               </el-form-item>
             </el-form>
           </div>
-
+          <!-- 申请小老师 (需完善个人信息后才展示)-->
+          <div v-if="cur==5" class="rechangePaw">
+            <el-breadcrumb separator-class="el-icon-arrow-right">
+              <el-breadcrumb-item>个人详情页</el-breadcrumb-item>
+              <el-breadcrumb-item>申请小老师</el-breadcrumb-item>
+            </el-breadcrumb>
+            <el-form
+              class="inputWrap"
+              :model="applyTeacherForm"
+              status-icon
+              :rules="rules"
+              ref="applyTeacherForm"
+            >
+              <el-form-item prop="realName">
+                <span class="labelStyle">姓名：</span>
+                <el-input
+                  class="inputStyle"
+                  type="text"
+                  placeholder="请输入姓名"
+                  v-model="applyTeacherForm.realName"
+                ></el-input>
+              </el-form-item>
+              <el-form-item prop="mobile">
+                <span class="labelStyle">手机：</span>
+                <el-input
+                  class="inputStyle"
+                  type="number"
+                  placeholder="请输入联系方式"
+                  v-model="applyTeacherForm.mobile"
+                ></el-input>
+              </el-form-item>
+              <el-form-item prop="email">
+                <span class="labelStyle">邮箱：</span>
+                <el-input
+                  class="inputStyle"
+                  type="text"
+                  placeholder="请输入邮箱"
+                  v-model="applyTeacherForm.email"
+                ></el-input>
+              </el-form-item>
+              <el-form-item prop="major">
+                <span class="labelStyle">院系：</span>
+                <el-select class="inputStyle" placeholder="请输入院系" v-model="applyTeacherForm.major">
+                  <el-option
+                    v-for="item in majorOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item prop="subject">
+                <span class="labelStyle">科目：</span>
+                <el-select
+                  class="inputStyle"
+                  placeholder="请输入科目"
+                  v-model="applyTeacherForm.subject"
+                >
+                  <el-option
+                    v-for="item in subjectOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item prop="desc">
+                <span class="labelStyle desc">自我评价：</span>
+                <el-input
+                  class="inputStyle"
+                  type="textarea"
+                  rows="3"
+                  placeholder="请输入自我描述..."
+                  v-model="applyTeacherForm.descContent"
+                ></el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-button class="inputButton" type="info" @click="resetInfo()">重置</el-button>
+                <el-button
+                  class="inputButton"
+                  type="primary"
+                  @click="submitApply('applyTeacherForm')"
+                >提交</el-button>
+              </el-form-item>
+            </el-form>
+          </div>
           <!-- <table cellpadding="0" cellspacing="0" v-if="m.checkFlag==2">
               <thead>
                 <tr>
@@ -246,7 +331,8 @@ import {
   apiGetSelectRecord,
   apiGetNomalRecord,
   apiCompleteInfo,
-  apiUpdatePaw
+  apiUpdatePaw,
+  apiApplySmallTeacher
 } from "~/servers/api/user";
 import { apiInviteList } from "~/servers/api/findTeacher";
 import { format } from "path";
@@ -282,14 +368,14 @@ export default {
     };
     return {
       tabTitle: [
-        "我的试卷",
-        "我的预约",
-        "我的课程",
-        "我发布的课程",
-        "我的评价",
-        "申请小老师",
-        "完善个人信息",
-        "修改密码"
+        { id: 0, tab: "我的试卷", flag: true },
+        { id: 1, tab: "我的预约", flag: true },
+        { id: 2, tab: "我的课程", flag: true },
+        { id: 3, tab: "我发布的课程", flag: true },
+        { id: 4, tab: "我的评价", flag: true },
+        { id: 5, tab: "申请小老师", flag: true },
+        { id: 6, tab: "完善个人信息", flag: true },
+        { id: 7, tab: "修改密码", flag: true }
       ],
       tabMain: [
         { title: "内容一", checkFlag: 0 },
@@ -307,9 +393,10 @@ export default {
       editDetail: {},
       newsList: [],
       editid: "",
+      userType: "", // 用户类型
       nickname: "", // 用户账号
       score: "", // 用户积分
-      gender: "",
+      gender: "", // 用户性别
       myReadList: [], // 我的预约
       normalList: [], // 我发布的帖子
       // 修改密码
@@ -324,6 +411,17 @@ export default {
         birthday: "",
         mobile: "",
         email: ""
+      },
+      // 判断用户是否完善个人信息
+      isCompleteInfo: false,
+      // 申请小老师
+      applyTeacherForm: {
+        realName: "",
+        mobile: "",
+        email: "",
+        major: "",
+        subject: "",
+        descContent: ""
       },
       birthday: "",
       // 院系列表
@@ -340,8 +438,12 @@ export default {
       ],
       subjectOptions: [{ value: "1", label: "机械工程系" }],
       rules: {
-        password: [{ required: true, message: "请输入旧密码", trigger: "blur" }],
-        new_password: [{ required: true, message: "请输入新密码", trigger: "blur" }],
+        password: [
+          { required: true, message: "请输入旧密码", trigger: "blur" }
+        ],
+        new_password: [
+          { required: true, message: "请输入新密码", trigger: "blur" }
+        ],
         realName: [{ required: true, message: "请输入姓名", trigger: "blur" }],
         mobile: [
           { required: true, message: "请输入联系方式", trigger: "blur" },
@@ -358,6 +460,7 @@ export default {
     };
   },
   computed: {
+    // 根据cur当前选项与索引判断显示对应模块（tab栏）
     checkIndex() {
       return this.tabMain.filter(item => {
         if (this.cur == item.checkFlag) {
@@ -365,7 +468,21 @@ export default {
         } else {
           return false;
         }
-        console.log("this.cur", this.cur);
+      });
+    },
+    // 根据用户状态显示tab栏入口
+    /**
+     * 0 普通用户
+     * 1 小老师
+     * 2 已完善信息
+     */
+    entryDisplay() {
+      // 对学生隐藏“申请小老师”入口
+      return this.tabTitle.filter(item => {
+        if (this.userType === 0 && item.id === 4) {
+          this.tabTitle.splice(item.id, 1);
+        }
+        return item;
       });
     }
   },
@@ -384,6 +501,7 @@ export default {
       this.nickname = data.username;
       this.score = data.score;
       this.gender = data.gender;
+      this.userType = data.type;
     },
     // 我的试卷
     async selectQuesiotn() {
@@ -408,35 +526,33 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           // 修改密码
-          this.submitChange()
+          this.submitChange();
           this.$notify({
             title: "修改成功",
             message: "修改密码成功，请重新登录！",
-            type: 'success'
-          })
-          this.$router.push('/login')
+            type: "success"
+          });
+          this.$router.push("/login");
         } else {
-          return false
+          return false;
         }
       });
     },
     // 修改密码传参
     async submitChange() {
       const { password, new_password } = this.changePawForm;
-      const data = await apiUpdatePaw(this.nickname, password, new_password, 'put')
-      console.log('data', data)
+      const data = await apiUpdatePaw(
+        this.nickname,
+        password,
+        new_password,
+        "put"
+      );
+      console.log("data", data);
     },
+    // 完善个人信息传参
     async inforContent() {
-      if (this.compliteInfoForm.gender === 1) {
-        this.gender = "female";
-        return;
-      } else if (this.compliteInfoForm.gender === 0) {
-        this.gender = "male";
-        return;
-      }
       // 将时间转换成YY-MM-DD
       this.birthday = formatDate.unixToTime(this.compliteInfoForm.birthday);
-      this.inforContent();
       const {
         realName,
         gender,
@@ -452,11 +568,12 @@ export default {
         email,
         "put"
       );
+      // 判断用户是否完善个人信息
+      this.isCompleteInfo = data.status;
     },
-    // 提交
+    // 完善个人信息提交
     submitInfo(formName) {
       this.$refs[formName].validate(val => {
-        console.log("valid", val);
         if (val) {
           this.inforContent();
           this.$notify({
@@ -464,17 +581,40 @@ export default {
             message: "恭喜您，获得了10积分！",
             type: "success"
           });
-          // 清空
-          this.resetInfo()
         } else {
-          return false;
           this.$notify({
             title: "更新失败",
             message: "操作有误，请重新输入！",
             type: "success"
           });
+          return false;
         }
       });
+    },
+    // 申请小老师提交
+    submitApply(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid && this.score >= 500) {
+          this.applyContent();
+          this.$notify({
+            title: "提交成功",
+            message: "您的申请已收到，我们会尽快审核~~",
+            type: "warning"
+          });
+        } else if (valid && this.score < 500) {
+          this.$notify({
+            title: "申请失败",
+            message: "抱歉，500积分以上才可以申请小老师哦~",
+            type: "error"
+          });
+        } else {
+          return false;
+        }
+      });
+    },
+    // 申请小老师传参
+    async applyContent() {
+      const data = await apiApplySmallTeacher("put");
     },
     // 重置
     resetInfo() {
@@ -482,11 +622,16 @@ export default {
         realName: "",
         mobile: "",
         email: "",
-        major: "",
-        subject: "",
-        descContent: "",
         gender: 1,
         birthday: ""
+      };
+      this.applyTeacherForm = {
+        realName: "",
+        mobile: "",
+        email: "",
+        major: "",
+        subject: "",
+        descContent: ""
       };
     }
   },

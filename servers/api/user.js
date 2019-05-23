@@ -44,6 +44,13 @@ export const apiCompleteInfo = (name, gender, birthday, mobile, email, method) =
 
 /**
  * @desc 更改密码
- * @param {string}
+ * @param {string} nickname 用户名
+ * @param {string} password 旧密码
+ * @param {string} new_password 新密码
  */
 export const apiUpdatePaw = (nickname, password, new_password, method) => request('update/user/password/', { nickname, password, new_password}, {method})
+
+/**
+ * @desc 申请小老师
+ */
+export const apiApplySmallTeacher = (method) => request('update/user/smt/', {}, {method})
