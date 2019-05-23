@@ -29,3 +29,14 @@ export const apiGetSelectRecord = (method) => request('/list/select/operations/'
  * @desc 普通问题操作记录列表
  */
 export const apiGetNomalRecord = (method) => request('/list/normal/operations/', {}, { method })
+
+/**
+ * @desc 完善个人信息
+ * @param {string} name 用户姓名
+ * @param {number} gender 性别
+ * @param {string} birthday 生日
+ * @param {string} mobile 手机
+ * @param {string} email 邮箱
+ */
+
+export const apiCompleteInfo = (name, gender, birthday, mobile, email, method) => request('update/user/detail/', { name, gender, birthday, mobile, email}, {method})

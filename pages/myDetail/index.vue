@@ -70,220 +70,109 @@
             <div id="table">{{m.id}}</div>
           </div>-->
           <!-- 我的预约 -->
-          <div v-for="(m,index) in tabMain" v-show="cur==index" :key="index">
-            <div>{{m.title}}</div>
-            <!-- 修改密码 -->
-            <div v-if="m.checkFlag==7" class="rechangePaw">
-              <el-breadcrumb separator-class="el-icon-arrow-right">
-                <el-breadcrumb-item>个人详情页</el-breadcrumb-item>
-                <el-breadcrumb-item>修改密码</el-breadcrumb-item>
-              </el-breadcrumb>
-              <el-form :model="changePawForm" status-icon :rules="rules" ref="changePawForm">
-                <el-form-item class="inputWrap" prop="nickname">
-                  <el-label>用户名：</el-label>
-                  <el-input type="text" class="inputStyle" v-model="nickname" :disabled="true"></el-input>
-                </el-form-item>
-                <el-form-item class="inputWrap" prop="oldPaw">
-                  <el-label>旧密码：</el-label>
-                  <el-input
-                    type="password"
-                    class="inputStyle"
-                    placeholder="请输入旧密码"
-                    v-model="changePawForm.oldPaw"
-                  ></el-input>
-                </el-form-item>
-                <el-form-item class="inputWrap" prop="newPaw">
-                  <el-label>新密码：</el-label>
-                  <el-input
-                    type="password"
-                    class="inputStyle"
-                    placeholder="请输入新密码"
-                    v-model="changePawForm.newPaw"
-                  ></el-input>
-                </el-form-item>
-                <el-form-item class="inputButton">
-                  <el-button type="danger" @click="changePaw('changePawForm')">确认修改</el-button>
-                </el-form-item>
-              </el-form>
-            </div>
-            <!-- 完善个人信息 -->
-            <div v-if="m.checkFlag==6" class="rechangePaw">
-              <el-breadcrumb separator-class="el-icon-arrow-right">
-                <el-breadcrumb-item>个人详情页</el-breadcrumb-item>
-                <el-breadcrumb-item>完善个人信息</el-breadcrumb-item>
-              </el-breadcrumb>
-              <el-form class="inputWrap" :model="compliteInfoForm" status-icon :rules="rules">
-                <el-form-item prop="realName">
-                  <el-label>姓名：</el-label>
-                  <el-input
-                    class="inputStyle"
-                    type="text"
-                    placeholder="请输入姓名"
-                    v-model="compliteInfoForm.realName"
-                  ></el-input>
-                </el-form-item>
-                <el-form-item prop="mobile">
-                  <el-label>手机：</el-label>
-                  <el-input
-                    class="inputStyle"
-                    type="number"
-                    placeholder="请输入联系方式"
-                    v-model="compliteInfoForm.mobile"
-                  ></el-input>
-                </el-form-item>
-                <el-form-item prop="email">
-                  <el-label>邮箱：</el-label>
-                  <el-input
-                    class="inputStyle"
-                    type="text"
-                    placeholder="请输入邮箱"
-                    v-model="compliteInfoForm.email"
-                  ></el-input>
-                </el-form-item>
-                <el-form-item prop="major">
-                  <el-label>院系：</el-label>
-                  <el-select
-                    class="inputStyle"
-                    placeholder="请输入院系"
-                    v-model="compliteInfoForm.major"
-                  >
-                    <el-option
-                      v-for="item in majorOptions"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    ></el-option>
-                  </el-select>
-                </el-form-item>
-                <!-- <el-form-item prop="subject">
-                  <el-label>科目：</el-label>
-                  <el-select
-                    class="inputStyle"
-                    placeholder="请输入科目"
-                    v-model="compliteInfoForm.subject"
-                  >
-                    <el-option
-                      v-for="item in subjectOptions"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    ></el-option>
-                  </el-select>
-                </el-form-item> -->
-                <!-- <el-form-item prop="desc">
-                  <el-label class="desc">自我评价：</el-label>
-                  <el-input
-                    class="inputStyle"
-                    type="textarea"
-                    rows="3"
-                    placeholder="请输入自我描述..."
-                    v-model="compliteInfoForm.descContent"
-                  ></el-input>
-                </el-form-item> -->
-                <el-form-item>
-                  <el-button
-                    class="inputButton"
-                    type="info"
-                    @click="resetInfo('compliteInfoForm')"
-                  >重置</el-button>
-                  <el-button
-                    class="inputButton"
-                    type="primary"
-                    @click="submitInfo('compliteInfoForm')"
-                  >提交</el-button>
-                </el-form-item>
-              </el-form>
-            </div>
-            <!-- 申请小老师 -->
-            <div v-if="m.checkFlag==5" class="rechangePaw">
-              <el-breadcrumb separator-class="el-icon-arrow-right">
-                <el-breadcrumb-item>个人详情页</el-breadcrumb-item>
-                <el-breadcrumb-item>申请小老师</el-breadcrumb-item>
-              </el-breadcrumb>
-              <el-form class="inputWrap" :model="compliteInfoForm" status-icon :rules="rules">
-                <el-form-item prop="realName">
-                  <el-label>姓名：</el-label>
-                  <el-input
-                    class="inputStyle"
-                    type="text"
-                    placeholder="请输入姓名"
-                    v-model="compliteInfoForm.realName"
-                  ></el-input>
-                </el-form-item>
-                <el-form-item prop="mobile">
-                  <el-label>手机：</el-label>
-                  <el-input
-                    class="inputStyle"
-                    type="number"
-                    placeholder="请输入联系方式"
-                    v-model="compliteInfoForm.mobile"
-                  ></el-input>
-                </el-form-item>
-                <el-form-item prop="email">
-                  <el-label>邮箱：</el-label>
-                  <el-input
-                    class="inputStyle"
-                    type="text"
-                    placeholder="请输入邮箱"
-                    v-model="compliteInfoForm.email"
-                  ></el-input>
-                </el-form-item>
-                <el-form-item prop="major">
-                  <el-label>院系：</el-label>
-                  <el-select
-                    class="inputStyle"
-                    placeholder="请输入院系"
-                    v-model="compliteInfoForm.major"
-                  >
-                    <el-option
-                      v-for="item in majorOptions"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    ></el-option>
-                  </el-select>
-                </el-form-item>
-                <el-form-item prop="subject">
-                  <el-label>科目：</el-label>
-                  <el-select
-                    class="inputStyle"
-                    placeholder="请输入科目"
-                    v-model="compliteInfoForm.subject"
-                  >
-                    <el-option
-                      v-for="item in subjectOptions"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    ></el-option>
-                  </el-select>
-                </el-form-item>
-                <el-form-item prop="desc">
-                  <el-label class="desc">自我评价：</el-label>
-                  <el-input
-                    class="inputStyle"
-                    type="textarea"
-                    rows="3"
-                    placeholder="请输入自我描述..."
-                    v-model="compliteInfoForm.descContent"
-                  ></el-input>
-                </el-form-item>
-                <el-form-item>
-                  <el-button
-                    class="inputButton"
-                    type="info"
-                    @click="resetInfo('compliteInfoForm')"
-                  >重置</el-button>
-                  <el-button
-                    class="inputButton"
-                    type="primary"
-                    @click="submitInfo('compliteInfoForm')"
-                  >提交</el-button>
-                </el-form-item>
-              </el-form>
-            </div>
+          <!-- {{checkIndex}} -->
+          <!-- <div v-for="(m,index) in tabMain" v-show="cur==index" :key="index"> -->
+          <!-- <div> -->
+          <!-- <div>{{m.title}}</div> -->
+          <!-- 修改密码 -->
+          <div v-if="cur==7" class="rechangePaw">
+            <el-breadcrumb separator-class="el-icon-arrow-right">
+              <el-breadcrumb-item>个人详情页</el-breadcrumb-item>
+              <el-breadcrumb-item>修改密码</el-breadcrumb-item>
+            </el-breadcrumb>
+            <el-form :model="changePawForm" status-icon :rules="rules" ref="changePawForm">
+              <el-form-item class="inputWrap" prop="nickname">
+                <span class="labelStyle">用户名：</span>
+                <el-input type="text" class="inputStyle" v-model="nickname" :disabled="true"></el-input>
+              </el-form-item>
+              <el-form-item class="inputWrap" prop="oldPaw">
+                <span class="labelStyle">旧密码：</span>
+                <el-input
+                  type="password"
+                  class="inputStyle"
+                  placeholder="请输入旧密码"
+                  v-model="changePawForm.oldPaw"
+                ></el-input>
+              </el-form-item>
+              <el-form-item class="inputWrap" prop="newPaw">
+                <span class="labelStyle">新密码：</span>
+                <el-input
+                  type="password"
+                  class="inputStyle"
+                  placeholder="请输入新密码"
+                  v-model="changePawForm.newPaw"
+                ></el-input>
+              </el-form-item>
+              <el-form-item class="inputButton">
+                <el-button type="danger" @click="changePaw()">确认修改</el-button>
+              </el-form-item>
+            </el-form>
+          </div>
+          <!-- 完善个人信息 -->
+          <div v-if="cur==6" class="rechangePaw">
+            <el-breadcrumb separator-class="el-icon-arrow-right">
+              <el-breadcrumb-item>个人详情页</el-breadcrumb-item>
+              <el-breadcrumb-item>完善个人信息</el-breadcrumb-item>
+            </el-breadcrumb>
+            <el-form
+              class="inputWrap"
+              :model="compliteInfoForm"
+              status-icon
+              :rules="rules"
+              ref="compliteInfoForm"
+            >
+              <el-form-item prop="realName">
+                <span class="labelStyle">姓名:</span>
+                <el-input
+                  class="inputStyle"
+                  type="text"
+                  placeholder="请输入姓名"
+                  v-model="compliteInfoForm.realName"
+                ></el-input>
+              </el-form-item>
+              <el-radio-group v-model="compliteInfoForm.gender" class="redioStyle">
+                <span class="redioStyle">性别:</span>
+                <el-radio :label="1">男</el-radio>
+                <el-radio :label="0">女</el-radio>
+              </el-radio-group>
+              <el-form-item prop="birthday" class="redioStyle">
+                <span class="labelStyle">生日：</span>
+                <el-date-picker
+                  v-model="compliteInfoForm.birthday"
+                  type="date"
+                  placeholder="选择日期时间"
+                ></el-date-picker>
+              </el-form-item>
+              <el-form-item prop="mobile">
+                <span>手机：</span>
+                <el-input
+                  class="inputStyle"
+                  type="number"
+                  placeholder="请输入联系方式"
+                  v-model="compliteInfoForm.mobile"
+                ></el-input>
+              </el-form-item>
+              <el-form-item prop="email">
+                <span class="labelStyle">邮箱:</span>
+                <el-input
+                  class="inputStyle"
+                  type="text"
+                  placeholder="请输入邮箱"
+                  v-model="compliteInfoForm.email"
+                ></el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-button class="inputButton" type="info" @click="resetInfo()">重置</el-button>
+                <el-button
+                  class="inputButton"
+                  type="primary"
+                  @click="submitInfo('compliteInfoForm')"
+                >提交</el-button>
+              </el-form-item>
+            </el-form>
+          </div>
 
-            <table cellpadding="0" cellspacing="0" v-if="m.checkFlag==2">
+          <!-- <table cellpadding="0" cellspacing="0" v-if="m.checkFlag==2">
               <thead>
                 <tr>
                   <th>序号</th>
@@ -338,10 +227,10 @@
                   <td>{{item.score}}</td>
                 </tr>
               </tbody>
-            </table>
-          </div>
+          </table>-->
         </div>
       </div>
+      <!-- </div> -->
     </div>
     <page-footer></page-footer>
   </div>
@@ -350,12 +239,16 @@
 import SdHeader from "~/components/navBar";
 import PageFooter from "~/components/pageFooter";
 import * as api from "~/assets/api";
+import formatDate from "~/assets/utils/formatDate";
+
 import {
   apiUserDetail,
   apiGetSelectRecord,
-  apiGetNomalRecord
+  apiGetNomalRecord,
+  apiCompleteInfo
 } from "~/servers/api/user";
 import { apiInviteList } from "~/servers/api/findTeacher";
+import { format } from "path";
 
 // 状态
 const statusMap = {
@@ -365,6 +258,27 @@ const statusMap = {
 
 export default {
   data() {
+    // 校验手机号
+    const mobileValidator = (rule, value, callback) => {
+      if (value && !/^((\+?86)|(\(\+86\)))?(1\d{10}$)$/.test(value)) {
+        callback(new Error("请输入正确的手机号"));
+      } else {
+        callback();
+      }
+    };
+    // 校验邮箱
+    const emailValidator = (rule, value, callback) => {
+      if (
+        value &&
+        !/^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(
+          value
+        )
+      ) {
+        callback(new Error("邮箱格式不正确"));
+      } else {
+        callback();
+      }
+    };
     return {
       tabTitle: [
         "我的试卷",
@@ -384,7 +298,7 @@ export default {
         { title: "内容五", checkFlag: 4 },
         { title: "内容六", checkFlag: 5 },
         { title: "内容七", checkFlag: 6 },
-        { title: "内容八", checkFlag: 7 },
+        { title: "内容八", checkFlag: 7 }
       ],
       cur: 0, //默认选中第一个tab
       addDetail: {},
@@ -394,10 +308,7 @@ export default {
       editid: "",
       nickname: "", // 用户账号
       score: "", // 用户积分
-      gender: {
-        female: "女",
-        male: "男"
-      }, // 用户性别
+      gender: "",
       myReadList: [], // 我的预约
       normalList: [], // 我发布的帖子
       // 修改密码
@@ -408,12 +319,12 @@ export default {
       // 完善个人信息
       compliteInfoForm: {
         realName: "",
+        gender: 1,
+        birthday: "",
         mobile: "",
-        email: "",
-        major: "",
-        subject: "",
-        descContent: ""
+        email: ""
       },
+      birthday: "",
       // 院系列表
       majorOptions: [
         { value: "1", label: "机械工程系" },
@@ -426,38 +337,36 @@ export default {
         { value: "8", label: "化工系" },
         { value: "9", label: "艺术系" }
       ],
-      subjectOptions: [
-        { value: "1", label: "机械工程系" },
-        { value: "2", label: "信息工程系" },
-        { value: "3", label: "计算机科学与技术系" },
-        { value: "4", label: "建筑系" },
-        { value: "5", label: "管理系" },
-        { value: "6", label: "社会科学与外国语系" },
-        { value: "7", label: "建筑工程系" },
-        { value: "8", label: "化工系" },
-        { value: "9", label: "艺术系" }
-      ],
+      subjectOptions: [{ value: "1", label: "机械工程系" }],
       rules: {
         oldPaw: [{ required: true, message: "请输入旧密码", trigger: "blur" }],
         newPaw: [{ required: true, message: "请输入新密码", trigger: "blur" }],
         realName: [{ required: true, message: "请输入姓名", trigger: "blur" }],
         mobile: [
           { required: true, message: "请输入联系方式", trigger: "blur" },
-          {
-            validator: (rule, value, callback) => {
-              if (!this.$regex.mobile.test(this.compliteInfoForm.mobile)) {
-                callback(new Error("请输入正确的手机号"));
-              } else {
-                callback();
-              }
-            }
-          }
+          { validator: mobileValidator, trigger: "blur" }
         ],
-        email: [{ required: true, message: "请输入邮箱", trigger: "blur" }],
+        email: [
+          { required: true, message: "请输入邮箱", trigger: "blur" },
+          { validator: emailValidator, trigger: "blur" }
+        ],
         major: [{ required: true, message: "请选择院系", trigger: "blur" }],
-        subject: [{ required: true, message: "请选择院系", trigger: "blur" }]
+        subject: [{ required: true, message: "请选择院系", trigger: "blur" }],
+        birthday: [{ required: true, message: "请选择生日", trigger: "blur" }]
       }
     };
+  },
+  computed: {
+    checkIndex() {
+      return this.tabMain.filter(item => {
+        if (this.cur == item.checkFlag) {
+          return item.checkFlag;
+        } else {
+          return false;
+        }
+        console.log("this.cur", this.cur);
+      });
+    }
   },
   mounted() {
     this.getUserInfo();
@@ -494,44 +403,84 @@ export default {
       });
     },
     // 修改密码
-    changePaw(formName) {
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-          // 修改密码
-        } else {
+    // changePaw(compliteInfoForm) {
+    //   this.$refs[compliteInfoForm].validate(valid => {
+    //     if (valid) {
+    //       // 修改密码
+    //     } else {
+    //       this.$notify({
+    //         title: "失败",
+    //         message: "操作有误，请重试！",
+    //         type: "warning"
+    //       });
+    //     }
+    //   });
+    // },
+    // 修改密码传参
+    // async submitChange() {
+    //   const { oldPaw, newPaw } = this.changePawForm;
+    // },
+    async inforContent() {
+      if (this.compliteInfoForm.gender === 1) {
+        this.gender = "female";
+        return;
+      } else if (this.compliteInfoForm.gender === 0) {
+        this.gender = "male";
+        return;
+      }
+      // 将时间转换成YY-MM-DD
+      this.birthday = formatDate.unixToTime(this.compliteInfoForm.birthday);
+      this.inforContent();
+      const {
+        realName,
+        gender,
+        birthday,
+        mobile,
+        email
+      } = this.compliteInfoForm;
+      const data = await apiCompleteInfo(
+        realName,
+        this.gender,
+        this.birthday,
+        mobile,
+        email,
+        "put"
+      );
+    },
+    // 提交
+    submitInfo(formName) {
+      this.$refs[formName].validate(val => {
+        console.log("valid", val);
+        if (val) {
+          this.inforContent();
           this.$notify({
-            title: "失败",
-            message: "操作有误，请重试！",
-            type: "warning"
+            title: "更新成功",
+            message: "恭喜您，获得了10积分！",
+            type: "success"
+          });
+          // 清空
+          this.resetInfo()
+        } else {
+          return false;
+          this.$notify({
+            title: "更新失败",
+            message: "操作有误，请重新输入！",
+            type: "success"
           });
         }
       });
     },
-    // 修改密码传参
-    async submitChange() {
-      const { oldPaw, newPaw } = this.changePawForm;
-    },
-    // 完善个人信息
-    // 提交
-    submitInfo(formName) {
-      const {
-        realName,
-        mobile,
-        email,
-        major,
-        subject,
-        descContent
-      } = this.compliteInfoForm;
-    },
     // 重置
-    resetInfo(formName) {
+    resetInfo() {
       this.compliteInfoForm = {
         realName: "",
         mobile: "",
         email: "",
         major: "",
         subject: "",
-        descContent: ""
+        descContent: "",
+        gender: 1,
+        birthday: ""
       };
     }
   },
@@ -555,6 +504,7 @@ export default {
 .inputStyle {
   width: 80%;
   margin-left: 10px;
+  margin-top: 10px;
 }
 .inputButton {
   margin-top: 40px;
@@ -562,6 +512,16 @@ export default {
 }
 
 /* 完善个人信息 */
+.labelStyle {
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+.redioStyle {
+  margin-right: 20px;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
 
 .root-wrap {
   display: flex;
