@@ -85,26 +85,26 @@
                 <span class="labelStyle">用户名：</span>
                 <el-input type="text" class="inputStyle" v-model="nickname" :disabled="true"></el-input>
               </el-form-item>
-              <el-form-item class="inputWrap" prop="oldPaw">
+              <el-form-item class="inputWrap" prop="password">
                 <span class="labelStyle">旧密码：</span>
                 <el-input
                   type="password"
                   class="inputStyle"
                   placeholder="请输入旧密码"
-                  v-model="changePawForm.oldPaw"
+                  v-model="changePawForm.password"
                 ></el-input>
               </el-form-item>
-              <el-form-item class="inputWrap" prop="newPaw">
+              <el-form-item class="inputWrap" prop="new_password">
                 <span class="labelStyle">新密码：</span>
                 <el-input
                   type="password"
                   class="inputStyle"
                   placeholder="请输入新密码"
-                  v-model="changePawForm.newPaw"
+                  v-model="changePawForm.new_password"
                 ></el-input>
               </el-form-item>
               <el-form-item class="inputButton">
-                <el-button type="danger" @click="changePaw()">确认修改</el-button>
+                <el-button type="danger" @click="changePaw('changePawForm')">确认修改</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -245,7 +245,8 @@ import {
   apiUserDetail,
   apiGetSelectRecord,
   apiGetNomalRecord,
-  apiCompleteInfo
+  apiCompleteInfo,
+  apiUpdatePaw
 } from "~/servers/api/user";
 import { apiInviteList } from "~/servers/api/findTeacher";
 import { format } from "path";
@@ -313,8 +314,8 @@ export default {
       normalList: [], // 我发布的帖子
       // 修改密码
       changePawForm: {
-        oldPaw: "",
-        newPaw: ""
+        password: "",
+        new_password: ""
       },
       // 完善个人信息
       compliteInfoForm: {
@@ -339,8 +340,8 @@ export default {
       ],
       subjectOptions: [{ value: "1", label: "机械工程系" }],
       rules: {
-        oldPaw: [{ required: true, message: "请输入旧密码", trigger: "blur" }],
-        newPaw: [{ required: true, message: "请输入新密码", trigger: "blur" }],
+        password: [{ required: true, message: "请输入旧密码", trigger: "blur" }],
+        new_password: [{ required: true, message: "请输入新密码", trigger: "blur" }],
         realName: [{ required: true, message: "请输入姓名", trigger: "blur" }],
         mobile: [
           { required: true, message: "请输入联系方式", trigger: "blur" },
@@ -403,23 +404,28 @@ export default {
       });
     },
     // 修改密码
-    // changePaw(compliteInfoForm) {
-    //   this.$refs[compliteInfoForm].validate(valid => {
-    //     if (valid) {
-    //       // 修改密码
-    //     } else {
-    //       this.$notify({
-    //         title: "失败",
-    //         message: "操作有误，请重试！",
-    //         type: "warning"
-    //       });
-    //     }
-    //   });
-    // },
+    changePaw(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          // 修改密码
+          this.submitChange()
+          this.$notify({
+            title: "修改成功",
+            message: "修改密码成功，请重新登录！",
+            type: 'success'
+          })
+          this.$router.push('/login')
+        } else {
+          return false
+        }
+      });
+    },
     // 修改密码传参
-    // async submitChange() {
-    //   const { oldPaw, newPaw } = this.changePawForm;
-    // },
+    async submitChange() {
+      const { password, new_password } = this.changePawForm;
+      const data = await apiUpdatePaw(this.nickname, password, new_password, 'put')
+      console.log('data', data)
+    },
     async inforContent() {
       if (this.compliteInfoForm.gender === 1) {
         this.gender = "female";

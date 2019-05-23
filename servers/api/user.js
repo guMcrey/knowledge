@@ -40,3 +40,10 @@ export const apiGetNomalRecord = (method) => request('/list/normal/operations/',
  */
 
 export const apiCompleteInfo = (name, gender, birthday, mobile, email, method) => request('update/user/detail/', { name, gender, birthday, mobile, email}, {method})
+
+
+/**
+ * @desc 更改密码
+ * @param {string}
+ */
+export const apiUpdatePaw = (nickname, password, new_password, method) => request('update/user/password/', { nickname, password, new_password}, {method})
