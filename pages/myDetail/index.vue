@@ -37,6 +37,10 @@
           </div>
         </div>
         <div class="tab-content">
+          <!-- 我的笔记 -->
+          <div v-if="cur==8" class="rechangePaw">
+            9999
+          </div>
           <!-- 我的讨论区发布 -->
           <div v-if="cur==8" class="rechangePaw">
             <el-table :data="discussData" style="width: 100%" :row-class-name="tableRowClassName">
@@ -309,7 +313,8 @@ import {
   apiCompleteInfo,
   apiUpdatePaw,
   apiApplySmallTeacher,
-  apiMyDiscussList
+  apiMyDiscussList,
+  apiMyNoteList
 } from "~/servers/api/user";
 import { apiInviteList } from "~/servers/api/findTeacher";
 import { format } from "path";
@@ -353,7 +358,8 @@ export default {
         { id: 5, tab: "申请小老师" },
         { id: 6, tab: "完善个人信息" },
         { id: 7, tab: "修改密码" },
-        { id: 8, tab: "我的讨论区发布" }
+        { id: 8, tab: "我的讨论区发布" },
+        { id: 9, tab: '我的笔记'}
       ],
       tabMain: [
         { title: "内容一", checkFlag: 0 },
@@ -474,6 +480,8 @@ export default {
     this.inviteList();
     // 我的讨论区发布
     this.discussList();
+    // 我的笔记
+    this.myNoteList()
   },
   methods: {
     // 获取用户信息
@@ -633,6 +641,11 @@ export default {
         return "warning-row";
       }
       return "";
+    },
+    // 我的笔记
+    async myNoteList() {
+      const data = await apiMyNoteList('get')
+      console.log('data', data)
     }
   },
   components: {

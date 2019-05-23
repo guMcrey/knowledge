@@ -91,7 +91,8 @@ import {
   apiCreateInvite,
   apiSelectBehavior,
   apiContentQuestion,
-  apiContentAnswer
+  apiContentAnswer,
+  apiCreateNote
 } from "~/servers/api/questions";
 import { apiUserDetail } from "~/servers/api/user";
 
@@ -230,7 +231,7 @@ export default {
       this.createNode = false;
     },
     // 点击添加笔记的确认按钮
-    nodeConfirm() {
+   async nodeConfirm() {
       //提交回访内容
       let nodeText = this.nodeText;
       if (nodeText) {
@@ -242,12 +243,7 @@ export default {
           });
           return;
         }
-        // this.$api.caseTrial
-        //   .addReturnVisit({
-        //     refuseApplyId: this.currentId,
-        //     content: hasReturnVisitStr
-        //   })
-        //   .then(() => {
+        const data = await apiCreateNote(this.nodeText)
         this.$notify({
           title: "成功",
           message: "添加笔记成功,您可到个人详情页查看~",

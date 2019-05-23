@@ -56,3 +56,8 @@ export const apiCreateAnswer = (owner, information_id, content, created_time, up
  * @param {string} is_correct 选择是否正确
  */
 export const apiSelectBehavior = (question_id, answer_id, user_id, score, is_correct) => request('/create/select/operation/', { question_id, answer_id, user_id, score, is_correct })
+
+/**
+ * @desc 创建笔记
+ */
+export const apiCreateNote = (content) => request('/create/select/note/', {content})

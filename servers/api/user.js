@@ -59,3 +59,13 @@ export const apiApplySmallTeacher = (method) => request('/update/user/smt/', {},
  * @desc 我的讨论区发布
  */
 export const apiMyDiscussList = (method) => request('/list/me/questions/', {}, {method})
+
+/**
+ * @desc 我的笔记
+ */
+export const apiMyNoteList = (method) => request('retrieve/select/note/', {}, {method})
+
+/**
+ * @desc 荣誉榜
+ */
+export const apiHonorsList = (type, method) => request('/users/detail/', {type}, {method})
