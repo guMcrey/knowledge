@@ -3,7 +3,7 @@
 import request from '../request'
 
 /**
-* @desc 获取选择题信息
+* @desc 获取顺序答题（选择题）信息
 */
 export const apiSelectQuestion = (type, method) => request('/list/select/questions/', { type }, { method })
 
@@ -11,6 +11,17 @@ export const apiSelectQuestion = (type, method) => request('/list/select/questio
  * @desc 获取选择题选项信息
  */
 export const apiSelectAnswer = (question_id, method) => request('/list/select/answers/', { question_id }, { method })
+
+/**
+ * @desc 获取文本题信息
+ */
+export const apiContentQuestion = (type, method) => request('/list/content/questions', {type}, {method})
+
+/**
+ * @desc 文本题回答接口
+ * 
+ */
+export const apiContentAnswer = (method) => request('/create/content/answer/',{}, {method})
 
 /**
  * @desc 创建邀约

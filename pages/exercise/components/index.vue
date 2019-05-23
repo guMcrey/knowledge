@@ -5,19 +5,30 @@
       <div class="wrap">
         <div class="aside" v-if="fatherComponent == 'home'">
           <ul class="menu">
-            <li class="menu-li" v-for="(title,index) in menuList" @click="cur=index"
-                :class="{active:cur==index}"
-                :key="index">{{title}}</li>
+            <li
+              class="menu-li"
+              v-for="(title,index) in menuList"
+              @click="cur=index"
+              :class="{active:cur==index}"
+              :key="index"
+            >{{title}}</li>
           </ul>
         </div>
         <div class="bigbox" v-for="(m,index) in tab" v-show="cur==index" :key="index">
-          <div class="begin" v-if="fatherComponent == 'home'" >
-            <div >{{m.title}}</div>
+          <div class="begin" v-if="fatherComponent == 'home'">
+            <div>{{m.title}}</div>
             <div class="topic">
               <div class="topic-title">课程题目：{{m.channel}}</div>
-              <div class="topic-number">题型：<span class="grade">{{m.exam}}</span></div>
+              <div class="topic-number">
+                题型：
+                <span class="grade">{{m.exam}}</span>
+              </div>
               <div class="topic-number">（共{{m.type}}题）</div>
-              <div class="topic-star">题目难度：<span class="grade">{{desc}}</span>（积分：<span class="grade">{{score}}</span>）</div>
+              <div class="topic-star">
+                题目难度：
+                <span class="grade">{{desc}}</span>（积分：
+                <span class="grade">{{score}}</span>）
+              </div>
             </div>
             <!-- <h2>请认真完成测试题。准备好了吗？</h2> -->
             <!-- <a href="/exercise/item" class="start button_style" @click="getQuestionList()"></a> -->
@@ -64,7 +75,7 @@ import SdHeader from "~/components/navBar";
 import * as api from "~/assets/api";
 import { apiSelectQuestion } from "~/servers/api/questions";
 import { apiUserDetail } from "~/servers/api/user";
-import img from '../images/icons.jpg'
+import img from "../images/icons.jpg";
 
 export default {
   name: "itemcontainer",
@@ -73,60 +84,85 @@ export default {
       itemId: null, //题目ID
       choosedNum: null, //选中答案索引
       choosedId: null, //选中答案id
-      menuList: [
-        "顺序答题", "乱序答题", "文本题"
+      menuList: ["顺序答题", "乱序答题", "文本题"],
+      cur: 0, // 默认选中第一个
+      tab: [
+        {
+          title: "内容一",
+          checkFlag: 0,
+          channel: this.$route.query.channel,
+          type: this.$route.query.id,
+          exam: "顺序答题（选择题）"
+        },
+        {
+          title: "内容二",
+          checkFlag: 1,
+          channel: this.$route.query.channel,
+          type: this.$route.query.id,
+          exam: "乱序答题（选择题）"
+        },
+        {
+          title: "内容三",
+          checkFlag: 2,
+          channel: this.$route.query.channel,
+          type: this.$route.query.id,
+          exam: "文本题"
+        }
       ],
-      cur: 0,  // 默认选中第一个
-      tab: [{title: "内容一", checkFlag: 0, channel: this.$route.query.channel, type: this.$route.query.id, exam: '顺序答题（选择题）'}, {title: "内容二", checkFlag: 1, channel: this.$route.query.channel, type: this.$route.query.id,  exam: '乱序答题（选择题）'}, {title: "内容三", checkFlag: 2, channel: this.$route.query.channel, type:this.$route.query.id,  exam: '文本题'}],
-      score: '', // 用户积分
-      desc: ''  // 题目描述
+      score: "", // 用户积分
+      desc: "" // 题目描述
     };
   },
   props: ["fatherComponent"],
   computed: mapState([
     "itemNum", //第几题
     "level", //第几周
-    "itemDetail", //题目详情
+    "itemDetail" //题目详情
   ]),
   methods: {
     ...mapActions(["addNum", "initializeData"]),
     // 获取用户信息
     async getUserInfo() {
       const userInfo = await apiUserDetail("get");
-      this.score = userInfo.score
+      this.score = userInfo.score;
       // 分数对应不同等级
-      switch (parseInt(this.score/1000)) {
+      switch (parseInt(this.score / 1000)) {
         case 0:
-        this.desc = '简单'
-         break
+          this.desc = "简单";
+          break;
         case 1:
         case 2:
         case 3:
         case 4:
-        this.desc = '容易'
-         break
+          this.desc = "容易";
+          break;
         case 5:
         case 6:
         case 7:
         case 8:
         case 9:
-        this.desc ='一般'
-         break
+          this.desc = "一般";
+          break;
         case 10:
-        this.desc = '较难'
-         break
+          this.desc = "较难";
+          break;
         default:
-        this.desc = '极难'
-        break
+          this.desc = "极难";
+          break;
       }
-      console.log('userInfo', this.score / 1000)
+      console.log("userInfo", this.score / 1000);
     },
     // 点击开始
     async getSelectQuestion() {
+      this.tab.forEach(val => {
+        console.log("werwrwerwer", val);
+      });
+      // if (this.tab)
       const data = await apiSelectQuestion(this.$route.query.type, "get");
       this.itemDetail = data.results;
-      window.location.href = `/exercise/item/?type=${this.$route.query.type}&exam=${this.tab[this.cur].exam}`;
-      console.log("data9999", this.itemDetail);
+      window.location.href = `/exercise/item/?type=${
+        this.$route.query.type
+      }&exam=${this.tab[this.cur].exam}`;
     },
     //点击下一题
     nextItem() {
@@ -172,7 +208,7 @@ export default {
     // document.body.style.backgroundImage = 'url(./static/img/1-1.jpg)';
   },
   mounted() {
-    this.getUserInfo()
+    this.getUserInfo();
   },
   components: {
     SdHeader,
@@ -186,14 +222,14 @@ export default {
   background: #f5f5f5;
 }
 .grade {
-  color: #A31E31;
+  color: #a31e31;
 }
 .menu {
   padding-top: 140px;
 }
 .menu-li {
   font-size: 17px;
-  color: #A31E31;
+  color: #a31e31;
   font-weight: bold;
   list-style-type: none;
   text-align: center;
@@ -213,7 +249,8 @@ export default {
   background: url(../images/aside-bg.jpg);
   background-position: 0px -245px;
   // background: #fff;
-  float:left;
+  margin-right: 15px;
+  float: left;
   margin-left: 120px;
   box-shadow: 0 2px 2px #d9d9d9, inset 0 2px 2px #f1f1f1;
 }

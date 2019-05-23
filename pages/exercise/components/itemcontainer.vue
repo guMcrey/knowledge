@@ -24,6 +24,14 @@
                 <div class="question" @click="invite()">邀约讲解</div>
                 <div class="question" @click="createNode=true">添加笔记</div>
               </div>
+              <el-input
+                type="textarea"
+                rows="8"
+                class="option_content"
+                placeholder="请在这里输入您的回答......"
+                v-model.trim="contentText"
+                v-if="exam === '文本题'"
+              ></el-input>
               <ul>
                 <li
                   v-for="(item, index) in itemDetail[itemNum-1].answers"
@@ -58,15 +66,14 @@
           </div>
         </div>
       </div>
-       <el-dialog title="" width="1000px" :visible="createNode" :before-close="createNodeClose">
-      <p class="nodeContent">请添加笔记内容：</p>
-      <el-input type="textarea" :rows="4" placeholder="请输入内容..." v-model="nodeText">
-      </el-input>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="createNodeClose">取 消</el-button>
-        <el-button type="primary" @click="nodeConfirm">确 定</el-button>
-      </span>
-    </el-dialog>
+      <el-dialog title width="1000px" :visible="createNode" :before-close="createNodeClose">
+        <p class="nodeContent">请添加笔记内容：</p>
+        <el-input type="textarea" :rows="4" placeholder="请输入内容..." v-model="nodeText"></el-input>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="createNodeClose">取 消</el-button>
+          <el-button type="primary" @click="nodeConfirm">确 定</el-button>
+        </span>
+      </el-dialog>
       <span class="next_item button_style" @click="nextItem" v-if="itemNum < itemDetail.length"></span>
       <span class="submit_item button_style" v-else @click="submitAnswer"></span>
     </section>
@@ -82,7 +89,9 @@ import {
   apiSelectQuestion,
   apiSelectAnswer,
   apiCreateInvite,
-  apiSelectBehavior
+  apiSelectBehavior,
+  apiContentQuestion,
+  apiContentAnswer
 } from "~/servers/api/questions";
 import { apiUserDetail } from "~/servers/api/user";
 
@@ -110,19 +119,23 @@ export default {
       created_time: null, // 创建邀约时间
       updated_time: null, // 创建邀约更新时间
       totalScore: 0, // 总分
+      totalContentScore: 0, // 文本题分数
       owner: "", // 用户id
       is_correct: "", // 答案是否正确
       answers_id: "", // 获取当前选中id
       callinTime: "0:0:0",
-      loading: false,  // 加载
-      createNode: false,  // 添加笔记
-      nodeText: ""  // 笔记内容
+      loading: false, // 加载
+      createNode: false, // 添加笔记
+      nodeText: "", // 笔记内容
+      exam: this.$route.query.exam, // 题型
+      contentText: "", // 文本题输入
+      analyzations: "" // 文本题答案是否正确
     };
   },
   props: ["fatherComponent"],
   computed: mapState([
     "itemNum", //第几题
-    "level", //第几周
+    "level" //第几周
   ]),
   mounted() {
     this.getSelectQuestion();
@@ -167,55 +180,67 @@ export default {
     },
     // 获取选择题信息
     async getSelectQuestion() {
-      // 顺序答题
       const exam = this.$route.query.exam;
-      console.log('exam', exam)
+
+      // 根据不同题型请求不同接口
       if (exam == "顺序答题（选择题）") {
         const data = await apiSelectQuestion(this.$route.query.type, "get");
         this.itemDetail = data.results;
         this.itemDetail.answers = data.results.answers;
         this.question_id = this.itemDetail[this.itemNum - 1].id;
-        console.log("data9999", this.question_id); 
-        } []
-        // else if (exam == '乱序答题（选择题）') {
-          
-        // }
+      } else if (exam == "文本题") {
+        const data = await apiContentQuestion(this.$route.query.type, "get");
+        this.itemDetail = data.results;
+        this.question_id = this.itemDetail[this.itemNum - 1].id;
+        this.analyzations = data.results.analyzations;
+        console.log("itemDetail", this.itemDetail);
+      }
     },
     ...mapActions(["addNum", "initializeData"]),
     //点击下一题
     nextItem() {
       this.showInvite = false;
       this.getContent = false;
-      if (this.choosedNum !== null) {
+      if (this.contentText == "") {
+        this.$notify({
+          title: "提示",
+          message: "您还没有输入答案哦~~",
+          type: "warning"
+        });
+      }
+      if (this.contentText !== "" || this.choosedNum !== null) {
+        this.contentText = "";
         this.choosedNum = null;
         //保存答案, 题目索引加一，跳到下一题
         this.addNum(this.choosedId);
-      } else {
+      } else if (!this.exam === "文本题") {
         this.$notify({
           title: "失败",
           message: "您还没有选择答案哦",
           type: "warning"
         });
       }
-      this.recordSelectBehavior();
+      if (!this.exam === "文本题") {
+        this.recordSelectBehavior();
+      }
     },
     // 添加笔记
     createNodeClose() {
-      this.nodeText = ''
-      this.createNode = false
+      this.nodeText = "";
+      this.createNode = false;
     },
     // 点击添加笔记的确认按钮
     nodeConfirm() {
       //提交回访内容
-      let nodeText = this.nodeText
+      let nodeText = this.nodeText;
       if (nodeText) {
         if (nodeText.length > 500) {
           this.$notify({
-            title: '警告',
+            title: "警告",
             message: `笔记内容只能输入500个字哦~~`,
-            type: 'warning'
-          })
-          return
+            type: "warning"
+          });
+          return;
         }
         // this.$api.caseTrial
         //   .addReturnVisit({
@@ -223,21 +248,21 @@ export default {
         //     content: hasReturnVisitStr
         //   })
         //   .then(() => {
-            this.$notify({
-              title: '成功',
-              message: '添加笔记成功,您可到个人详情页查看~',
-              type: 'success'
-            })
-            this.createNode = false
-            this.nodeText = ''
-          // })
-        return
+        this.$notify({
+          title: "成功",
+          message: "添加笔记成功,您可到个人详情页查看~",
+          type: "success"
+        });
+        this.createNode = false;
+        this.nodeText = "";
+        // })
+        return;
       }
       this.$notify({
-        title: '失败',
+        title: "失败",
         message: `请填写笔记内容`,
-        type: 'error'
-      })
+        type: "error"
+      });
     },
     //索引0-3对应答案A-B
     chooseType: type => {
@@ -284,6 +309,7 @@ export default {
     },
     // 重答
     haveQuestion() {
+      this.contentText = "";
       this.choosedNum = null;
     },
     // 邀约讲解
@@ -317,19 +343,40 @@ export default {
           message: "发布邀约成功,您可到信息广场查看~",
           type: "success"
         });
+        this.showInvite = false;
       }
+
       console.log(this.textContent);
     },
     //到达最后一题，交卷，请空定时器，跳转分数页面
-    submitAnswer() {
-      this.loading = true
-      if (this.choosedNum !== null) {
+    async submitAnswer() {
+      if (this.contentText == "") {
+        this.$notify({
+          title: "提示",
+          message: "您还没有输入答案哦~~",
+          type: "warning"
+        });
+      } else {
+        console.log("9999999999999", this.contentText == this.analyzations);
+        // 这里判断都是false
+        // const data = await apiContentAnswer('post');
+        // console.log(data);
+        this.totalContentScore += 10;
+        this.$router.push(
+          `/exercise/score/?totalScore=${this.totalContentScore}&timer=${
+            this.callinTime
+          }`
+        );
+      }
+      if (!(this.exam === "文本题") && this.choosedNum !== null) {
         this.recordSelectBehavior();
         this.addNum(this.choosedId);
-        this.$router.push(`/exercise/score/?totalScore=${
-          this.totalScore
-        }&timer=${this.callinTime}`)
-      } else {
+        this.$router.push(
+          `/exercise/score/?totalScore=${this.totalScore}&timer=${
+            this.callinTime
+          }`
+        );
+      } else if (!(this.exam === "文本题")) {
         this.$notify({
           title: "失败",
           message: "您还没有选择答案哦",
@@ -353,6 +400,10 @@ export default {
 <style lang="less">
 .root {
   background: #f5f5f5;
+}
+.option_content {
+  width: 94.5%;
+  margin-top: 30px;
 }
 .nodeContent {
   font-size: 15px;
@@ -534,7 +585,7 @@ export default {
   margin: 30px 50px 20px 0;
   background: #f5f5f5;
   padding: 10px;
-  width: 859px;
+  width: 900px;
 }
 .content2 {
   overflow: hidden;
@@ -544,7 +595,7 @@ export default {
   background: #f5f5f5;
   padding: 10px;
   margin-top: 30px;
-  width: 859px;
+  width: 899px;
   height: 120px;
   color: #333;
   border-radius: 4px;
