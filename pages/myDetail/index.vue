@@ -37,43 +37,16 @@
           </div>
         </div>
         <div class="tab-content">
-          <!-- <div v-for="(m,index) in tabMain" v-show="cur==index" :key="index">
-            <table cellpadding="0" cellspacing="0">
-              <thead>
-                <tr>
-                  <th>序号</th>
-                  <th>标题</th>
-                  <th>发布人</th>
-                  <th>上课房间</th>
-                  <th>积分</th>
-                  <th>开始时间</th>
-                  <th>结束时间</th>
-                  <th>操作</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td width="6%">{{index+1}}</td>
-          <td>{{m.title}}</td>-->
-          <!-- <td width="10%">{{m.content}}</td>
-                <td width="10%">{{item.room}}</td>
-                <td width="6%">{{item.score}}</td>
-                <td width="12%">{{item.interview_time}}</td>
-                <td width="12%">{{item.end_time}}</td>
-                <td width="15%">
-                  <span class="edit" @click="commitInvite(item)" v-if="item.status == 0">点击预约</span>
-                  <span class="edit" @click="commitInvite(item)" v-else>{{item.status}}</span>
-          </td>-->
-          <!-- </tr>
-              </tbody>
-            </table>
-            <div id="table">{{m.id}}</div>
-          </div>-->
-          <!-- 我的预约 -->
-          <!-- {{checkIndex}} -->
-          <!-- <div v-for="(m,index) in tabMain" v-show="cur==index" :key="index"> -->
-          <!-- <div> -->
-          <!-- <div>{{m.title}}</div> -->
+          <!-- 我的讨论区发布 -->
+          <div v-if="cur==8" class="rechangePaw">
+            <el-table :data="discussData" style="width: 100%" :row-class-name="tableRowClassName">
+              <el-table-column prop="title" label="标题" width="180"></el-table-column>
+              <el-table-column prop="score" label="积分" width="180"></el-table-column>
+              <el-table-column prop="created_time" label="创建时间"></el-table-column>
+              <el-table-column prop="updated_time" label="更新时间"></el-table-column>
+            </el-table>
+          </div>
+
           <!-- 修改密码 -->
           <div v-if="cur==7" class="rechangePaw">
             <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -108,6 +81,7 @@
               </el-form-item>
             </el-form>
           </div>
+
           <!-- 完善个人信息 -->
           <div v-if="cur==6" class="rechangePaw">
             <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -171,6 +145,7 @@
               </el-form-item>
             </el-form>
           </div>
+
           <!-- 申请小老师 (需完善个人信息后才展示)-->
           <div v-if="cur==5" class="rechangePaw">
             <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -257,6 +232,7 @@
               </el-form-item>
             </el-form>
           </div>
+
           <!-- <table cellpadding="0" cellspacing="0" v-if="m.checkFlag==2">
               <thead>
                 <tr>
@@ -332,7 +308,8 @@ import {
   apiGetNomalRecord,
   apiCompleteInfo,
   apiUpdatePaw,
-  apiApplySmallTeacher
+  apiApplySmallTeacher,
+  apiMyDiscussList
 } from "~/servers/api/user";
 import { apiInviteList } from "~/servers/api/findTeacher";
 import { format } from "path";
@@ -368,14 +345,15 @@ export default {
     };
     return {
       tabTitle: [
-        { id: 0, tab: "我的试卷", flag: true },
-        { id: 1, tab: "我的预约", flag: true },
-        { id: 2, tab: "我的课程", flag: true },
-        { id: 3, tab: "我发布的课程", flag: true },
-        { id: 4, tab: "我的评价", flag: true },
-        { id: 5, tab: "申请小老师", flag: true },
-        { id: 6, tab: "完善个人信息", flag: true },
-        { id: 7, tab: "修改密码", flag: true }
+        { id: 0, tab: "我的试卷" },
+        { id: 1, tab: "我的预约" },
+        { id: 2, tab: "我的课程" },
+        { id: 3, tab: "我发布的课程" },
+        { id: 4, tab: "我的评价" },
+        { id: 5, tab: "申请小老师" },
+        { id: 6, tab: "完善个人信息" },
+        { id: 7, tab: "修改密码" },
+        { id: 8, tab: "我的讨论区发布" }
       ],
       tabMain: [
         { title: "内容一", checkFlag: 0 },
@@ -437,6 +415,8 @@ export default {
         { value: "9", label: "艺术系" }
       ],
       subjectOptions: [{ value: "1", label: "机械工程系" }],
+      // 我的讨论区发布
+      discussData: [],
       rules: {
         password: [
           { required: true, message: "请输入旧密码", trigger: "blur" }
@@ -492,6 +472,8 @@ export default {
     this.normalRecord();
     // 我的预约
     this.inviteList();
+    // 我的讨论区发布
+    this.discussList();
   },
   methods: {
     // 获取用户信息
@@ -633,6 +615,24 @@ export default {
         subject: "",
         descContent: ""
       };
+    },
+    // 我的讨论区发布
+    async discussList() {
+      const data = await apiMyDiscussList("get");
+      this.discussData = data.results;
+      // 格式化返回时间
+      this.discussData.forEach(val => {
+        val.created_time = formatDate.unixToTime(val.created_time);
+        val.updated_time = formatDate.unixToTime(val.updated_time);
+      });
+    },
+    // 控制偶行样式
+    tableRowClassName({ row, rowIndex }) {
+      console.log("22222222222", row);
+      if (rowIndex % 2) {
+        return "warning-row";
+      }
+      return "";
     }
   },
   components: {
@@ -645,6 +645,16 @@ export default {
 * {
   font-size: 16px;
 }
+
+/* 我的讨论区发布 */
+.el-table .warning-row {
+  background: oldlace;
+}
+
+.el-table .success-row {
+  background: #f0f9eb;
+}
+
 /* 修改密码 */
 .rechangePaw {
   margin: 25px;
@@ -840,7 +850,7 @@ ul li {
 }
 .tab-content {
   width: 2400px;
-  min-height: 780px;
+  min-height: 840px;
   background: #fff;
   margin-top: 100px;
 }

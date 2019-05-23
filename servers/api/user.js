@@ -39,7 +39,7 @@ export const apiGetNomalRecord = (method) => request('/list/normal/operations/',
  * @param {string} email 邮箱
  */
 
-export const apiCompleteInfo = (name, gender, birthday, mobile, email, method) => request('update/user/detail/', { name, gender, birthday, mobile, email}, {method})
+export const apiCompleteInfo = (name, gender, birthday, mobile, email, method) => request('/update/user/detail/', { name, gender, birthday, mobile, email}, {method})
 
 
 /**
@@ -48,9 +48,14 @@ export const apiCompleteInfo = (name, gender, birthday, mobile, email, method) =
  * @param {string} password 旧密码
  * @param {string} new_password 新密码
  */
-export const apiUpdatePaw = (nickname, password, new_password, method) => request('update/user/password/', { nickname, password, new_password}, {method})
+export const apiUpdatePaw = (nickname, password, new_password, method) => request('/update/user/password/', { nickname, password, new_password}, {method})
 
 /**
  * @desc 申请小老师
  */
-export const apiApplySmallTeacher = (method) => request('update/user/smt/', {}, {method})
+export const apiApplySmallTeacher = (method) => request('/update/user/smt/', {}, {method})
+
+/**
+ * @desc 我的讨论区发布
+ */
+export const apiMyDiscussList = (method) => request('/list/me/questions/', {}, {method})
