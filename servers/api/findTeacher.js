@@ -33,3 +33,8 @@ export const apiGetInvite = (method) => request("/list/courses/", {}, { method }
 * @param {string} end_time 预约结束时间
 */
 export const apiClickInvite = (selector_id, teacher_id, status, room, score, interview_time, end_time) => request("/create/select/teacher/", { selector_id, teacher_id, status, room, score, interview_time, end_time})
+
+/**
+ * @desc 获取课程列表
+ */
+export const apiSubjectList = (method) => request('/list/course/category/', {}, {method})

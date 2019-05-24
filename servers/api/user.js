@@ -39,7 +39,7 @@ export const apiGetNomalRecord = (method) => request('/list/normal/operations/',
  * @param {string} email 邮箱
  */
 
-export const apiCompleteInfo = (name, gender, birthday, mobile, email, method) => request('/update/user/detail/', { name, gender, birthday, mobile, email}, {method})
+export const apiCompleteInfo = (name, gender, birthday, mobile, email, method) => request('/update/user/detail/', { name, gender, birthday, mobile, email }, { method })
 
 
 /**
@@ -48,24 +48,46 @@ export const apiCompleteInfo = (name, gender, birthday, mobile, email, method) =
  * @param {string} password 旧密码
  * @param {string} new_password 新密码
  */
-export const apiUpdatePaw = (nickname, password, new_password, method) => request('/update/user/password/', { nickname, password, new_password}, {method})
+export const apiUpdatePaw = (nickname, password, new_password, method) => request('/update/user/password/', { nickname, password, new_password }, { method })
 
 /**
  * @desc 申请小老师
  */
-export const apiApplySmallTeacher = (method) => request('/update/user/smt/', {}, {method})
+export const apiApplySmallTeacher = (method) => request('/update/user/smt/', {}, { method })
 
 /**
  * @desc 我的讨论区发布
  */
-export const apiMyDiscussList = (method) => request('/list/me/questions/', {}, {method})
+export const apiMyDiscussList = (method) => request('/list/me/questions/', {}, { method })
 
 /**
  * @desc 我的笔记
  */
-export const apiMyNoteList = (method) => request('retrieve/select/note/', {}, {method})
+export const apiMyNoteList = (method) => request('retrieve/select/note/', {}, { method })
 
 /**
  * @desc 荣誉榜
  */
-export const apiHonorsList = (type, method) => request('/users/detail/', {type}, {method})
+export const apiHonorsList = (type, method) => request('/users/detail/', { type }, { method })
+
+/**
+ * @desc 我的评价
+ */
+export const apiCommitList = (method) => request('/list/course/feedback/', {}, { method })
+
+/**
+ * @desc 我发布的课程
+ */
+export const apiReportCourse = (method) => request('/list/course/mine', {}, { method })
+
+/**
+ * @desc 我的课程
+ * @param {string} teacher_id
+ * @param {string} selector_id
+ */
+export const apiCourseList = (method) => request('/list/select/student/', {}, { method })
+
+/**
+ * @desc 我的预约
+ */
+export const apiMyInvite = (method) => request('/list/select/teacher/', {}, { method })

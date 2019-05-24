@@ -3,49 +3,50 @@
     <sd-header :activeTab="5"></sd-header>
     <div class="root">
       <div class="wrap">
-        <div class="table">
-          <div class="add">
-            <input type="text" v-model="addDetail.title" name="title" value placeholder="预约标题">
-            <input type="text" v-model="addDetail.content" name="content" value placeholder="发布人">
-            <input type="text" v-model="addDetail.room" name="room" value placeholder="上课房间">
-            <input type="text" v-model="addDetail.score" name="score" vlaue placeholder="积分">
-            <br>
-            <span>预约开始时间:</span>
-            <el-date-picker v-model="addDetail.interview_time" type="datetime" placeholder="选择开始时间"></el-date-picker>
-            <span>预约结束时间:</span>
-            <el-date-picker v-model="addDetail.end_time" type="datetime" placeholder="选择结束时间"></el-date-picker>
-            <button class="create-invite" @click="adddetail">创建预约</button>
-          </div>
-          <table cellpadding="0" cellspacing="0">
-            <thead>
-              <tr>
-                <th>序号</th>
-                <th>标题</th>
-                <th>发布人</th>
-                <th>上课房间</th>
-                <th>积分</th>
-                <th>开始时间</th>
-                <th>结束时间</th>
-                <th>状态</th>
-              </tr>
-            </thead>
-            <tbody v-loading="loading">
-              <tr v-for="(item,index) in newsList" :key="index">
-                <td width="6%">{{index+1}}</td>
-                <td>{{item.title}}</td>
-                <td width="10%">{{item.content}}</td>
-                <td width="10%">{{item.room}}</td>
-                <td width="6%">{{item.score}}</td>
-                <td width="12%">{{item.interview_time}}</td>
-                <td width="12%">{{item.end_time}}</td>
-                <!-- 如果是学生 -->
-                <td width="15%" v-if="!typeUser">
-                  <span class="edit" @click="commitInvite(item)">{{item.statusName}}</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <el-card>
+          <el-form ref="form" label-width="100px">
+            <el-form-item label="预约标题：" prop>
+              <el-input type="text" v-model="addDetail.title" placeholder="请输入预约标题"></el-input>
+            </el-form-item>
+            <el-form-item label="发布人：" prop>
+              <el-input type="text" v-model="addDetail.content" placeholder="请输入教师/小老师姓名"></el-input>
+            </el-form-item>
+            <el-form-item label="上课房间：">
+              <el-input type="text" v-model="addDetail.room" placeholder="请输入上课教室"></el-input>
+            </el-form-item>
+            <el-form-item label="积分：" prop>
+              <el-input type="text" v-model="addDetail.score" placeholder="请输入奖励积分"></el-input>
+            </el-form-item>
+            <el-form-item prop label="预约科目：">
+              <el-select class="inputStyle" placeholder="请输入预约科目" v-model="addDetail.item">
+                <el-option
+                    v-for="item in subjectOptions"
+                    :key="item.id"
+                    :label="item.type_name"
+                    :value="item.id"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="开始时间：" prop>
+              <el-date-picker v-model="addDetail.interview_time" type="date" placeholder="选择开始时间"></el-date-picker>
+            </el-form-item>
+            <el-form-item label="结束时间：" prop>
+              <el-date-picker v-model="addDetail.end_time" type="date" placeholder="选择结束时间"></el-date-picker>
+            </el-form-item>
+          </el-form>
+            <el-button type="primary" @click="adddetail">创建预约</el-button>
+        </el-card>
+        <el-card>
+          <el-table :data="newsList" style="width: 100%">
+              <el-table-column prop="title" label="课程标题" width="180"></el-table-column>
+              <el-table-column prop="type_name" label="课程类别" width="180"></el-table-column>
+              <el-table-column prop="room" label="上课房间" width="180"></el-table-column>
+              <el-table-column prop="score" label="积分" width="180"></el-table-column>
+              <el-table-column prop="created_time" label="开始时间"></el-table-column>
+              <el-table-column prop="end_time" label="更新时间"></el-table-column>
+              <el-table-column prop="status" label="状态" width="180">{{statusMap}}</el-table-column>
+            </el-table>
+        </el-card>
       </div>
     </div>
     <page-footer></page-footer>
@@ -59,14 +60,19 @@ import {
   apiCreateInvite,
   apiGetInvite,
   apiClickInvite,
-  apiInviteList
+  apiInviteList,
+  apiSubjectList
 } from "~/servers/api/findTeacher";
 import { get } from "http";
 
+// 状态
 const statusMap = {
-  1: "点击预约",
-  0: "已预约"
+  0: "已失效",
+  1: "已生效",
+  2: "已完成",
+  3: "已评价"
 };
+
 export default {
   data() {
     return {
@@ -76,6 +82,7 @@ export default {
         status: 1,
         room: "",
         score: "",
+        item: null,
         interview_time: "",
         end_time: ""
       },
@@ -85,12 +92,16 @@ export default {
       editid: "",
       loading: false,
       statusName: "点击预约",
-      typeUser: "" // 用户身份
+      typeUser: "", // 用户身份
+      subjectOptions: [] // 课程列表
     };
   },
   created() {
     this.inviteList();
     this.userInfo();
+  },
+  mounted() {
+    this.getSubject()
   },
   methods: {
     // 获取用户信息
@@ -103,10 +114,9 @@ export default {
     async inviteList() {
       const inviteList = await apiGetInvite("get");
       this.newsList = inviteList.results;
-      this.newsList.forEach(res => {
-        this.$set(res, "statusName", "点击预约");
-      });
-      this.statusName = statusMap[this.status];
+       this.newsList.forEach(val => {
+        val.status = statusMap[val.status]
+      })
     },
     // 创建预约列表
     async adddetail(item) {
@@ -153,6 +163,11 @@ export default {
       this.$message("预约成功！记录信息请到个人详情页查看~");
       // 点击预约后，老师显示已预约列表，学生显示预约列表，放到个人信息页中，最后调
       const clickList = await apiInviteList("get");
+    },
+    // 获取科目选项列表
+    async getSubject() {
+      const data = await apiSubjectList('get')
+      this.subjectOptions = data.results
     }
     //删除
     // deletelist(id, i) {
@@ -210,13 +225,9 @@ export default {
 }
 .wrap {
   box-shadow: 0 2px 10px #d9d9d9, inset 0 10px 1px #f1f1f1;
-  display: flex;
-  justify-content: space-around;
   max-width: 1140px;
-  margin: 0px auto;
   background: #fff;
   padding: 40px;
-  overflow: auto;
   height: 100vh;
 }
 .table table {
@@ -261,11 +272,11 @@ table tbody td span {
   padding: 15px;
   line-height: 50px;
 }
-.create-invite {
+/* .create-invite {
   margin-left: 20px;
   width: 100px;
   height: 35px;
-}
+} */
 
 input {
   border: 1px solid #ccc;
@@ -275,11 +286,7 @@ input {
 }
 
 button {
-  background: #f5ad1b;
-  border: 0;
-  padding: 4px 15px;
-  border-radius: 3px;
-  color: #fff;
+  margin-left: 20px;
 }
 
 #mask {

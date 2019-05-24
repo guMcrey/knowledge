@@ -38,9 +38,7 @@
         </div>
         <div class="tab-content">
           <!-- 我的笔记 -->
-          <div v-if="cur==8" class="rechangePaw">
-            9999
-          </div>
+          <div v-if="cur==9" class="rechangePaw">9999</div>
           <!-- 我的讨论区发布 -->
           <div v-if="cur==8" class="rechangePaw">
             <el-table :data="discussData" style="width: 100%" :row-class-name="tableRowClassName">
@@ -237,6 +235,50 @@
             </el-form>
           </div>
 
+          <!-- 我的评价 -->
+          <div v-if="cur==4" class="rechangePaw">
+            <el-table :data="commitData" style="width: 100%" :row-class-name="tableRowClassName">
+              <el-table-column prop="title" label="标题" width="180"></el-table-column>
+              <el-table-column prop="score" label="积分" width="180"></el-table-column>
+              <el-table-column prop="created_time" label="创建时间"></el-table-column>
+              <el-table-column prop="updated_time" label="更新时间"></el-table-column>
+            </el-table>
+          </div>
+          <!-- 我发布的课程 -->
+          <div v-if="cur==3" class="rechangePaw">
+            <el-table :data="courseData" style="width: 100%" :row-class-name="tableRowClassName">
+              <el-table-column prop="title" label="标题" width="180"></el-table-column>
+              <el-table-column prop="type_name" label="课程类别" width="180"></el-table-column>
+              <el-table-column prop="room" label="上课房间" width="180"></el-table-column>
+              <el-table-column prop="content" label="发布人"></el-table-column>
+              <el-table-column prop="score" label="积分"></el-table-column>
+              <el-table-column prop="created_time" label="开始时间"></el-table-column>
+              <el-table-column prop="end_time" label="结束时间"></el-table-column>
+            </el-table>
+          </div>
+          <!-- 我的课程 -->
+          <div v-if="cur==2" class="rechangePaw">
+            <el-table :data="courseData2" style="width: 100%" :row-class-name="tableRowClassName">
+              <el-table-column prop="teacher_name" label="教师姓名" width="180"></el-table-column>
+              <el-table-column prop="room" label="上课房间" width="180"></el-table-column>
+              <!-- <el-table-column prop="status" label="课程状态" width="180">{{statusMap2}}</el-table-column> -->
+            </el-table>
+          </div>
+
+          <!-- 我的预约 -->
+          <div v-if="cur==1" class="rechangePaw">
+            <el-table
+              :data="inviteList"
+              style="width: 100%"
+              :row-class-name="tableRowClassName"
+              :key="index"
+            >
+              <el-table-column prop="teacher_name" label="教师姓名" width="180"></el-table-column>
+              <el-table-column prop="room" label="上课房间"></el-table-column>
+              <el-table-column prop="status" label="课程状态">{{statusMap}}</el-table-column>
+            </el-table>
+          </div>
+
           <!-- <table cellpadding="0" cellspacing="0" v-if="m.checkFlag==2">
               <thead>
                 <tr>
@@ -314,15 +356,20 @@ import {
   apiUpdatePaw,
   apiApplySmallTeacher,
   apiMyDiscussList,
-  apiMyNoteList
+  apiMyNoteList,
+  apiCommitList,
+  apiReportCourse,
+  apiCourseList,
+  apiMyInvite
 } from "~/servers/api/user";
-import { apiInviteList } from "~/servers/api/findTeacher";
 import { format } from "path";
 
 // 状态
 const statusMap = {
-  0: "已预约",
-  1: "可预约"
+  0: "已失效",
+  1: "已预约",
+  2: "已完成",
+  3: "已评价"
 };
 
 export default {
@@ -359,7 +406,7 @@ export default {
         { id: 6, tab: "完善个人信息" },
         { id: 7, tab: "修改密码" },
         { id: 8, tab: "我的讨论区发布" },
-        { id: 9, tab: '我的笔记'}
+        { id: 9, tab: "我的笔记" }
       ],
       tabMain: [
         { title: "内容一", checkFlag: 0 },
@@ -377,6 +424,8 @@ export default {
       editDetail: {},
       newsList: [],
       editid: "",
+      teacher_id: 0,
+      selector_id: 0, // id
       userType: "", // 用户类型
       nickname: "", // 用户账号
       score: "", // 用户积分
@@ -423,6 +472,14 @@ export default {
       subjectOptions: [{ value: "1", label: "机械工程系" }],
       // 我的讨论区发布
       discussData: [],
+      // 我的评价
+      commitData: [],
+      // 我发布的课程
+      courseData: [],
+      // 我的课程
+      courseData2: [],
+      // 我的预约
+      inviteList: [],
       rules: {
         password: [
           { required: true, message: "请输入旧密码", trigger: "blur" }
@@ -476,12 +533,18 @@ export default {
     this.getUserInfo();
     this.selectQuesiotn();
     this.normalRecord();
-    // 我的预约
-    this.inviteList();
-    // 我的讨论区发布
+    // // 我的讨论区发布
     this.discussList();
-    // 我的笔记
-    this.myNoteList()
+    // // 我的笔记
+    this.myNoteList();
+    // // 我的评价
+    this.myCommitList();
+    // // 我发布的课程
+    this.reportCourse();
+    // 我的课程
+    this.myCourseList();
+    // 我的预约
+    this.myInvite();
   },
   methods: {
     // 获取用户信息
@@ -492,6 +555,8 @@ export default {
       this.score = data.score;
       this.gender = data.gender;
       this.userType = data.type;
+      this.selector_id = data.id;
+      this.teacher_id = data.id;
     },
     // 我的试卷
     async selectQuesiotn() {
@@ -502,14 +567,6 @@ export default {
     async normalRecord() {
       const normal = await apiGetNomalRecord("get");
       this.normalList = normal.results;
-    },
-    // 我的预约
-    async inviteList() {
-      const clickList = await apiInviteList("get");
-      this.myReadList = clickList.results;
-      this.myReadList.forEach(res => {
-        res.status = statusMap[res.status];
-      });
     },
     // 修改密码
     changePaw(formName) {
@@ -644,8 +701,33 @@ export default {
     },
     // 我的笔记
     async myNoteList() {
-      const data = await apiMyNoteList('get')
-      console.log('data', data)
+      const data = await apiMyNoteList("get");
+      console.log("data", data);
+    },
+    // 我的评价
+    async myCommitList() {
+      // 暂无数据
+      const data = await apiCommitList("get");
+      console.log("data", data);
+    },
+    // 我发布的课程
+    async reportCourse() {
+      const data = await apiReportCourse("get");
+      this.courseData = data.results;
+      console.log("data", data);
+    },
+    // 我的课程
+    async myCourseList() {
+      const course = await apiCourseList("get");
+      this.courseData2 = course.results;
+    },
+    // 我的预约
+    async myInvite() {
+      const data = await apiMyInvite("get");
+      this.inviteList = data.results;
+      this.inviteList.forEach(val => {
+        val.status = statusMap[val.status];
+      });
     }
   },
   components: {
@@ -862,10 +944,11 @@ ul li {
   margin: 0;
 }
 .tab-content {
-  width: 2400px;
-  min-height: 840px;
+  min-width: 1000px;
+  min-height: 900px;
   background: #fff;
   margin-top: 100px;
+  margin-left: 30px;
 }
 .router-link-active {
   font-weight: bold;
