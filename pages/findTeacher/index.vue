@@ -3,7 +3,8 @@
     <sd-header :activeTab="5"></sd-header>
     <div class="root">
       <div class="wrap">
-        <el-card>
+        <!-- 创建预约只对小老师开放 -->
+        <el-card v-if="typeUser == 1">
           <el-form ref="form" label-width="100px">
             <el-form-item label="预约标题：" prop>
               <el-input type="text" v-model="addDetail.title" placeholder="请输入预约标题"></el-input>
@@ -20,10 +21,10 @@
             <el-form-item prop label="预约科目：">
               <el-select class="inputStyle" placeholder="请输入预约科目" v-model="addDetail.item">
                 <el-option
-                    v-for="item in subjectOptions"
-                    :key="item.id"
-                    :label="item.type_name"
-                    :value="item.id"
+                  v-for="item in subjectOptions"
+                  :key="item.id"
+                  :label="item.type_name"
+                  :value="item.id"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -34,18 +35,24 @@
               <el-date-picker v-model="addDetail.end_time" type="date" placeholder="选择结束时间"></el-date-picker>
             </el-form-item>
           </el-form>
-            <el-button type="primary" @click="adddetail">创建预约</el-button>
+          <el-button type="primary" @click="adddetail">创建预约</el-button>
         </el-card>
         <el-card>
           <el-table :data="newsList" style="width: 100%">
-              <el-table-column prop="title" label="课程标题" width="180"></el-table-column>
-              <el-table-column prop="type_name" label="课程类别" width="180"></el-table-column>
-              <el-table-column prop="room" label="上课房间" width="180"></el-table-column>
-              <el-table-column prop="score" label="积分" width="180"></el-table-column>
-              <el-table-column prop="created_time" label="开始时间"></el-table-column>
-              <el-table-column prop="end_time" label="更新时间"></el-table-column>
-              <el-table-column prop="status" label="状态" width="180">{{statusMap}}</el-table-column>
-            </el-table>
+            <el-table-column prop="title" label="课程标题" width="100"></el-table-column>
+            <el-table-column prop="type_name" label="课程类别" width="100"></el-table-column>
+            <el-table-column prop="room" label="上课房间" width="100"></el-table-column>
+            <el-table-column prop="score" label="积分" width="100"></el-table-column>
+            <el-table-column prop="created_time" label="开始时间"></el-table-column>
+            <el-table-column prop="end_time" label="更新时间"></el-table-column>
+            <el-table-column prop="status" label="状态" width="100">{{statusName}}</el-table-column>
+            <!-- 只对学生开放点击预约按钮 -->
+            <el-table-column label="操作" v-if="typeUser== 1">
+              <template slot-scope="scope">
+                <el-button size="mini" type="danger" @click="commitInvite(scope.row)">点击预约</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
         </el-card>
       </div>
     </div>
@@ -79,7 +86,7 @@ export default {
       addDetail: {
         title: "",
         content: "",
-        status: 1,
+        status: "",
         room: "",
         score: "",
         item: null,
@@ -91,7 +98,7 @@ export default {
       newsList: [],
       editid: "",
       loading: false,
-      statusName: "点击预约",
+      statusName: "",
       typeUser: "", // 用户身份
       subjectOptions: [] // 课程列表
     };
@@ -101,7 +108,7 @@ export default {
     this.userInfo();
   },
   mounted() {
-    this.getSubject()
+    this.getSubject();
   },
   methods: {
     // 获取用户信息
@@ -114,9 +121,9 @@ export default {
     async inviteList() {
       const inviteList = await apiGetInvite("get");
       this.newsList = inviteList.results;
-       this.newsList.forEach(val => {
-        val.status = statusMap[val.status]
-      })
+      this.newsList.map(val => {
+        this.statusName = statusMap[val.status];
+      });
     },
     // 创建预约列表
     async adddetail(item) {
@@ -147,6 +154,7 @@ export default {
         status,
         room,
         score,
+        id: course_id,
         interview_time,
         end_time
       } = item;
@@ -156,18 +164,17 @@ export default {
         status,
         room,
         score,
+        course_id,
         interview_time,
         end_time
       );
-      item.statusName = statusMap[item.status];
       this.$message("预约成功！记录信息请到个人详情页查看~");
-      // 点击预约后，老师显示已预约列表，学生显示预约列表，放到个人信息页中，最后调
-      const clickList = await apiInviteList("get");
+      this.inviteList();
     },
     // 获取科目选项列表
     async getSubject() {
-      const data = await apiSubjectList('get')
-      this.subjectOptions = data.results
+      const data = await apiSubjectList("get");
+      this.subjectOptions = data.results;
     }
     //删除
     // deletelist(id, i) {

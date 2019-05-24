@@ -60,11 +60,6 @@ export const apiApplySmallTeacher = (method) => request('/update/user/smt/', {},
  */
 export const apiMyDiscussList = (method) => request('/list/me/questions/', {}, { method })
 
-// /**
-//  * @desc 我的笔记
-//  */
-// export const apiMyNoteList = (question_id, method) => request('retrieve/select/note/', {question_id}, { method })
-
 /**
  * @desc 荣誉榜
  */
@@ -91,3 +86,8 @@ export const apiCourseList = (method) => request('/list/select/student/', {}, { 
  * @desc 我的预约
  */
 export const apiMyInvite = (method) => request('/list/select/teacher/', {}, { method })
+
+/**
+ * @desc 我的课程取消
+ */
+export const apiCancelCourse = (course_id, order_id, method) => request('/cancle/course/order/', { course_id, order_id }, { method })

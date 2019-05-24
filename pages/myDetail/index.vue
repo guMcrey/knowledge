@@ -269,11 +269,19 @@
               :data="inviteList"
               style="width: 100%"
               :row-class-name="tableRowClassName"
-              :key="index"
             >
               <el-table-column prop="teacher_name" label="教师姓名" width="180"></el-table-column>
               <el-table-column prop="room" label="上课房间"></el-table-column>
-              <el-table-column prop="status" label="课程状态">{{statusMap}}</el-table-column>
+              <el-table-column prop="status" label="课程状态"></el-table-column>
+              <el-table-column label="操作">
+                <template slot-scope="scope">
+                  <el-button
+                    size="mini"
+                    type="danger"
+                    @click="cancelCourse(scope.row)"
+                  >取消</el-button>
+                </template>
+              </el-table-column>
             </el-table>
           </div>
 
@@ -283,11 +291,10 @@
               :data="paperList"
               style="width: 100%"
               :row-class-name="tableRowClassName"
-              :key="index"
             >
               <el-table-column prop="title" label="试卷标题" width="500px"></el-table-column>
               <el-table-column prop="score" label="积分"></el-table-column>
-              <el-table-column prop="is_correct" label="是否回答正确">{{answerMap}}</el-table-column>
+              <el-table-column prop="is_correct" label="是否回答正确"></el-table-column>
             </el-table>
           </div>
         </div>
@@ -314,14 +321,15 @@ import {
   apiCommitList,
   apiReportCourse,
   apiCourseList,
-  apiMyInvite
+  apiMyInvite,
+  apiCancelCourse
 } from "~/servers/api/user";
 import { format } from "path";
 
 // 试卷答案
 const answerMap = {
-  false: "错误",
-  true: "正确"
+  'false': "错误",
+  'true': "正确"
 };
 
 // 状态
@@ -489,11 +497,15 @@ export default {
       });
     }
   },
+  created() {
+    // 我的试卷
+    this.selectQuesiotn();
+    // 我的预约
+    this.myInvite();
+  },
   mounted() {
     // 获取用户信息
     this.getUserInfo();
-    // 我的试卷
-    this.selectQuesiotn();
     // // 我的讨论区发布
     this.discussList();
     // // 我的评价
@@ -503,7 +515,7 @@ export default {
     // 我的课程
     this.myCourseList();
     // 我的预约
-    this.myInvite();
+    // this.myInvite();
   },
   methods: {
     // 获取用户信息
@@ -681,7 +693,13 @@ export default {
       this.inviteList.forEach(val => {
         val.status = statusMap[val.status];
       });
-    }
+    },
+    // // 我的预--取消
+    async cancelCourse(id) {
+      this.order_id = id.id
+      const cancel = await apiCancelCourse(id.course_id, id.id, 'put')
+      this.myInvite()
+    } 
   },
   components: {
     SdHeader,
