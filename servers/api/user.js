@@ -91,3 +91,18 @@ export const apiMyInvite = (method) => request('/list/select/teacher/', {}, { me
  * @desc 我的课程取消
  */
 export const apiCancelCourse = (course_id, order_id, method) => request('/cancle/course/order/', { course_id, order_id }, { method })
+
+/**
+ * @desc 我发布的课程删除
+ */
+export const apiDeleteCourse = (course_id, method) => request('/cancle/course/', { course_id }, { method })
+
+/**
+ * @desc 我的课程
+ */
+export const apiCompleteCourse = (course_id, order_id, method) => request('/complete/course/', { course_id, order_id }, { method })
+
+/**
+ * @desc 创建课程评论
+ */
+export const apiCreateCommit = (commit) => request('/create/course/feedback/', {commit})

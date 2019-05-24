@@ -15,7 +15,7 @@
                 </div>
                 <div class="bigTitle">
                   <div class="newTitle">{{item.content}}</div>
-                  <div class="ym">{{item.username}} 发布于：{{item.created_time}}</div>
+                  <div class="ym">{{item.username}} 发布于：{{created_time}}</div>
                   <div class="reward">悬赏积分：{{item.score}}</div>
                 </div>
                 <div class="newTitleIcon"></div>
@@ -58,10 +58,9 @@
                         <div class="reply-text">{{sitem.content}}</div>
                         <div class="bottom">
                           <div class="repaly-time">发表于 {{sitem.created_time}}</div>
-                          <!-- <div class="repaly-reply" @click="replyNow()">点击回复</div> -->
                         </div>
                       </div>
-                      <div class="user-grade">用户等级</div>
+                      <div class="user-grade">积分：{{userScore}}分</div>
                     </div>
                   </div>
                   <div class="click-reply" v-if="showReplyNow">
@@ -83,6 +82,7 @@ import PageFooter from "~/components/pageFooter";
 import SdHeader from "~/components/navBar";
 import { apiInformationList, apiCreateAnswer } from "~/servers/api/questions";
 import { apiUserDetail } from "~/servers/api/user";
+import formatDate from "~/assets/utils/formatDate";
 
 // 悬赏积分
 const rewardMap = {
@@ -119,13 +119,21 @@ export default {
       quesitonList: [], // 问题详情
       answerContent: "", // 回复内容
       information_id: "", // 邀约信息id
-      showReplyList: false // 展示评论
+      showReplyList: false, // 展示评论
+      userScore: '', // 用户积分
+      created_time: '' // 发布时间
     };
   },
   mounted() {
     this.getInformation();
+    this.userInfo()
   },
   methods: {
+    // 获取用户信息
+    async userInfo() {
+      const data = await apiUserDetail('get')
+      this.userScore = data.score
+    },
     // 获取邀约讲解列表
     async getInformation() {
       const data = await apiInformationList("get");
@@ -136,7 +144,8 @@ export default {
       this.score = this.informationList.forEach(res => {
         res.score = rewardMap[res.score];
         res.type = typeMap[res.type];
-        return res.score, res.type;
+        this.created_time = formatDate.unixToTime(res.created_time)
+        return res.score, res.type, this.created_time;
       });
     },
     // 点击问题列表
@@ -148,10 +157,6 @@ export default {
     createReply() {
       this.showCreate = !this.showCreate;
     },
-    // 点击 点击回复
-    // replyNow() {
-    //   this.showReplyNow = !this.showReplyNow;
-    // },
     // 显示回复列表
     showReplyFlag() {
       this.showReplyList = !this.showReplyList
@@ -317,9 +322,10 @@ a {
   text-align: left;
   vertical-align: top;
   position: relative;
+  border-bottom: 1px solid #e9e3e3;
 }
 .newsCenterPanel_inner .newContentBox.odd {
-  /* margin-right: 100px; */
+  margin-top: 18px;
 }
 .newsCenterPanel_inner .newContentBox a {
   cursor: pointer;
@@ -426,7 +432,7 @@ a {
 
 .openContent {
   border: 1px solid #ccc;
-  width: 800px;
+  width: 860px;
   border-radius: 6px;
   margin-bottom: 30px;
   background: #f5f5f5;
@@ -449,7 +455,7 @@ a {
   font-size: 15px;
   color: #333;
   background: #fff;
-  width: 650px;
+  width: 706px;
   height: 30px;
   margin-top: 13px;
   line-height: 30px;
@@ -470,7 +476,7 @@ a {
   border-radius: 2px;
 }
 .create-input {
-  width: 610px;
+  width: 665px;
   height: 40px;
   border-radius: 5px;
   font: 15px/1 Lucida Grande, Helvetica, Arial, Verdana, sans-serif;
@@ -478,7 +484,7 @@ a {
 }
 .create-button {
   background: #f5ad1b;
-  margin-left: 560px;
+  margin-left: 610px;
   width: 52px;
   height: 25px;
   margin-top: 20px;
@@ -491,7 +497,7 @@ a {
 }
 .open-content {
   background: #fff;
-  width: 650px;
+  width: 710px;
   padding: 20px;
   margin-bottom: 3px;
   border-radius: 2px;

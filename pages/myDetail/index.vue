@@ -245,13 +245,18 @@
           <!-- 我发布的课程 -->
           <div v-if="cur==3" class="rechangePaw">
             <el-table :data="courseData" style="width: 100%" :row-class-name="tableRowClassName">
-              <el-table-column prop="title" label="标题" width="180"></el-table-column>
-              <el-table-column prop="type_name" label="课程类别" width="180"></el-table-column>
-              <el-table-column prop="room" label="上课房间" width="180"></el-table-column>
+              <el-table-column prop="title" label="标题"></el-table-column>
+              <el-table-column prop="type_name" label="课程类别"></el-table-column>
+              <el-table-column prop="room" label="上课房间"></el-table-column>
               <el-table-column prop="content" label="发布人"></el-table-column>
               <el-table-column prop="score" label="积分"></el-table-column>
               <el-table-column prop="created_time" label="开始时间"></el-table-column>
               <el-table-column prop="end_time" label="结束时间"></el-table-column>
+              <el-table-column label="操作">
+                <template slot-scope="scope">
+                  <el-button size="mini" type="danger" @click="deleteCourse(scope.row)">删除</el-button>
+                </template>
+              </el-table-column>
             </el-table>
           </div>
           <!-- 我的课程 -->
@@ -259,27 +264,25 @@
             <el-table :data="courseData2" style="width: 100%" :row-class-name="tableRowClassName">
               <el-table-column prop="teacher_name" label="教师姓名" width="180"></el-table-column>
               <el-table-column prop="room" label="上课房间" width="180"></el-table-column>
-              <!-- <el-table-column prop="status" label="课程状态" width="180">{{statusMap2}}</el-table-column> -->
+              <el-table-column prop="status" label="课程状态" width="180">{{statusMap}}</el-table-column>
+              <el-table-column label="操作">
+                <template slot-scope="scope">
+                  <el-button size="mini" type="primary" @click="completeCourse(scope.row)">完成</el-button>
+                  <el-input type="text" v-model="scope.row.commitText" placeholder="请输入评价~" @blur="createCommit(scope.row)"></el-input>
+                </template>
+              </el-table-column>
             </el-table>
           </div>
 
           <!-- 我的预约 -->
           <div v-if="cur==1" class="rechangePaw">
-            <el-table
-              :data="inviteList"
-              style="width: 100%"
-              :row-class-name="tableRowClassName"
-            >
+            <el-table :data="inviteList" style="width: 100%" :row-class-name="tableRowClassName">
               <el-table-column prop="teacher_name" label="教师姓名" width="180"></el-table-column>
               <el-table-column prop="room" label="上课房间"></el-table-column>
               <el-table-column prop="status" label="课程状态"></el-table-column>
               <el-table-column label="操作">
                 <template slot-scope="scope">
-                  <el-button
-                    size="mini"
-                    type="danger"
-                    @click="cancelCourse(scope.row)"
-                  >取消</el-button>
+                  <el-button size="mini" type="danger" @click="cancelCourse(scope.row)">取消</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -287,11 +290,7 @@
 
           <!-- 我的试卷 -->
           <div v-if="cur==0" class="rechangePaw">
-            <el-table
-              :data="paperList"
-              style="width: 100%"
-              :row-class-name="tableRowClassName"
-            >
+            <el-table :data="paperList" style="width: 100%" :row-class-name="tableRowClassName">
               <el-table-column prop="title" label="试卷标题" width="500px"></el-table-column>
               <el-table-column prop="score" label="积分"></el-table-column>
               <el-table-column prop="is_correct" label="是否回答正确"></el-table-column>
@@ -306,7 +305,6 @@
 <script>
 import SdHeader from "~/components/navBar";
 import PageFooter from "~/components/pageFooter";
-import * as api from "~/assets/api";
 import formatDate from "~/assets/utils/formatDate";
 
 import {
@@ -322,14 +320,17 @@ import {
   apiReportCourse,
   apiCourseList,
   apiMyInvite,
-  apiCancelCourse
+  apiCancelCourse,
+  apiDeleteCourse,
+  apiCompleteCourse,
+  apiCreateCommit
 } from "~/servers/api/user";
 import { format } from "path";
 
 // 试卷答案
 const answerMap = {
-  'false': "错误",
-  'true': "正确"
+  false: "错误",
+  true: "正确"
 };
 
 // 状态
@@ -448,6 +449,8 @@ export default {
       courseData2: [],
       // 我的预约
       inviteList: [],
+      // 评论
+      commitText: '',
       rules: {
         password: [
           { required: true, message: "请输入旧密码", trigger: "blur" }
@@ -515,7 +518,7 @@ export default {
     // 我的课程
     this.myCourseList();
     // 我的预约
-    // this.myInvite();
+    this.myInvite();
   },
   methods: {
     // 获取用户信息
@@ -681,10 +684,25 @@ export default {
       this.courseData = data.results;
       console.log("data", data);
     },
+    // 我发布的课程删除
+    async deleteCourse(id) {
+      const data = await apiDeleteCourse(id.id, "put");
+      this.reportCourse();
+    },
     // 我的课程
     async myCourseList() {
       const course = await apiCourseList("get");
       this.courseData2 = course.results;
+      this.courseData2.map(val => {
+        val.status = statusMap[val.status];
+      });
+    },
+    // 我的课程--完成
+    async completeCourse(id) {
+      const data = await apiCompleteCourse(id.course_id, id.id, "put");
+    },
+    async createCommit(id) {
+      const data = await apiCreateCommit(id.commitText)
     },
     // 我的预约
     async myInvite() {
@@ -694,12 +712,12 @@ export default {
         val.status = statusMap[val.status];
       });
     },
-    // // 我的预--取消
+    // 我的预约--取消
     async cancelCourse(id) {
-      this.order_id = id.id
-      const cancel = await apiCancelCourse(id.course_id, id.id, 'put')
-      this.myInvite()
-    } 
+      this.order_id = id.id;
+      const cancel = await apiCancelCourse(id.course_id, id.id, "put");
+      this.myInvite();
+    }
   },
   components: {
     SdHeader,

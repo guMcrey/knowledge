@@ -1,11 +1,5 @@
 <template>
 <div>
-<section class="investor-root">
-    <h2 class="title">题库来源渠道</h2>
-
-    <div class="investor-list">
-    </div>
-  </section>
   <section class="investor-root">
     <h2 class="title">加入我们</h2>
 

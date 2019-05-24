@@ -8,19 +8,19 @@
               <span>联系邮箱：</span><a href="mailto:943383098@qq.com">943383098@qq.com</a>
             </div>
             <div class="item">
-              <span>合作伙伴：</span>xxx
+              <span>合作伙伴：</span>天津大学仁爱学院计算机系
             </div>
             <div class="item">
-              <span>联系地址：</span>xxx
+              <span>联系地址：</span>天津市静海区团泊新城
             </div>
           </div>
           <div class="tel">
             <div class="tel__icon"></div>
             <div class="tel__num">
               <div class="tel__num-name">友情链接</div>
-              <a href="" class="tel__num-num">xxxzzzz</a><br>
-              <a href="" class="tel__num-num">xxxzzzz</a><br>
-              <a href="" class="tel__num-num">xxxzzzz</a>
+              <a href="http://jw.tjrac.edu.cn/sadfasdfasdfasdfasdfkdfo12301230.aspx" class="tel__num-num">天津大学仁爱学院正方教务网</a><br>
+              <a href="http://tjrac.fanya.chaoxing.com/portal" class="tel__num-num">天津大学仁爱学院网络教学平台</a><br>
+              <a href="http://jw.tjrac.edu.cn/bm/" class="tel__num-num">天津大学仁爱学院数字化校园平台</a>
               <div class="tel__work-time">
                 工作日 9:30-21:30
               </div>
@@ -38,7 +38,7 @@
           <div class="case-number">
             <a target="_blank" href="">
               <img src="./img/record-icon.png" class="record-icon"/>
-              京公网安备 xxxx号
+              版权归知学平台所有，违反必究
             </a>
           </div>
         </div>
@@ -52,7 +52,7 @@ export default {
   data() {
     return {
       companyInfo: {
-        code: '京ICP备xxxxx号-1',
+        code: '',
         name: '知学平台'
       }
     }
@@ -60,11 +60,11 @@ export default {
   mounted () {
     const info = {
       cn: {
-        code: '京ICP备xxx号-1',
+        code: '',
         name: '知学平台'
       },
       com: {
-        code: '京ICP备xxxx号-1',
+        code: '',
         name: '知学平台'
       }
     }
@@ -141,15 +141,7 @@ export default {
     margin-right: 120px;
     display: flex;
     align-items: center;
-    // margin-top: -20px;   
-    // &__icon {
-    //   width:20px;
-    //   height:20px;
-    //   margin-top: -50px;
-    //   background: url(./img/icon-tel.png) no-repeat center/cover;
-    // }
     &__num {
-      // margin-left: 10px;
       &-name {
         font-size:14px;
         color:#737582;
@@ -160,7 +152,6 @@ export default {
         font-size:14px;
         color:#f1f1f1;
         line-height: 25px;
-        // font-weight: 800;
       }
     }
     &__online {
@@ -178,11 +169,9 @@ export default {
       text-align: center;
     }
     &__work-time {
-      width:120px;
       height:20px;
       line-height:20px;
       margin-top:10px;
-      // margin-left:-8px;
       font-weight: 700;
       color:#fff;
       background-color: #4D91FD;

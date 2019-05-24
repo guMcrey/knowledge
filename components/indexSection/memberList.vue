@@ -15,7 +15,6 @@
 </template>
 
 <script>
-import memberList from './member'
 export default {
   name: 'member-list',
   serverCacheKey() {

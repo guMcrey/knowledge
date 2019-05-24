@@ -72,7 +72,6 @@
 import PageFooter from "~/components/pageFooter";
 import { mapState, mapActions } from "vuex";
 import SdHeader from "~/components/navBar";
-import * as api from "~/assets/api";
 import { apiSelectQuestion } from "~/servers/api/questions";
 import { apiUserDetail } from "~/servers/api/user";
 import img from "../images/icons.jpg";

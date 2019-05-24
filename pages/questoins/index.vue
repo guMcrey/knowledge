@@ -42,7 +42,6 @@
 <script>
 import SdHeader from '~/components/navBar'
 import PageFooter from '~/components/pageFooter'
-import * as api from '~/assets/api'
 import { mapGetters } from 'vuex'
 import img1 from './img/problemset_c.jpg'
 import img2 from './img/problemset_c++.jpg'

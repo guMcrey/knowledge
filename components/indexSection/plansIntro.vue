@@ -54,12 +54,10 @@
       </div>
     </div>
   </div>
-  <notice-list></notice-list>
 </div>
 </template>
 
 <script>
-import NoticeList from './noticeList'
 
 export default {
   name: 'plans-intro',
@@ -71,9 +69,6 @@ export default {
       showQrIndex: 0,
       isShowQr: false
     }
-  },
-  components: {
-    NoticeList
   },
   methods: {
     toogleCard(index) {

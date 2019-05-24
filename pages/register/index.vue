@@ -45,7 +45,6 @@
   </div>
 </template>
 <script>
-import * as api from "~/assets/api";
 import PageFooter from "~/components/pageFooter";
 import SdHeader from "~/components/navBar";
 import { apiRegister } from "~/servers/api/user";

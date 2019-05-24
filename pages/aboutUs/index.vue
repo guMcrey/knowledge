@@ -33,24 +33,18 @@
                 </a>
               </li>
               </ul>
-              <div class="pages">
-              <a :href="prevUrl" v-if="hasPrev" class="prev-page">上一页</a>
-              <a :href="nextUrl" v-if="hasNext" class="next-page">下一页</a>
-            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
   <page-footer></page-footer>
-  <!-- <CommonFooter></CommonFooter> -->
 </div>
 </template>
 
 <script>
 import SdHeader from '~/components/navBar'
 import PageFooter from '~/components/pageFooter'
-import * as api from '~/assets/api'
 import { mapGetters } from 'vuex'
 export default {
   data() {

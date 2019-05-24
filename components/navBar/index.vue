@@ -81,12 +81,12 @@ export default {
           text: "寻师",
           path: "/findTeacher",
           falg: false
+        },
+        {
+          text: "荣誉榜",
+          path: "/honorsList",
+          falg: false
         }
-        // {
-        //   text: "个人详情页",
-        //   path: "/myDetail",
-        //   falg: false
-        // }
       ],
       hasToken: ""
     };

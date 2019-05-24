@@ -176,44 +176,6 @@ export default {
       const data = await apiSubjectList("get");
       this.subjectOptions = data.results;
     }
-    //删除
-    // deletelist(id, i) {
-    //   this.newsList.splice(i, 1);
-    //这边可以传id给服务端进行删除  ID = id
-    //axios.get('url',{ID:id}).then((res) =>{
-    //			加载列表
-    //})
-    // },
-    //编辑
-    // edit(item) {
-    //   this.editDetail = {
-    //     title: item.title,
-    //     user: item.user,
-    //     dates: item.dates,
-    //     id: item.id
-    //   };
-    //   this.editlist = true;
-    //   this.editid = item.id;
-    // },
-    //确认更新
-    // update() {
-    //编辑的话，也是传id去服务端
-    //axios.get('url',{ID:id}).then((res) =>{
-    //			加载列表
-    //})
-    // let _this = this;
-    // for (let i = 0; i < _this.newsList.length; i++) {
-    //   if (_this.newsList[i].id == this.editid) {
-    //     _this.newsList[i] = {
-    //       title: _this.editDetail.title,
-    //       user: _this.editDetail.user,
-    //       dates: _this.editDetail.dates,
-    //       id: this.editid
-    //     };
-    //     this.editlist = false;
-    //   }
-    // }
-    // }
   },
   components: {
     SdHeader,
