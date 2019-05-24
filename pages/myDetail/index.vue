@@ -277,65 +277,21 @@
             </el-table>
           </div>
 
-          <!-- <table cellpadding="0" cellspacing="0" v-if="m.checkFlag==2">
-              <thead>
-                <tr>
-                  <th>序号</th>
-                  <th>发布人</th>
-                  <th>上课房间</th>
-                  <th>预约人</th>
-                  <th>状态</th>
-                </tr>
-              </thead>
-              <tbody v-for="(item,index) in myReadList" :key="index">
-                <tr>
-                  <td>{{index+1}}</td>
-                  <td>{{item.teacher_name}}</td>
-                  <td>{{item.room}}</td>
-                  <td>{{item.selector_name}}</td>
-                  <td>{{item.status}}</td>
-                </tr>
-              </tbody>
-            </table>
-            <table cellpadding="0" cellspacing="0" v-if="m.checkFlag==1">
-              <thead>
-                <tr>
-                  <th>序号</th>
-                  <th>问题id</th>
-                  <th>回答id</th>
-                  <th>奖励积分</th>
-                </tr>
-              </thead>
-              <tbody v-for="(item,index) in normalList" :key="index">
-                <tr>
-                  <td>{{index+1}}</td>
-                  <td>{{item.question_id}}</td>
-                  <td>{{item.answer_id}}</td>
-                  <td>{{item.score}}</td>
-                </tr>
-              </tbody>
-            </table>
-            <table cellpadding="0" cellspacing="0" v-if="m.checkFlag==0">
-              <thead>
-                <tr>
-                  <th>序号</th>
-                  <th>问题id</th>
-                  <th>回答id</th>
-                  <th>奖励积分</th>
-                </tr>
-              </thead>
-              <tbody v-for="(item,index) in normalList" :key="index">
-                <tr>
-                  <td>{{index+1}}</td>
-                  <td>{{item.question_id}}</td>
-                  <td>{{item.answer_id}}</td>
-                  <td>{{item.score}}</td>
-                </tr>
-              </tbody>
-          </table>-->
+          <!-- 我的试卷 -->
+          <div v-if="cur==0" class="rechangePaw">
+            <el-table
+              :data="paperList"
+              style="width: 100%"
+              :row-class-name="tableRowClassName"
+              :key="index"
+            >
+              <el-table-column prop="title" label="试卷标题" width="500px"></el-table-column>
+              <el-table-column prop="score" label="积分"></el-table-column>
+              <el-table-column prop="is_correct" label="是否回答正确">{{answerMap}}</el-table-column>
+            </el-table>
+          </div>
         </div>
       </div>
-      <!-- </div> -->
     </div>
     <page-footer></page-footer>
   </div>
@@ -361,6 +317,12 @@ import {
   apiMyInvite
 } from "~/servers/api/user";
 import { format } from "path";
+
+// 试卷答案
+const answerMap = {
+  false: "错误",
+  true: "正确"
+};
 
 // 状态
 const statusMap = {
@@ -427,6 +389,7 @@ export default {
       nickname: "", // 用户账号
       score: "", // 用户积分
       gender: "", // 用户性别
+      paperList: [], // 我的试卷
       myReadList: [], // 我的预约
       normalList: [], // 我发布的帖子
       // 修改密码
@@ -527,9 +490,10 @@ export default {
     }
   },
   mounted() {
+    // 获取用户信息
     this.getUserInfo();
+    // 我的试卷
     this.selectQuesiotn();
-    this.normalRecord();
     // // 我的讨论区发布
     this.discussList();
     // // 我的评价
@@ -556,12 +520,11 @@ export default {
     // 我的试卷
     async selectQuesiotn() {
       const data = await apiGetSelectRecord("get");
+      this.paperList = data.results;
+      this.paperList.forEach(val => {
+        val.is_correct = answerMap[val.is_correct];
+      });
       console.log(data);
-    },
-    // 我的回复
-    async normalRecord() {
-      const normal = await apiGetNomalRecord("get");
-      this.normalList = normal.results;
     },
     // 修改密码
     changePaw(formName) {
@@ -719,7 +682,6 @@ export default {
         val.status = statusMap[val.status];
       });
     }
-  
   },
   components: {
     SdHeader,
