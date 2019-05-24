@@ -21,8 +21,10 @@
               <div class="view">
                 <div class="content-text" @click="viewContent()">查看解析</div>
                 <div class="question" @click="haveQuestion()">重答</div>
-                <div class="question" @click="invite()">邀约讲解</div>
-                <div class="question" @click="createNode=true">添加笔记</div>
+                <div class="question" v-if="exam!=='文本题'" @click="invite()">邀约讲解</div>
+                <div class="question" v-else>{{邀约讲解}}</div>
+                <div class="question" v-if="exam!=='文本题'" @click="createNode=true">添加笔记</div>
+                <div class="question" v-else >{{添加笔记}}</div>
               </div>
               <el-input
                 type="textarea"
@@ -92,7 +94,8 @@ import {
   apiSelectBehavior,
   apiContentQuestion,
   apiContentAnswer,
-  apiCreateNote
+  apiCreateNote,
+  apiMyNoteList
 } from "~/servers/api/questions";
 import { apiUserDetail } from "~/servers/api/user";
 
@@ -141,6 +144,7 @@ export default {
   mounted() {
     this.getSelectQuestion();
     this.start(true);
+    this.selectNote();
   },
   methods: {
     // 计时器
@@ -231,7 +235,7 @@ export default {
       this.createNode = false;
     },
     // 点击添加笔记的确认按钮
-   async nodeConfirm() {
+    async nodeConfirm() {
       //提交回访内容
       let nodeText = this.nodeText;
       if (nodeText) {
@@ -243,7 +247,13 @@ export default {
           });
           return;
         }
-        const data = await apiCreateNote(this.nodeText)
+        const data = await apiCreateNote(
+          this.owner,
+          this.question_id,
+          this.nodeText,
+          this.created_time,
+          this.updated_time
+        );
         this.$notify({
           title: "成功",
           message: "添加笔记成功,您可到个人详情页查看~",
@@ -259,6 +269,17 @@ export default {
         message: `请填写笔记内容`,
         type: "error"
       });
+    },
+    // 查看笔记
+    async selectNote() {
+      const data = await apiSelectQuestion(this.$route.query.type, "get");
+      this.itemDetail = data.results;
+      this.itemDetail.answers = data.results.answers;
+      this.question_id = this.itemDetail[this.itemNum - 1].id;
+      const content = await apiMyNoteList(this.question_id, "get");
+      if (content.content) {
+        this.nodeText = content.content;
+      }
     },
     //索引0-3对应答案A-B
     chooseType: type => {
@@ -353,11 +374,7 @@ export default {
           type: "warning"
         });
       } else {
-        console.log("9999999999999", this.contentText == this.analyzations);
-        // 这里判断都是false
-        // const data = await apiContentAnswer('post');
-        // console.log(data);
-        this.totalContentScore += 10;
+        this.totalContentScore += 10 * this.itemDetail.length;
         this.$router.push(
           `/exercise/score/?totalScore=${this.totalContentScore}&timer=${
             this.callinTime

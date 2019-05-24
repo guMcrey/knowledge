@@ -60,10 +60,10 @@ export const apiApplySmallTeacher = (method) => request('/update/user/smt/', {},
  */
 export const apiMyDiscussList = (method) => request('/list/me/questions/', {}, { method })
 
-/**
- * @desc 我的笔记
- */
-export const apiMyNoteList = (method) => request('retrieve/select/note/', {}, { method })
+// /**
+//  * @desc 我的笔记
+//  */
+// export const apiMyNoteList = (question_id, method) => request('retrieve/select/note/', {question_id}, { method })
 
 /**
  * @desc 荣誉榜

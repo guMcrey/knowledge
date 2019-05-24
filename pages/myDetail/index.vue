@@ -37,8 +37,6 @@
           </div>
         </div>
         <div class="tab-content">
-          <!-- 我的笔记 -->
-          <div v-if="cur==9" class="rechangePaw">9999</div>
           <!-- 我的讨论区发布 -->
           <div v-if="cur==8" class="rechangePaw">
             <el-table :data="discussData" style="width: 100%" :row-class-name="tableRowClassName">
@@ -405,8 +403,7 @@ export default {
         { id: 5, tab: "申请小老师" },
         { id: 6, tab: "完善个人信息" },
         { id: 7, tab: "修改密码" },
-        { id: 8, tab: "我的讨论区发布" },
-        { id: 9, tab: "我的笔记" }
+        { id: 8, tab: "我的讨论区发布" }
       ],
       tabMain: [
         { title: "内容一", checkFlag: 0 },
@@ -535,8 +532,6 @@ export default {
     this.normalRecord();
     // // 我的讨论区发布
     this.discussList();
-    // // 我的笔记
-    this.myNoteList();
     // // 我的评价
     this.myCommitList();
     // // 我发布的课程
@@ -699,11 +694,6 @@ export default {
       }
       return "";
     },
-    // 我的笔记
-    async myNoteList() {
-      const data = await apiMyNoteList("get");
-      console.log("data", data);
-    },
     // 我的评价
     async myCommitList() {
       // 暂无数据
@@ -729,6 +719,7 @@ export default {
         val.status = statusMap[val.status];
       });
     }
+  
   },
   components: {
     SdHeader,
@@ -945,7 +936,7 @@ ul li {
 }
 .tab-content {
   min-width: 1000px;
-  min-height: 900px;
+  min-height: 840px;
   background: #fff;
   margin-top: 100px;
   margin-left: 30px;

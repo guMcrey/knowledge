@@ -19,9 +19,9 @@ export const apiContentQuestion = (type, method) => request('/list/content/quest
 
 /**
  * @desc 文本题回答接口
- * 
+ * @param {string} content 回答内容
  */
-export const apiContentAnswer = (method) => request('/create/content/answer/',{}, {method})
+export const apiContentAnswer = (content) => request('/create/content/answer/',{content})
 
 /**
  * @desc 创建邀约
@@ -60,4 +60,10 @@ export const apiSelectBehavior = (question_id, answer_id, user_id, score, is_cor
 /**
  * @desc 创建笔记
  */
-export const apiCreateNote = (content) => request('/create/select/note/', {content})
+export const apiCreateNote = (owner, question_id, content, created_time, updated_time) => request('/create/select/note/', {owner, question_id, content, created_time, updated_time})
+
+
+/**
+ * @desc 查看笔记
+ */
+export const apiMyNoteList = (question_id, method) => request('retrieve/select/note/', {question_id}, { method })
