@@ -94,15 +94,23 @@ export const apiCancelCourse = (course_id, order_id, method) => request('/cancle
 
 /**
  * @desc 我发布的课程删除
+ * @param {string} couese_id 课程id
  */
 export const apiDeleteCourse = (course_id, method) => request('/cancle/course/', { course_id }, { method })
 
 /**
- * @desc 我的课程
+ * @desc 我的课程完成
+ * @param {string} course_id 课程id
  */
-export const apiCompleteCourse = (course_id, order_id, method) => request('/complete/course/', { course_id, order_id }, { method })
+export const apiCompleteCourse = (course_id, method) => request('/complete/course/', { course_id }, { method })
 
 /**
  * @desc 创建课程评论
- */
-export const apiCreateCommit = (commit) => request('/create/course/feedback/', {commit})
+ * @param {string} order_id  列表id
+ * @param {string} course_id  课程id
+ * @param {string} selector_id 选中的id
+ * @param {string} score  积分
+ * @param {string} content 评价内容
+ * @param {string } status 当前课程状态
+ */ 
+export const apiCreateCommit = (order_id, course_id, selector_id, teacher_id, score, content, status) => request('/create/course/feedback/', { order_id, course_id, selector_id, teacher_id, score, content, status})

@@ -8,6 +8,11 @@ import request from '../request'
 export const apiSelectQuestion = (type, method) => request('/list/select/questions/', { type }, { method })
 
 /**
+* @desc 获取乱序答题（选择题）信息
+*/
+export const apiSelectQuestionRandom = (type, mode, method) => request('/list/select/questions/', { type, mode }, { method })
+
+/**
  * @desc 获取选择题选项信息
  */
 export const apiSelectAnswer = (question_id, method) => request('/list/select/answers/', { question_id }, { method })
@@ -15,13 +20,13 @@ export const apiSelectAnswer = (question_id, method) => request('/list/select/an
 /**
  * @desc 获取文本题信息
  */
-export const apiContentQuestion = (type, method) => request('/list/content/questions', {type}, {method})
+export const apiContentQuestion = (type, method) => request('/list/content/questions', { type }, { method })
 
 /**
  * @desc 文本题回答接口
  * @param {string} content 回答内容
  */
-export const apiContentAnswer = (content) => request('/create/content/answer/',{content})
+export const apiContentAnswer = (content) => request('/create/content/answer/', { content })
 
 /**
  * @desc 创建邀约
@@ -60,10 +65,10 @@ export const apiSelectBehavior = (question_id, answer_id, user_id, score, is_cor
 /**
  * @desc 创建笔记
  */
-export const apiCreateNote = (owner, question_id, content, created_time, updated_time) => request('/create/select/note/', {owner, question_id, content, created_time, updated_time})
+export const apiCreateNote = (owner, question_id, content, created_time, updated_time) => request('/create/select/note/', { owner, question_id, content, created_time, updated_time })
 
 
 /**
  * @desc 查看笔记
  */
-export const apiMyNoteList = (question_id, method) => request('retrieve/select/note/', {question_id}, { method })
+export const apiMyNoteList = (question_id, method) => request('retrieve/select/note/', { question_id }, { method })

@@ -236,10 +236,10 @@
           <!-- 我的评价 -->
           <div v-if="cur==4" class="rechangePaw">
             <el-table :data="commitData" style="width: 100%" :row-class-name="tableRowClassName">
-              <el-table-column prop="title" label="标题" width="180"></el-table-column>
-              <el-table-column prop="score" label="积分" width="180"></el-table-column>
-              <el-table-column prop="created_time" label="创建时间"></el-table-column>
-              <el-table-column prop="updated_time" label="更新时间"></el-table-column>
+              <el-table-column prop="course_name" label="课程标题"></el-table-column>
+              <el-table-column prop="username" label="用户昵称"></el-table-column>
+              <el-table-column prop="content" label="评价内容"></el-table-column>
+              <el-table-column prop="score" label="评分"></el-table-column>
             </el-table>
           </div>
           <!-- 我发布的课程 -->
@@ -676,7 +676,7 @@ export default {
     async myCommitList() {
       // 暂无数据
       const data = await apiCommitList("get");
-      console.log("data", data);
+      this.commitData = data.results
     },
     // 我发布的课程
     async reportCourse() {
@@ -693,16 +693,18 @@ export default {
     async myCourseList() {
       const course = await apiCourseList("get");
       this.courseData2 = course.results;
-      this.courseData2.map(val => {
-        val.status = statusMap[val.status];
-      });
+      // this.courseData2.map(val => {
+      //   val.status = statusMap[val.status];
+      // });
     },
     // 我的课程--完成
     async completeCourse(id) {
-      const data = await apiCompleteCourse(id.course_id, id.id, "put");
+      const data = await apiCompleteCourse(id.course_id,"put");
+      this.myCourseList()
     },
+    // 我的课程--评价
     async createCommit(id) {
-      const data = await apiCreateCommit(id.commitText)
+      const data = await apiCreateCommit(id.id, id.course_id, id.selector_id, id.teacher_id, 5, id.commitText, id.status)
     },
     // 我的预约
     async myInvite() {

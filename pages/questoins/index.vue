@@ -43,12 +43,12 @@
 import SdHeader from '~/components/navBar'
 import PageFooter from '~/components/pageFooter'
 import { mapGetters } from 'vuex'
-import img1 from './img/problemset_c.jpg'
-import img2 from './img/problemset_c++.jpg'
-import img3 from './img/problemset_bigdata.jpg'
-import img4 from './img/problemset_computer.jpg'
-import img5 from './img/problemset_database.jpg'
-import img6 from './img/problemset_datastructures.jpg'
+import img4 from './img/philosophy.jpg'
+import img2 from './img/history.jpg'
+import img3 from './img/medicine1.jpg'
+import img1 from './img/problemset_computer.jpg'
+import img5 from './img/physics.jpg'
+import img6 from './img/biology.jpg'
 import img7 from './img/problemset_graphic.jpg'
 import img8 from './img/problemset_java.jpg'
 import img9 from './img/problemset_networld.jpg'
@@ -61,18 +61,18 @@ export default {
       hasPrev: false,
       hasNext: true,
       questionList: [
-        {id: 1, questionTitle: 'C语言程序设计', questionNumber: '10', questionType:'选择题', img: img1},
-        {id: 2, questionTitle: 'C++程序设计', questionNumber: '10', questionType:'选择题', img: img2},
-        {id: 3, questionTitle: '大数据程序设计', questionNumber: '10', questionType:'选择题', img: img3},
-        {id: 4, questionTitle: '计算机基础', questionNumber: '10', questionType:'选择题', img: img4},
-        {id: 5, questionTitle: '数据库原理', questionNumber: '10', questionType:'选择题', img: img5},
-        {id: 6, questionTitle: '数据结构', questionNumber: '10', questionType:'选择题', img: img6},
-        {id: 7, questionTitle: '图像图形设计', questionNumber: '10', questionType:'选择题', img: img7},
-        {id: 8, questionTitle: 'Java程序设计', questionNumber: '10', questionType:'选择题', img: img8},
-        {id: 9, questionTitle: '计算机网络', questionNumber: '10', questionType:'选择题', img: img9},
-        {id: 10, questionTitle: 'Python编程基础', questionNumber: '10', questionType:'选择题', img: img10},
-        {id: 11, questionTitle: '软件测试', questionNumber: '10', questionType:'选择题', img: img11},
-        {id: 12, questionTitle: 'OS编程基础', questionNumber: '10', questionType:'选择题', img: img12},
+        {id: 1, questionTitle: '计算机基础', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img1},
+        {id: 2, questionTitle: '人文历史（文类）', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img2},
+        {id: 3, questionTitle: '药理学（文类）', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img3},
+        {id: 4, questionTitle: '哲学（文类）', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img4},
+        {id: 5, questionTitle: '应用物理学', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img5},
+        {id: 6, questionTitle: '生物科学类', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img6},
+        {id: 7, questionTitle: '图像图形设计', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img7},
+        {id: 8, questionTitle: 'Java程序设计', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img8},
+        {id: 9, questionTitle: '计算机网络', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img9},
+        {id: 10, questionTitle: 'Python编程基础', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img10},
+        {id: 11, questionTitle: '软件测试', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img11},
+        {id: 12, questionTitle: 'OS编程基础', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img12},
       ],
       type: ''
     }

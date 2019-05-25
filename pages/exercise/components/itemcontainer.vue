@@ -20,11 +20,11 @@
               <header class="item_title">{{itemNum}}. {{itemDetail[itemNum-1].title}}：</header>
               <div class="view">
                 <div class="content-text" @click="viewContent()">查看解析</div>
-                <div class="question" @click="haveQuestion()">重答</div>
+                <div class="reAnswer" @click="haveQuestion()">重答</div>
                 <div class="question" v-if="exam!=='文本题'" @click="invite()">邀约讲解</div>
                 <div class="question" v-else>{{邀约讲解}}</div>
-                <div class="question" v-if="exam!=='文本题'" @click="createNode=true">添加笔记</div>
-                <div class="question" v-else >{{添加笔记}}</div>
+                <div class="question" v-if="exam!=='文本题'" @click="selectNote()">添加/查看笔记</div>
+                <div class="question" v-else>{{添加笔记}}</div>
               </div>
               <el-input
                 type="textarea"
@@ -95,7 +95,8 @@ import {
   apiContentQuestion,
   apiContentAnswer,
   apiCreateNote,
-  apiMyNoteList
+  apiMyNoteList,
+  apiSelectQuestionRandom
 } from "~/servers/api/questions";
 import { apiUserDetail } from "~/servers/api/user";
 
@@ -144,7 +145,6 @@ export default {
   mounted() {
     this.getSelectQuestion();
     this.start(true);
-    this.selectNote();
   },
   methods: {
     // 计时器
@@ -186,19 +186,30 @@ export default {
     // 获取选择题信息
     async getSelectQuestion() {
       const exam = this.$route.query.exam;
-
+      this.itemDetail = [];
       // 根据不同题型请求不同接口
       if (exam == "顺序答题（选择题）") {
+        console.log("顺序答题");
         const data = await apiSelectQuestion(this.$route.query.type, "get");
         this.itemDetail = data.results;
         this.itemDetail.answers = data.results.answers;
         this.question_id = this.itemDetail[this.itemNum - 1].id;
       } else if (exam == "文本题") {
+        console.log("文本题");
         const data = await apiContentQuestion(this.$route.query.type, "get");
         this.itemDetail = data.results;
         this.question_id = this.itemDetail[this.itemNum - 1].id;
         this.analyzations = data.results.analyzations;
-        console.log("itemDetail", this.itemDetail);
+      } else {
+        console.log("乱序答题");
+        const data = await apiSelectQuestionRandom(
+          this.$route.query.type,
+          "random",
+          "get"
+        );
+        this.itemDetail = data.results;
+        this.itemDetail.answers_id = data.results.answers;
+        this.question_id = this.itemDetail[this.itemNum - 1].id;
       }
     },
     ...mapActions(["addNum", "initializeData"]),
@@ -206,22 +217,15 @@ export default {
     nextItem() {
       this.showInvite = false;
       this.getContent = false;
-      if (this.contentText == "") {
-        this.$notify({
-          title: "提示",
-          message: "您还没有输入答案哦~~",
-          type: "warning"
-        });
-      }
       if (this.contentText !== "" || this.choosedNum !== null) {
         this.contentText = "";
         this.choosedNum = null;
         //保存答案, 题目索引加一，跳到下一题
         this.addNum(this.choosedId);
-      } else if (!this.exam === "文本题") {
+      } else {
         this.$notify({
           title: "失败",
-          message: "您还没有选择答案哦",
+          message: "您还没有填写答案哦",
           type: "warning"
         });
       }
@@ -270,9 +274,10 @@ export default {
         type: "error"
       });
     },
-    // 查看笔记
+    // 添加/查看笔记
     async selectNote() {
       const data = await apiSelectQuestion(this.$route.query.type, "get");
+      this.createNode = true;
       this.itemDetail = data.results;
       this.itemDetail.answers = data.results.answers;
       this.question_id = this.itemDetail[this.itemNum - 1].id;
@@ -370,7 +375,7 @@ export default {
       if (this.contentText == "") {
         this.$notify({
           title: "提示",
-          message: "您还没有输入答案哦~~",
+          message: "您还没有填写答案哦~~",
           type: "warning"
         });
       } else {
@@ -582,7 +587,17 @@ export default {
   .question {
     background: #007fff;
     float: left;
-    width: 64px;
+    width: 96px;
+    margin-left: 15px;
+    color: #fff;
+    border-radius: 3px;
+    font-weight: bold;
+    font-size: 14px;
+  }
+  .reAnswer {
+    background: #007fff;
+    float: left;
+    width: 56px;
     margin-left: 15px;
     color: #fff;
     border-radius: 3px;

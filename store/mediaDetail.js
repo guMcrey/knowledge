@@ -1,5 +1,4 @@
 import Vue from 'vue'
-import * as api from '~/assets/api'
 
 const state = function () {
   return {

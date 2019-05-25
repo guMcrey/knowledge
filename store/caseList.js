@@ -1,4 +1,3 @@
-import * as api from '~/assets/api'
 import formatDate from '~/assets/utils/formatDate'
 
 const state = function () {

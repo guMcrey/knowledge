@@ -72,7 +72,11 @@
 import PageFooter from "~/components/pageFooter";
 import { mapState, mapActions } from "vuex";
 import SdHeader from "~/components/navBar";
-import { apiSelectQuestion } from "~/servers/api/questions";
+import {
+  apiSelectQuestion,
+  apiSelectQuestionRandom,
+  apiContentQuestion
+} from "~/servers/api/questions";
 import { apiUserDetail } from "~/servers/api/user";
 import img from "../images/icons.jpg";
 
@@ -87,6 +91,7 @@ export default {
       cur: 0, // 默认选中第一个
       tab: [
         {
+          id: 1,
           title: "内容一",
           checkFlag: 0,
           channel: this.$route.query.channel,
@@ -94,6 +99,7 @@ export default {
           exam: "顺序答题（选择题）"
         },
         {
+          id: 2,
           title: "内容二",
           checkFlag: 1,
           channel: this.$route.query.channel,
@@ -101,6 +107,7 @@ export default {
           exam: "乱序答题（选择题）"
         },
         {
+          id: 3,
           title: "内容三",
           checkFlag: 2,
           channel: this.$route.query.channel,
@@ -156,12 +163,27 @@ export default {
       this.tab.forEach(val => {
         console.log("werwrwerwer", val);
       });
-      // if (this.tab)
-      const data = await apiSelectQuestion(this.$route.query.type, "get");
-      this.itemDetail = data.results;
+      if (this.tab[this.cur].exam === "乱序答题（选择题）") {
+        const data = await apiSelectQuestionRandom(
+          this.$route.query.type,
+          "random",
+          "get"
+        );
+        this.itemDetail = data.results;
+      } else if (this.tab[this.cur].exam === "顺序答题（选择题）") {
+        const data = await apiSelectQuestion(
+          this.$route.query.type,
+          "get"
+        );
+        this.itemDetail = data.results;
+        
+      } else {
+        const data = await apiContentQuestion(this.$route.query.type, "get");
+        this.itemDetail = data.results;
+      }
       window.location.href = `/exercise/item/?type=${
-        this.$route.query.type
-      }&exam=${this.tab[this.cur].exam}`;
+          this.$route.query.type
+        }&exam=${this.tab[this.cur].exam}`;
     },
     //点击下一题
     nextItem() {
