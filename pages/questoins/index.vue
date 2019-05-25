@@ -49,12 +49,12 @@ import img3 from './img/medicine1.jpg'
 import img1 from './img/problemset_computer.jpg'
 import img5 from './img/physics.jpg'
 import img6 from './img/biology.jpg'
-import img7 from './img/problemset_graphic.jpg'
-import img8 from './img/problemset_java.jpg'
-import img9 from './img/problemset_networld.jpg'
-import img10 from './img/problemset_python.jpg'
-import img11 from './img/problemset_softwareTest.jpg'
-import img12 from './img/problemset_os.jpg'
+import img7 from './img/astronantics.jpg'
+import img8 from './img/psychology.jpg'
+import img9 from './img/automation.jpg'
+import img10 from './img/Statistics.jpg'
+import img11 from './img/chinese.jpg'
+import img12 from './img/english.jpg'
 export default {
   data() {
     return {
@@ -67,12 +67,12 @@ export default {
         {id: 4, questionTitle: '哲学（文类）', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img4},
         {id: 5, questionTitle: '应用物理学', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img5},
         {id: 6, questionTitle: '生物科学类', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img6},
-        {id: 7, questionTitle: '图像图形设计', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img7},
-        {id: 8, questionTitle: 'Java程序设计', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img8},
-        {id: 9, questionTitle: '计算机网络', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img9},
-        {id: 10, questionTitle: 'Python编程基础', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img10},
-        {id: 11, questionTitle: '软件测试', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img11},
-        {id: 12, questionTitle: 'OS编程基础', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img12},
+        {id: 7, questionTitle: '天文学', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img7},
+        {id: 8, questionTitle: '心理学', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img8},
+        {id: 9, questionTitle: '机械设计自动化', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img9},
+        {id: 10, questionTitle: '统计学', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img10},
+        {id: 11, questionTitle: '国学（文类）', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img11},
+        {id: 12, questionTitle: '外语（文类）', questionNumber: '15', questionType:'顺序答题/乱序答题/文本题', img: img12},
       ],
       type: ''
     }
@@ -154,66 +154,6 @@ export default {
   background: rgba(255, 255, 255, 1);
   box-shadow: 0px 2px 6px 0px rgba(184, 184, 184, 0.5);
   border-radius: 5px;
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-.famous_teacher_classroom_title_01 {
-  /* background: url(./img/problemset_c.jpg); */
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-.famous_teacher_classroom_title_02 {
-  background: url(./img/problemset_c++.jpg);
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-.famous_teacher_classroom_title_03 {
-  background: url(./img/problemset_bigdata.jpg);
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-.famous_teacher_classroom_title_04 {
-  background: url(./img/problemset_computer.jpg);
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-.famous_teacher_classroom_title_05 {
-  background: url(./img/problemset_database.jpg);
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-.famous_teacher_classroom_title_06 {
-  background: url(./img/problemset_datastructures.jpg);
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-.famous_teacher_classroom_title_07 {
-  background: url(./img/problemset_graphic.jpg);
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-.famous_teacher_classroom_title_08 {
-  background: url(./img/problemset_java.jpg);
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-.famous_teacher_classroom_title_09 {
-  background: url(./img/problemset_networld.jpg);
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-.famous_teacher_classroom_title_10 {
-  background: url(./img/problemset_python.jpg);
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-.famous_teacher_classroom_title_11 {
-  background: url(./img/problemset_softwareTest.jpg);
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-.famous_teacher_classroom_title_12 {
-  background: url(./img/problemset_os.jpg);
   background-size: cover;
   background-repeat: no-repeat;
 }
