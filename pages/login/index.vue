@@ -89,7 +89,6 @@ export default {
         if (valid) {
           this.login();
         } else {
-          this.$message("操作有误,请重试！！");
           return false;
         }
       });

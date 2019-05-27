@@ -91,7 +91,6 @@ export default {
         if (valid) {
           this.singIn();
         } else {
-          this.$message("操作有误,请重试！！");
           return false;
         }
       });

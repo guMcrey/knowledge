@@ -79,10 +79,13 @@
                   </div>
                 </div>
                 <div class="ques-list-name">
-                  <div class="ques-list-name-head">{{item.username}} <span v-if="item.name">(姓名：{{item.name}})</span></div>
+                  <div class="ques-list-name-head">
+                    {{item.username}}
+                    <span v-if="item.name">(姓名：{{item.name}})</span>
+                  </div>
                   <div class="ques-list-name-info">
                     <div class="ques-list-name-text">性别：{{item.gender}}</div>
-                    <div class="ques-list-name-text">用户积分: {{item.score}}</div>                     
+                    <div class="ques-list-name-text">用户积分: {{item.score}}</div>
                     <div class="ques-list-name-text">手机号：{{item.mobile}}</div>
                     <div class="ques-list-name-text">邮箱: {{item.email}}</div>
                     <div class="ques-list-name-text">生日: {{item.birthday}}</div>
@@ -170,10 +173,13 @@
                   </div>
                 </div>
                 <div class="ques-list-name">
-                  <div class="ques-list-name-head">{{item.username}} <span v-if="item.name">(姓名：{{item.name}})</span></div>
+                  <div class="ques-list-name-head">
+                    {{item.username}}
+                    <span v-if="item.name">(姓名：{{item.name}})</span>
+                  </div>
                   <div class="ques-list-name-info">
                     <div class="ques-list-name-text">性别：{{item.gender}}</div>
-                    <div class="ques-list-name-text" v-if="item.score">用户积分: {{item.score}}</div>                     
+                    <div class="ques-list-name-text" v-if="item.score">用户积分: {{item.score}}</div>
                     <div class="ques-list-name-text" v-if="item.mobile">手机号：{{item.mobile}}</div>
                     <div class="ques-list-name-text" v-if="item.email">邮箱: {{item.email}}</div>
                     <div class="ques-list-name-text" v-if="item.birthday">生日: {{item.birthday}}</div>
@@ -196,7 +202,7 @@ import { apiUserDetail, apiHonorsList } from "~/servers/api/user";
 export default {
   data() {
     return {
-      userType: '',
+      userType: "",
       teacherList: [],
       studentList: []
     };
@@ -213,7 +219,7 @@ export default {
       this.userType = user.type;
       const student = await apiHonorsList(this.userType, "get");
       this.teacherList = student.results;
-      this.studentList = student.results
+      this.studentList = student.results;
     }
   },
   components: {

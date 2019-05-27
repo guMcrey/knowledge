@@ -36,7 +36,7 @@
                       <span>我来答</span>
                     </a>
                   </div>
-                  <div class="vice-reply" @click="showReplyFlag()">
+                  <div class="vice-reply" @click="showReplyFlag()" v-if="informationList[index].answers.length>0">
                     <a class="MydaBut2">
                       <i>查</i>
                       <span>我要看</span>
@@ -64,9 +64,9 @@
                     </div>
                   </div>
                   <div class="click-reply" v-if="showReplyNow">
-                      <textarea class="reply-input" placeholder="请输入你的观点..."></textarea>
-                      <div class="reply-button">发送</div>
-                    </div>
+                    <textarea class="reply-input" placeholder="请输入你的观点..."></textarea>
+                    <div class="reply-button">发送</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -120,19 +120,19 @@ export default {
       answerContent: "", // 回复内容
       information_id: "", // 邀约信息id
       showReplyList: false, // 展示评论
-      userScore: '', // 用户积分
-      created_time: '' // 发布时间
+      userScore: "", // 用户积分
+      created_time: "" // 发布时间
     };
   },
   mounted() {
     this.getInformation();
-    this.userInfo()
+    this.userInfo();
   },
   methods: {
     // 获取用户信息
     async userInfo() {
-      const data = await apiUserDetail('get')
-      this.userScore = data.score
+      const data = await apiUserDetail("get");
+      this.userScore = data.score;
     },
     // 获取邀约讲解列表
     async getInformation() {
@@ -144,7 +144,7 @@ export default {
       this.score = this.informationList.forEach(res => {
         res.score = rewardMap[res.score];
         res.type = typeMap[res.type];
-        this.created_time = formatDate.unixToTime(res.created_time)
+        this.created_time = formatDate.unixToTime(res.created_time);
         return res.score, res.type, this.created_time;
       });
     },
@@ -159,26 +159,34 @@ export default {
     },
     // 显示回复列表
     showReplyFlag() {
-      this.showReplyList = !this.showReplyList
+      this.showReplyList = !this.showReplyList;
     },
     // 创建邀约
     async createAnswer(item) {
-      const userInfo = await apiUserDetail("get");
-      const owner = userInfo.id;
-      const data = await apiCreateAnswer(
-        owner,
-        item.id,
-        this.answerContent,
-        null,
-        null
-      );
-      this.getInformation();
-      this.showCreate = false;
-      this.$notify({
-        title: "成功",
-        message: "添加回答成功~",
-        type: "success"
-      });
+      if (this.answerContent === "") {
+        this.$notify({
+          title: "提示",
+          message: "回复内容不能为空哦~",
+          type: "warning"
+        });
+      } else {
+        const userInfo = await apiUserDetail("get");
+        const owner = userInfo.id;
+        const data = await apiCreateAnswer(
+          owner,
+          item.id,
+          this.answerContent,
+          null,
+          null
+        );
+        this.getInformation();
+        this.showCreate = false;
+        this.$notify({
+          title: "成功",
+          message: "添加回答成功~",
+          type: "success"
+        });
+      }
     }
   },
   components: {
@@ -212,6 +220,7 @@ a {
   /* width: 30%; */
   height: 42px;
   margin: 20px;
+  padding-right: 63px;
 }
 .vice-reply {
   /* width: 30%; */
@@ -237,6 +246,7 @@ a {
   border-radius: 4px;
   cursor: pointer;
   margin-right: 67px;
+  margin-left: -60px;
 }
 .MydaBut2 i {
   /* display: block; */
@@ -456,7 +466,6 @@ a {
   color: #333;
   background: #fff;
   width: 706px;
-  height: 30px;
   margin-top: 13px;
   line-height: 30px;
   padding-left: 20px;

@@ -260,7 +260,7 @@ export default {
         );
         this.$notify({
           title: "成功",
-          message: "添加笔记成功,您可到个人详情页查看~",
+          message: "添加笔记成功,笔记记录可点击添加笔记按钮查看~",
           type: "success"
         });
         this.createNode = false;
@@ -613,7 +613,7 @@ export default {
   margin: 30px 50px 20px 0;
   background: #f5f5f5;
   padding: 10px;
-  width: 900px;
+  width: 970px;
 }
 .content2 {
   overflow: hidden;
@@ -623,7 +623,7 @@ export default {
   background: #f5f5f5;
   padding: 10px;
   margin-top: 30px;
-  width: 899px;
+  width: 970px;
   height: 120px;
   color: #333;
   border-radius: 4px;
@@ -633,7 +633,7 @@ export default {
   // text-align: right;
   // margin-right: 50px;
   margin-top: 20px;
-  margin-left: 770px;
+  margin-left: 870px;
   background-color: #007fff;
   width: 85px;
   height: 30px;
@@ -643,7 +643,7 @@ export default {
   font-size: 16px;
 }
 .integral {
-  width: 280px;
+  width: 310px;
   display: flex;
   justify-content: space-between;
   margin-top: 30px;

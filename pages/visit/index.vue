@@ -44,7 +44,7 @@
                 <div class="AnswerQuantity">
                   <span>
                     共
-                     <em>{{item.answers.length}}</em>个回答
+                    <em>{{item.answers.length}}</em>个回答
                   </span>
                 </div>
                 <div class="AnswerItemList" v-for="(sitem, index) in item.answers" :key="index">
@@ -93,7 +93,7 @@
                       <b>43</b>条数据
                     </li>
                   </ul>
-                </div> -->
+            </div>-->
           </div>
         </div>
       </div>
@@ -104,7 +104,11 @@
 <script>
 import SdHeader from "~/components/navBar";
 import PageFooter from "~/components/pageFooter";
-import { apiCheckInfo, apiCreateAnswer, apiNomalBehavior } from "~/servers/api/discuss";
+import {
+  apiCheckInfo,
+  apiCreateAnswer,
+  apiNomalBehavior
+} from "~/servers/api/discuss";
 import { apiUserDetail } from "~/servers/api/user";
 
 const scoreMap = {
@@ -134,24 +138,37 @@ export default {
     async getQuestionInfo() {
       const data = await apiCheckInfo(this.question_id, "get");
       this.questionContent = data.results;
-      console.log('otherAnswerList', this.otherAnswerList)
+      console.log("otherAnswerList", this.otherAnswerList);
       this.score = this.questionContent.forEach(res => {
         res.score = scoreMap[res.score];
       });
     },
     // 创建问题回答
     async createAnswer() {
-      const userInfo = await apiUserDetail("get");
-      this.owner = userInfo.id;
-      const data = await apiCreateAnswer(
-        this.owner,
-        this.question_id,
-        this.content,
-        this.created_time,
-        this.updated_time
-      );
-      this.getQuestionInfo()
-      console.log('chuangjianwenti', data)
+      if (this.content === "") {
+        this.$notify({
+          title: "提示",
+          message: "您还没有输入内容哦~",
+          type: "warning"
+        });
+      } else {
+        const userInfo = await apiUserDetail("get");
+        this.owner = userInfo.id;
+        const data = await apiCreateAnswer(
+          this.owner,
+          this.question_id,
+          this.content,
+          this.created_time,
+          this.updated_time
+        );
+        this.$notify({
+          title: "成功",
+          message: "添加回复成功",
+          type: "success"
+        });
+        this.content = "";
+        this.getQuestionInfo();
+      }
     }
   },
   components: {
@@ -184,6 +201,7 @@ export default {
   margin: 0px auto;
   background: #fff;
   padding: 40px;
+  min-height: 71vh;
 }
 .ask_main .amLeft h2 {
   display: block;

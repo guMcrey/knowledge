@@ -5,21 +5,21 @@
       <div class="wrap">
         <!-- 创建预约只对小老师开放 -->
         <el-card v-if="typeUser == 1">
-          <el-form ref="form" label-width="100px">
-            <el-form-item label="预约标题：" prop>
+          <el-form :model="addDetail" ref="addDetail" label-width="100px" :rules="rules">
+            <el-form-item label="预约标题：" prop="title">
               <el-input type="text" v-model="addDetail.title" placeholder="请输入预约标题"></el-input>
             </el-form-item>
-            <el-form-item label="发布人：" prop>
+            <el-form-item label="发布人：" prop="content">
               <el-input type="text" v-model="addDetail.content" placeholder="请输入教师/小老师姓名"></el-input>
             </el-form-item>
-            <el-form-item label="上课房间：">
+            <el-form-item label="上课房间：" prop="room">
               <el-input type="text" v-model="addDetail.room" placeholder="请输入上课教室"></el-input>
             </el-form-item>
-            <el-form-item label="积分：" prop>
+            <el-form-item label="积分：" prop="score">
               <el-input type="text" v-model="addDetail.score" placeholder="请输入奖励积分"></el-input>
             </el-form-item>
-            <el-form-item prop label="预约科目：">
-              <el-select class="inputStyle" placeholder="请输入预约科目" v-model="addDetail.item">
+            <el-form-item label="预约科目：" prop="item">
+              <el-select class="inputStyle" placeholder="请选择预约科目" v-model="addDetail.item">
                 <el-option
                   v-for="item in subjectOptions"
                   :key="item.id"
@@ -28,14 +28,14 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="开始时间：" prop>
+            <el-form-item label="开始时间：" prop="interview_time">
               <el-date-picker v-model="addDetail.interview_time" type="date" placeholder="选择开始时间"></el-date-picker>
             </el-form-item>
-            <el-form-item label="结束时间：" prop>
+            <el-form-item label="结束时间：" prop="end_time">
               <el-date-picker v-model="addDetail.end_time" type="date" placeholder="选择结束时间"></el-date-picker>
             </el-form-item>
           </el-form>
-          <el-button type="primary" @click="adddetail">创建预约</el-button>
+          <el-button type="primary" @click="adddetail('addDetail')">创建预约</el-button>
         </el-card>
         <el-card>
           <el-table :data="newsList" style="width: 100%">
@@ -45,9 +45,9 @@
             <el-table-column prop="score" label="积分" width="100"></el-table-column>
             <el-table-column prop="created_time" label="开始时间"></el-table-column>
             <el-table-column prop="end_time" label="更新时间"></el-table-column>
-            <el-table-column prop="status" label="状态" width="100">{{statusName}}</el-table-column>
+            <el-table-column prop="statusStr" label="状态" width="100"></el-table-column>
             <!-- 只对学生开放点击预约按钮 -->
-            <el-table-column label="操作" v-if="typeUser== 1">
+            <el-table-column label="操作" v-if="typeUser== 0">
               <template slot-scope="scope">
                 <el-button size="mini" type="danger" @click="commitInvite(scope.row)">点击预约</el-button>
               </template>
@@ -100,7 +100,22 @@ export default {
       loading: false,
       statusName: "",
       typeUser: "", // 用户身份
-      subjectOptions: [] // 课程列表
+      subjectOptions: [], // 课程列表
+      rules: {
+        title: [{ required: true, message: "请输入课程标题", trigger: "blur" }],
+        content: [
+          { required: true, message: "请输入教师/小老师姓名", trigger: "blur" }
+        ],
+        room: [{ required: true, message: "请输入上课教室", trigger: "blur" }],
+        score: [{ required: true, message: "请输入奖励积分", trigger: "blur" }],
+        item: [{ required: true, message: "请选择预约科目", trigger: "blur" }],
+        interview_time: [
+          { required: true, message: "请输入课程开始时间", trigger: "blur" }
+        ],
+        end_time: [
+          { required: true, message: "请输入课程结束时间", trigger: "blur" }
+        ]
+      }
     };
   },
   created() {
@@ -122,12 +137,20 @@ export default {
       const inviteList = await apiGetInvite("get");
       this.newsList = inviteList.results;
       this.newsList.map(val => {
-        this.statusName = statusMap[val.status];
+        val.statusStr = statusMap[val.status];
       });
     },
-    // 创建预约列表
-    async adddetail(item) {
-      //这里的思路应该是把this.addDetail传给服务端，然后加载列表this.newsList
+    // 创建预约列表校验
+    adddetail(item) {
+      this.$refs[item].validate(val => {
+        if (val) {
+          this.createCourse();
+        } else {
+          return false;
+        }
+      });
+    },
+    async createCourse() {
       const {
         title,
         content,
@@ -144,7 +167,24 @@ export default {
         interview_time,
         end_time
       );
-      this.inviteList();
+      this.$notify({
+        title: "创建成功",
+        message: "创建课程成功~",
+        type: "success"
+      });
+      // 清空输入
+      (this.addDetail = {
+        title: "",
+        content: "",
+        status: "",
+        room: "",
+        score: "",
+        item: null,
+        interview_time: "",
+        end_time: ""
+      }),
+        // 刷新列表
+        this.inviteList();
     },
     // 点击预约
     async commitInvite(item) {
@@ -168,7 +208,11 @@ export default {
         interview_time,
         end_time
       );
-      this.$message("预约成功！记录信息请到个人详情页查看~");
+      this.$notify({
+        title: "成功",
+        message: "预约成功，具体详情请到个人中心查看~",
+        type: "success"
+      });
       this.inviteList();
     },
     // 获取科目选项列表

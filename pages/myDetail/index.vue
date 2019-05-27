@@ -39,7 +39,15 @@
         <div class="tab-content">
           <!-- 我的讨论区发布 -->
           <div v-if="cur==8" class="rechangePaw">
-            <el-table :data="discussData" style="width: 100%" :row-class-name="tableRowClassName">
+            <el-breadcrumb separator-class="el-icon-arrow-right">
+              <el-breadcrumb-item>个人详情页</el-breadcrumb-item>
+              <el-breadcrumb-item>我的讨论区发布</el-breadcrumb-item>
+            </el-breadcrumb>
+            <el-table
+              :data="discussData"
+              style="width: 100%;margin-top: 30px"
+              :row-class-name="tableRowClassName"
+            >
               <el-table-column prop="title" label="标题" width="180"></el-table-column>
               <el-table-column prop="score" label="积分" width="180"></el-table-column>
               <el-table-column prop="created_time" label="创建时间"></el-table-column>
@@ -197,7 +205,7 @@
                   ></el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item prop="subject">
+              <!-- <el-form-item prop="subject">
                 <span class="labelStyle">科目：</span>
                 <el-select
                   class="inputStyle"
@@ -211,7 +219,7 @@
                     :value="item.value"
                   ></el-option>
                 </el-select>
-              </el-form-item>
+              </el-form-item>-->
               <el-form-item prop="desc">
                 <span class="labelStyle desc">自我评价：</span>
                 <el-input
@@ -235,7 +243,15 @@
 
           <!-- 我的评价 -->
           <div v-if="cur==4" class="rechangePaw">
-            <el-table :data="commitData" style="width: 100%" :row-class-name="tableRowClassName">
+            <el-breadcrumb separator-class="el-icon-arrow-right">
+              <el-breadcrumb-item>个人详情页</el-breadcrumb-item>
+              <el-breadcrumb-item>我的评价</el-breadcrumb-item>
+            </el-breadcrumb>
+            <el-table
+              :data="commitData"
+              style="width: 100%; margin-top: 30px;"
+              :row-class-name="tableRowClassName"
+            >
               <el-table-column prop="course_name" label="课程标题"></el-table-column>
               <el-table-column prop="username" label="用户昵称"></el-table-column>
               <el-table-column prop="content" label="评价内容"></el-table-column>
@@ -244,7 +260,15 @@
           </div>
           <!-- 我发布的课程 -->
           <div v-if="cur==3" class="rechangePaw">
-            <el-table :data="courseData" style="width: 100%" :row-class-name="tableRowClassName">
+            <el-breadcrumb separator-class="el-icon-arrow-right">
+              <el-breadcrumb-item>个人详情页</el-breadcrumb-item>
+              <el-breadcrumb-item>我发布的课程</el-breadcrumb-item>
+            </el-breadcrumb>
+            <el-table
+              :data="courseData"
+              style="width: 100%; margin-top:30px"
+              :row-class-name="tableRowClassName"
+            >
               <el-table-column prop="title" label="标题"></el-table-column>
               <el-table-column prop="type_name" label="课程类别"></el-table-column>
               <el-table-column prop="room" label="上课房间"></el-table-column>
@@ -261,14 +285,28 @@
           </div>
           <!-- 我的课程 -->
           <div v-if="cur==2" class="rechangePaw">
-            <el-table :data="courseData2" style="width: 100%" :row-class-name="tableRowClassName">
+            <el-breadcrumb separator-class="el-icon-arrow-right">
+              <el-breadcrumb-item>个人详情页</el-breadcrumb-item>
+              <el-breadcrumb-item>我的课程</el-breadcrumb-item>
+            </el-breadcrumb>
+            <el-table
+              :data="courseData2"
+              style="width: 100%; margin-top: 30px"
+              :row-class-name="tableRowClassName"
+            >
               <el-table-column prop="teacher_name" label="教师姓名" width="180"></el-table-column>
               <el-table-column prop="room" label="上课房间" width="180"></el-table-column>
-              <el-table-column prop="status" label="课程状态" width="180">{{statusMap}}</el-table-column>
+              <el-table-column prop="statusStr" label="课程状态" width="180"></el-table-column>
               <el-table-column label="操作">
                 <template slot-scope="scope">
-                  <el-button size="mini" type="primary" @click="completeCourse(scope.row)">完成</el-button>
-                  <el-input type="text" v-model="scope.row.commitText" placeholder="请输入评价~" @blur="createCommit(scope.row)"></el-input>
+                  <el-input
+                    v-if="scope.row.courseFlag"
+                    type="text"
+                    v-model="scope.row.commitText"
+                    placeholder="请输入评价~"
+                    @blur="createCommit(scope.row)"
+                  ></el-input>
+                  <el-button v-else size="mini" type="primary" @click="completeCourse(scope.row)">完成</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -276,7 +314,15 @@
 
           <!-- 我的预约 -->
           <div v-if="cur==1" class="rechangePaw">
-            <el-table :data="inviteList" style="width: 100%" :row-class-name="tableRowClassName">
+            <el-breadcrumb separator-class="el-icon-arrow-right">
+              <el-breadcrumb-item>个人详情页</el-breadcrumb-item>
+              <el-breadcrumb-item>我的预约</el-breadcrumb-item>
+            </el-breadcrumb>
+            <el-table
+              :data="inviteList"
+              style="width: 100%; margin-top:30px;"
+              :row-class-name="tableRowClassName"
+            >
               <el-table-column prop="teacher_name" label="教师姓名" width="180"></el-table-column>
               <el-table-column prop="room" label="上课房间"></el-table-column>
               <el-table-column prop="status" label="课程状态"></el-table-column>
@@ -290,7 +336,15 @@
 
           <!-- 我的试卷 -->
           <div v-if="cur==0" class="rechangePaw">
-            <el-table :data="paperList" style="width: 100%" :row-class-name="tableRowClassName">
+            <el-breadcrumb separator-class="el-icon-arrow-right">
+              <el-breadcrumb-item>个人详情页</el-breadcrumb-item>
+              <el-breadcrumb-item>我的试卷</el-breadcrumb-item>
+            </el-breadcrumb>
+            <el-table
+              :data="paperList"
+              style="width: 100%;margin-top:20px"
+              :row-class-name="tableRowClassName"
+            >
               <el-table-column prop="title" label="试卷标题" width="500px"></el-table-column>
               <el-table-column prop="score" label="积分"></el-table-column>
               <el-table-column prop="is_correct" label="是否回答正确"></el-table-column>
@@ -326,6 +380,7 @@ import {
   apiCreateCommit
 } from "~/servers/api/user";
 import { format } from "path";
+import { getCookie, setCookie } from "~/assets/js/cookie.js";
 
 // 试卷答案
 const answerMap = {
@@ -450,7 +505,7 @@ export default {
       // 我的预约
       inviteList: [],
       // 评论
-      commitText: '',
+      commitText: "",
       rules: {
         password: [
           { required: true, message: "请输入旧密码", trigger: "blur" }
@@ -468,7 +523,6 @@ export default {
           { validator: emailValidator, trigger: "blur" }
         ],
         major: [{ required: true, message: "请选择院系", trigger: "blur" }],
-        subject: [{ required: true, message: "请选择院系", trigger: "blur" }],
         birthday: [{ required: true, message: "请选择生日", trigger: "blur" }]
       }
     };
@@ -494,6 +548,9 @@ export default {
       // 对学生隐藏“申请小老师”入口
       return this.tabTitle.filter(item => {
         if (this.userType === 0 && item.id === 4) {
+          this.tabTitle.splice(item.id, 1);
+        }
+        if (this.userType === 0 && item.id === 2) {
           this.tabTitle.splice(item.id, 1);
         }
         return item;
@@ -552,6 +609,8 @@ export default {
             message: "修改密码成功，请重新登录！",
             type: "success"
           });
+          const hasToken = getCookie("token");
+          setCookie("token", "", 0);
           this.$router.push("/login");
         } else {
           return false;
@@ -602,11 +661,6 @@ export default {
             type: "success"
           });
         } else {
-          this.$notify({
-            title: "更新失败",
-            message: "操作有误，请重新输入！",
-            type: "success"
-          });
           return false;
         }
       });
@@ -676,13 +730,12 @@ export default {
     async myCommitList() {
       // 暂无数据
       const data = await apiCommitList("get");
-      this.commitData = data.results
+      this.commitData = data.results;
     },
     // 我发布的课程
     async reportCourse() {
       const data = await apiReportCourse("get");
       this.courseData = data.results;
-      console.log("data", data);
     },
     // 我发布的课程删除
     async deleteCourse(id) {
@@ -693,18 +746,46 @@ export default {
     async myCourseList() {
       const course = await apiCourseList("get");
       this.courseData2 = course.results;
-      // this.courseData2.map(val => {
-      //   val.status = statusMap[val.status];
-      // });
+      this.courseData2.map(val => {
+        val.statusStr = statusMap[val.status];
+        val.courseFlag = false;
+        return val;
+      });
+      console.log("0000000000000", this.courseData2);
     },
     // 我的课程--完成
     async completeCourse(id) {
-      const data = await apiCompleteCourse(id.course_id,"put");
-      this.myCourseList()
+      const data = await apiCompleteCourse(id.course_id, "put");
+      id.courseFlag = true;
+      this.$set(this.courseData2, "courseFlag", true);
+      console.log("courseData2", this.courseData2);
+      console.log("courseFlag", id.courseFlag);
+      // this.myCourseList();
     },
     // 我的课程--评价
     async createCommit(id) {
-      const data = await apiCreateCommit(id.id, id.course_id, id.selector_id, id.teacher_id, 5, id.commitText, id.status)
+      if (id.commitText !== "") {
+        const data = await apiCreateCommit(
+          id.id,
+          id.course_id,
+          id.selector_id,
+          id.teacher_id,
+          5,
+          id.commitText,
+          id.status
+        );
+        this.$notify({
+          title: "成功",
+          message: "评论成功，已将您的反馈发送给老师~",
+          type: "success"
+        });
+      } else {
+        this.$notify({
+          title: "失败",
+          message: "评论内容不能为空哦~",
+          type: "error"
+        });
+      }
     },
     // 我的预约
     async myInvite() {
@@ -718,6 +799,11 @@ export default {
     async cancelCourse(id) {
       this.order_id = id.id;
       const cancel = await apiCancelCourse(id.course_id, id.id, "put");
+      this.$notify({
+        title: "成功",
+        message: "取消预约成功，课程状态已失效",
+        type: "success"
+      });
       this.myInvite();
     }
   },
