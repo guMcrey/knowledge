@@ -77,7 +77,6 @@ export default {
         message: "登录成功，欢迎访问知学平台~",
         type: "success"
       });
-      // this.$message("登录成功，欢迎访问知学平台~");
     },
     async userInfo() {
       const userInfo = await apiUserDetail("get");

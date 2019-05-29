@@ -40,7 +40,7 @@ export const apiCreateInvite = (type, owner, score, content, question_id, create
 /**
  * @desc 信息广场列表
  */
-export const apiInformationList = (method) => request('/list/informations/', {}, { method })
+export const apiInformationList = (limit, offset, method) => request('/list/informations/', { limit, offset }, { method })
 
 /**
  * @desc 创建邀约回答

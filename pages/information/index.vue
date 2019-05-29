@@ -9,19 +9,19 @@
         <div class="newsCenterPanel_inner">
           <div v-for="(item, index) in informationList" :key="index">
             <div class="newContentBox odd" @click="openInfo(item)">
-              <a hidefocus="true" href="#">
+              <div hidefocus="true" href="#">
                 <div class="time">
                   <p class="day">{{item.type}}</p>
                 </div>
                 <div class="bigTitle">
                   <div class="newTitle">{{item.content}}</div>
-                  <div class="ym">{{item.username}} 发布于：{{created_time}}</div>
+                  <div class="ym">{{item.username}} 发布于：{{item.created_time}}</div>
                   <div class="reward">悬赏积分：{{item.score}}</div>
                 </div>
                 <div class="newTitleIcon"></div>
                 <div class="border"></div>
                 <div class="newContent">{{item.question.title}}</div>
-              </a>
+              </div>
             </div>
             <div class="openContent" v-if="item.checkFlag">
               <div class="content-text">
@@ -36,7 +36,11 @@
                       <span>我来答</span>
                     </a>
                   </div>
-                  <div class="vice-reply" @click="showReplyFlag()" v-if="informationList[index].answers.length>0">
+                  <div
+                    class="vice-reply"
+                    @click="showReplyFlag()"
+                    v-if="informationList[index].answers.length>0"
+                  >
                     <a class="MydaBut2">
                       <i>查</i>
                       <span>我要看</span>
@@ -72,6 +76,14 @@
             </div>
           </div>
         </div>
+        <el-pagination
+          @current-change="getInformation"
+          :current-page.sync="pagination.current"
+          :page-size="pagination.pageSize"
+          layout="total, prev, pager, next"
+          :total="pagination.total"
+          class="pagination-content"
+        ></el-pagination>
       </div>
     </div>
     <page-footer></page-footer>
@@ -121,7 +133,14 @@ export default {
       information_id: "", // 邀约信息id
       showReplyList: false, // 展示评论
       userScore: "", // 用户积分
-      created_time: "" // 发布时间
+      created_time: "", // 发布时间
+      // 分页
+      pagination: {
+        current: 1,
+        total: 0,
+        pageSize: 10
+      },
+      nextList: ""
     };
   },
   mounted() {
@@ -136,15 +155,21 @@ export default {
     },
     // 获取邀约讲解列表
     async getInformation() {
-      const data = await apiInformationList("get");
-      this.informationList = data.results;
+      const data = await apiInformationList(
+        this.pagination.pageSize,
+        Math.pow(this.pagination.pageSize, this.pagination.current - 1),
+        "get"
+      );
+      this.informationList = data.results.reverse();
+      this.pagination.total = data.count;
+      this.nextList = data.next;
       this.informationList.forEach(res => {
         this.$set(res, "checkFlag", false);
       });
       this.score = this.informationList.forEach(res => {
         res.score = rewardMap[res.score];
         res.type = typeMap[res.type];
-        this.created_time = formatDate.unixToTime(res.created_time);
+        res.created_time = formatDate.unixToTime(res.created_time);
         return res.score, res.type, this.created_time;
       });
     },
@@ -210,6 +235,11 @@ ul {
 }
 a {
   text-decoration: none;
+}
+.pagination-content {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
 }
 .vice {
   display: flex;

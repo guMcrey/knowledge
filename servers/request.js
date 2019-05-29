@@ -29,9 +29,9 @@ service.interceptors.request.use(function (config) {
 });
 // 输出方法
 export default function request(url, data = {}, options) {
-    console.log('url', url)
-    console.log('data', data)
-    console.log('options', options)
+    // console.log('url', url)
+    // console.log('data', data)
+    // console.log('options', options)
     const defaultOptions = { //默认参数
         method: "post",//请求方式
         hidetoast: false    // 默认参数不隐藏toast
@@ -62,7 +62,7 @@ export default function request(url, data = {}, options) {
                 //         return
                 //     }
                 // }
-                if (res.data === "Invalid Authorization header. No credentials provided.") {
+                if (res.detail === "Invalid Authorization header. No credentials provided.") {
                     // 强制登出
                     if (process.browser) {
                         // Vue.prototype.$toast.error({
@@ -70,6 +70,7 @@ export default function request(url, data = {}, options) {
                         //     message: res.data.tooltip || res.data.retInfo
                         // })
                         setCookie('token', '', 0)
+                        window.location.href = './login'
                         // Vue.prototype.$loginRegister.show()
                         return
                     }

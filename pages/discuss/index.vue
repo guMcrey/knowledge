@@ -2,40 +2,56 @@
   <div>
     <sd-header :activeTab="4"></sd-header>
     <div class="root">
-      <div class="ask-top">
-        <div class="ask-button" @click="askQuestion()">我有问题，我要提问！</div>
-      </div>
-      <div class="ask_main" @click="viewDetail(item.id)" v-for="(item,index) in questionList" :key="index">
-        <div class="amIn" v-loading="loading">
-          <div class="AskItemList">
-            <div class="top">
-              <div class="info">
-                <span style="color:#666;">{{item.updated_time}}&nbsp;</span>
-                <span>来自&nbsp;</span>
-                <a href class="uname">{{item.owner}}</a>
-                <span>&nbsp;的提问</span>
-                <a class="title">{{item.title}}</a>
+      <div>
+        <div class="ask-top">
+          <div class="ask-button" @click="askQuestion()">我有问题，我要提问！</div>
+        </div>
+        <div
+          class="ask_main"
+          @click="viewDetail(item.id)"
+          v-for="(item,index) in questionList"
+          :key="index"
+        >
+          <div class="amIn" v-loading="loading">
+            <div class="AskItemList">
+              <div class="top">
+                <div class="info">
+                  <span style="color:#666;">{{item.updated_time}}&nbsp;</span>
+                  <span>来自&nbsp;</span>
+                  <a href class="uname">{{item.owner}}</a>
+                  <span>&nbsp;的提问</span>
+                  <a class="title">{{item.title}}</a>
+                </div>
+                <div class="da">
+                  <span>
+                    <em>{{item.answers.length}}</em>
+                    <dl>已有回答</dl>
+                  </span>
+                </div>
               </div>
-              <div class="da">
-                <span>
-                  <em>{{item.answers.length}}</em>
-                  <dl>已有回答</dl>
-                </span>
+              <div class="desc">{{item.content}}</div>
+              <div class="tags">
+                <a href>{{item.type}}</a>
+                <div class="Appreciation">
+                  <i></i>
+                  <span>{{item.score}}</span>
+                </div>
+                <div class="share_bar_con"></div>
               </div>
-            </div>
-            <div class="desc">{{item.content}}</div>
-            <div class="tags">
-              <a href>{{item.type}}</a>
-              <div class="Appreciation">
-                <i></i>
-                <span>{{item.score}}</span>
-              </div>
-              <div class="share_bar_con"></div>
             </div>
           </div>
         </div>
+        <el-pagination
+          @current-change="getInformation"
+          :current-page.sync="pagination.current"
+          :page-size="pagination.pageSize"
+          layout="total, prev, pager, next"
+          :total="pagination.total"
+          class="pagination-content"
+        ></el-pagination>
       </div>
     </div>
+
     <page-footer class="heigh"></page-footer>
   </div>
 </template>
@@ -49,8 +65,8 @@ const scoreMap = {
   1: "5分",
   2: "10分",
   3: "15分",
-  4: "20分",
-}
+  4: "20分"
+};
 //问题类型
 const typeMap = {
   1: "社会民生",
@@ -66,9 +82,13 @@ const typeMap = {
 export default {
   data() {
     return {
-      type: '', // 问题列表
+      type: "", // 问题列表
       questionList: [], // 问题列表
-      loading: false
+      pagination: {
+        current: 1,
+        total: 0,
+        pageSize: 10
+      }
     };
   },
   created() {
@@ -77,15 +97,15 @@ export default {
   methods: {
     async getQuestionList() {
       // 获取个人详情
-      const userInfo = await apiUserDetail("get")
+      const userInfo = await apiUserDetail("get");
       // 获取问题列表
       const data = await apiGetQuestionList("get");
       this.questionList = data.results;
       this.type = this.questionList.forEach(res => {
-         res.type = typeMap[res.type]
-         res.score = scoreMap[res.score]
-         return res.type, res.score
-      })
+        res.type = typeMap[res.type];
+        res.score = scoreMap[res.score];
+        return res.type, res.score;
+      });
     },
     // 点击问题列表查看详情
     viewDetail(item) {
@@ -102,6 +122,12 @@ export default {
 };
 </script>
 <style scoped>
+.pagination-content {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
 .root {
   background: #f5f5f5;
   min-height: 100vh;

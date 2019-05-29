@@ -171,19 +171,15 @@ export default {
         );
         this.itemDetail = data.results;
       } else if (this.tab[this.cur].exam === "顺序答题（选择题）") {
-        const data = await apiSelectQuestion(
-          this.$route.query.type,
-          "get"
-        );
+        const data = await apiSelectQuestion(this.$route.query.type, "get");
         this.itemDetail = data.results;
-        
       } else {
         const data = await apiContentQuestion(this.$route.query.type, "get");
         this.itemDetail = data.results;
       }
       window.location.href = `/exercise/item/?type=${
-          this.$route.query.type
-        }&exam=${this.tab[this.cur].exam}`;
+        this.$route.query.type
+      }&exam=${this.tab[this.cur].exam}`;
     },
     //点击下一题
     nextItem() {
