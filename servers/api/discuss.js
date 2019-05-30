@@ -13,7 +13,7 @@ export const apiCreateQuestion = (title, content, score, type) => request("/crea
 /**
 * @desc 获取讨论区问题列表
 */
-export const apiGetQuestionList = (method) => request('list/normal/questions/', {}, { method })
+export const apiGetQuestionList = (limit, offset, method) => request('list/normal/questions/', { limit, offset }, { method })
 
 /**
 * @desc 查看问题详情

@@ -12,7 +12,7 @@
           v-for="(item,index) in questionList"
           :key="index"
         >
-          <div class="amIn" v-loading="loading">
+          <div class="amIn">
             <div class="AskItemList">
               <div class="top">
                 <div class="info">
@@ -42,7 +42,7 @@
           </div>
         </div>
         <el-pagination
-          @current-change="getInformation"
+          @current-change="getQuestionList"
           :current-page.sync="pagination.current"
           :page-size="pagination.pageSize"
           layout="total, prev, pager, next"
@@ -99,8 +99,13 @@ export default {
       // 获取个人详情
       const userInfo = await apiUserDetail("get");
       // 获取问题列表
-      const data = await apiGetQuestionList("get");
+      const data = await apiGetQuestionList(
+        this.pagination.pageSize,
+        this.pagination.pageSize * (this.pagination.current - 1),
+        "get"
+      );
       this.questionList = data.results;
+      this.pagination.total = data.count;
       this.type = this.questionList.forEach(res => {
         res.type = typeMap[res.type];
         res.score = scoreMap[res.score];

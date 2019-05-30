@@ -70,7 +70,7 @@ export default {
       const { username, password } = this.form;
       const data = await apiLogin(username, password);
       console.log("token", data.token);
-      setCookie("token", data.token, 86400000);
+      setCookie("token", data.token, 21600000);
       this.$router.push("/");
       this.$notify({
         title: "成功",

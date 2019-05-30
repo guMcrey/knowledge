@@ -53,6 +53,14 @@
               </template>
             </el-table-column>
           </el-table>
+          <el-pagination
+            @current-change="inviteList"
+            :current-page.sync="pagination.current"
+            :page-size="pagination.pageSize"
+            layout="total, prev, pager, next"
+            :total="pagination.total"
+            class="pagination-content"
+          ></el-pagination>
         </el-card>
       </div>
     </div>
@@ -115,6 +123,11 @@ export default {
         end_time: [
           { required: true, message: "请输入课程结束时间", trigger: "blur" }
         ]
+      },
+      pagination: {
+        current: 1,
+        total: 0,
+        pageSize: 10
       }
     };
   },
@@ -134,8 +147,13 @@ export default {
     },
     // 获取邀约列表
     async inviteList() {
-      const inviteList = await apiGetInvite("get");
+      const inviteList = await apiGetInvite(
+        this.pagination.pageSize,
+        this.pagination.pageSize * (this.pagination.current - 1),
+        "get"
+      );
       this.newsList = inviteList.results;
+      this.pagination.total = inviteList.count;
       this.newsList.map(val => {
         val.statusStr = statusMap[val.status];
       });
@@ -230,6 +248,11 @@ export default {
 <style scoped>
 * {
   font-size: 15px;
+}
+.pagination-content {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
 }
 .root {
   background: #f5f5f5;

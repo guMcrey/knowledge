@@ -2,10 +2,11 @@ import * as types from './mutation-types'
 import axios from 'axios'
 import { apiUserDetail } from '~/servers/api/user'
 import { apiSelectQuestion } from '../servers/api/questions'
+import Vue from 'vue';
 
 export default {
     // 获取题目列表
-    async getSelectQuestion({commit, state}) {
+    async getSelectQuestion({ commit, state }) {
         const data = await apiSelectQuestion(1, 'get')
         state.itemDetail = data.results
     },
@@ -24,15 +25,15 @@ export default {
         // token存在
         let cookieArr = req.headers.cookie
         let count = cookieArr && cookieArr.indexOf("token=")
-        // console.log("----------------------------------------------------->")
+        console.log("----------------------------------------------------->")
         // console.log(cookieArr)
-        // console.log(count)
-        // console.log(axios.defaults.headers['token'])
+        console.log(count)
+        // console.log('00000', axios.defaults.headers['token'])
         // console.log("<-----------------------------------------------------")
-        axios.defaults.headers['token'] = ""
+        // axios.defaults.headers['token'] = ""
         if (req.headers.cookie && count >= 0) {
             axios.defaults.headers['Authorization'] = `JWT ${(cookieArr.substr(Number(count) + 6)).split(";")[0]}`
-            // console.log('axios.defaults.headers', axios.defaults.headers['token'])
+            console.log('axios.defaults.headers', axios.defaults.headers['Authorization'])
             try {
                 // 请求用户信息
                 let userInfo = await apiUserDetail('get')
@@ -42,7 +43,7 @@ export default {
 
             } catch (error) {
                 commit(types.SET_USER, '')
-                console.log('catch', types.SET_USER)    
+                console.log('catch', types.SET_USER)
             }
         } else {
             commit(types.SET_USER, '')

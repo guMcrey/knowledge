@@ -55,37 +55,58 @@ export default {
         {
           text: "首页",
           path: "/",
-          flag: true
+          meta: {
+            title: "",
+            requireAuth: false
+          }
         },
         {
           text: "项目概况",
           path: "/aboutUs",
-          falg: false
+          meta: {
+            title: "",
+            requireAuth: false
+          }
         },
         {
           text: "题库中心",
           path: "/questoins",
-          flag: false
+          meta: {
+            title: "",
+            requireAuth: true
+          }
         },
         {
           text: "信息广场",
           path: "/information",
-          falg: false
+          meta: {
+            title: "",
+            requireAuth: true
+          }
         },
         {
           text: "讨论区",
           path: "/discuss",
-          flag: false
+          meta: {
+            title: "",
+            requireAuth: true
+          }
         },
         {
           text: "寻师",
           path: "/findTeacher",
-          falg: false
+          meta: {
+            title: "",
+            requireAuth: true
+          }
         },
         {
           text: "荣誉榜",
           path: "/honorsList",
-          falg: false
+          meta: {
+            title: "",
+            requireAuth: true
+          }
         }
       ],
       hasToken: ""
@@ -93,20 +114,24 @@ export default {
   },
   mounted() {
     this.hasToken = getCookie("token");
-    console.log('token', this.hasToken)
+    console.log("token", this.hasToken);
     if (!this.hasToken) {
-      // this.$router.push('/login')
+      this.$notify({
+        title: "提示",
+        message: "账号已过期，请您重新登录~",
+        type: "error"
+      });
     }
   },
   methods: {
     handleCommand(command) {
-      if(command === 'a') {
-        this.$router.push("./myDetail");
+      if (command === "a") {
+        window.location.href = `/myDetail`;
       } else {
         // 清空token
-        this.hasToken = ''
-        setCookie('token', '', 0)
-        this.$router.push('./login')
+        this.hasToken = "";
+        setCookie("token", "", 0);
+        window.location.href = `/login`;
       }
     }
   },

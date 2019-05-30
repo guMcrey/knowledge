@@ -23,7 +23,7 @@ export const apiUserDetail = (method) => request('/user/detail/', {}, { method }
 /**
  * @desc 获取选择题问题操作记录
  */
-export const apiGetSelectRecord = (method) => request('/list/select/operations/', {}, { method })
+export const apiGetSelectRecord = (limit, offset, method) => request('/list/select/operations/', { limit, offset }, { method })
 
 /**
  * @desc 普通问题操作记录列表
@@ -58,34 +58,34 @@ export const apiApplySmallTeacher = (method) => request('/update/user/smt/', {},
 /**
  * @desc 我的讨论区发布
  */
-export const apiMyDiscussList = (method) => request('/list/me/questions/', {}, { method })
+export const apiMyDiscussList = (limit, offset, method) => request('/list/me/questions/', { limit, offset }, { method })
 
 /**
  * @desc 荣誉榜
  */
-export const apiHonorsList = (type, method) => request('/users/detail/', { type }, { method })
+export const apiHonorsList = (limit, offset, type, method) => request('/users/detail/', { limit, offset, type }, { method })
 
 /**
  * @desc 我的评价
  */
-export const apiCommitList = (method) => request('/list/course/feedback/', {}, { method })
+export const apiCommitList = (limit, offset, method) => request('/list/course/feedback/', { limit, offset }, { method })
 
 /**
  * @desc 我发布的课程
  */
-export const apiReportCourse = (method) => request('/list/course/mine', {}, { method })
+export const apiReportCourse = (limit, offset, method) => request('/list/course/mine', { limit, offset }, { method })
 
 /**
  * @desc 我的课程
  * @param {string} teacher_id
  * @param {string} selector_id
  */
-export const apiCourseList = (method) => request('/list/select/student/', {}, { method })
+export const apiCourseList = (limit, offset, method) => request('/list/select/student/', { limit, offset }, { method })
 
 /**
  * @desc 我的预约
  */
-export const apiMyInvite = (method) => request('/list/select/teacher/', {}, { method })
+export const apiMyInvite = (limit, offset, method) => request('/list/select/teacher/', { limit, offset }, { method })
 
 /**
  * @desc 我的课程取消
@@ -112,5 +112,5 @@ export const apiCompleteCourse = (course_id, method) => request('/complete/cours
  * @param {string} score  积分
  * @param {string} content 评价内容
  * @param {string } status 当前课程状态
- */ 
-export const apiCreateCommit = (order_id, course_id, selector_id, teacher_id, score, content, status) => request('/create/course/feedback/', { order_id, course_id, selector_id, teacher_id, score, content, status})
+ */
+export const apiCreateCommit = (order_id, course_id, selector_id, teacher_id, score, content, status) => request('/create/course/feedback/', { order_id, course_id, selector_id, teacher_id, score, content, status })

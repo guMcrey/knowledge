@@ -53,6 +53,14 @@
               <el-table-column prop="created_time" label="创建时间"></el-table-column>
               <el-table-column prop="updated_time" label="更新时间"></el-table-column>
             </el-table>
+            <el-pagination
+              @current-change="discussList"
+              :current-page.sync="pagination.discussCurrent"
+              :page-size="pagination.discussPageSize"
+              layout="total, prev, pager, next"
+              :total="pagination.discussTotal"
+              class="pagination-content"
+            ></el-pagination>
           </div>
 
           <!-- 修改密码 -->
@@ -257,6 +265,14 @@
               <el-table-column prop="content" label="评价内容"></el-table-column>
               <el-table-column prop="score" label="评分"></el-table-column>
             </el-table>
+            <el-pagination
+              @current-change="myCommitList"
+              :current-page.sync="pagination.commitCurrent"
+              :page-size="pagination.commitPageSize"
+              layout="total, prev, pager, next"
+              :total="pagination.commitTotal"
+              class="pagination-content"
+            ></el-pagination>
           </div>
           <!-- 我发布的课程 -->
           <div v-if="cur==3" class="rechangePaw">
@@ -282,6 +298,14 @@
                 </template>
               </el-table-column>
             </el-table>
+            <el-pagination
+              @current-change="reportCourse"
+              :current-page.sync="pagination.reportCurrent"
+              :page-size="pagination.reportPageSize"
+              layout="total, prev, pager, next"
+              :total="pagination.reportTotal"
+              class="pagination-content"
+            ></el-pagination>
           </div>
           <!-- 我的课程 -->
           <div v-if="cur==2" class="rechangePaw">
@@ -310,6 +334,14 @@
                 </template>
               </el-table-column>
             </el-table>
+            <el-pagination
+              @current-change="myCourseList"
+              :current-page.sync="pagination.courseCurrent"
+              :page-size="pagination.coursePageSize"
+              layout="total, prev, pager, next"
+              :total="pagination.courseTotal"
+              class="pagination-content"
+            ></el-pagination>
           </div>
 
           <!-- 我的预约 -->
@@ -332,6 +364,14 @@
                 </template>
               </el-table-column>
             </el-table>
+            <el-pagination
+              @current-change="myInvite"
+              :current-page.sync="pagination.inviteCurrent"
+              :page-size="pagination.invitePageSize"
+              layout="total, prev, pager, next"
+              :total="pagination.inviteTotal"
+              class="pagination-content"
+            ></el-pagination>
           </div>
 
           <!-- 我的试卷 -->
@@ -349,6 +389,14 @@
               <el-table-column prop="score" label="积分"></el-table-column>
               <el-table-column prop="is_correct" label="是否回答正确"></el-table-column>
             </el-table>
+            <el-pagination
+              @current-change="selectQuesiotn"
+              :current-page.sync="pagination.current"
+              :page-size="pagination.pageSize"
+              layout="total, prev, pager, next"
+              :total="pagination.total"
+              class="pagination-content"
+            ></el-pagination>
           </div>
         </div>
       </div>
@@ -524,6 +572,26 @@ export default {
         ],
         major: [{ required: true, message: "请选择院系", trigger: "blur" }],
         birthday: [{ required: true, message: "请选择生日", trigger: "blur" }]
+      },
+      pagination: {
+        current: 1,
+        total: 0,
+        pageSize: 10,
+        inviteCurrent: 1,
+        inviteTotal: 0,
+        invitePageSize: 10,
+        courseCurrent: 1,
+        courseTotal: 0,
+        coursePageSize: 10,
+        reportPageSize: 10,
+        reportTotal: 0,
+        reportCurrent: 1,
+        commitPageSize: 10,
+        commitTotal: 0,
+        commitCurrent: 1,
+        discussPageSize: 10,
+        discussTotal: 0,
+        discussCurrent: 1
       }
     };
   },
@@ -591,8 +659,13 @@ export default {
     },
     // 我的试卷
     async selectQuesiotn() {
-      const data = await apiGetSelectRecord("get");
+      const data = await apiGetSelectRecord(
+        this.pagination.pageSize,
+        this.pagination.pageSize * (this.pagination.current - 1),
+        "get"
+      );
       this.paperList = data.results;
+      this.pagination.total = data.count;
       this.paperList.forEach(val => {
         val.is_correct = answerMap[val.is_correct];
       });
@@ -710,8 +783,13 @@ export default {
     },
     // 我的讨论区发布
     async discussList() {
-      const data = await apiMyDiscussList("get");
+      const data = await apiMyDiscussList(
+        this.pagination.discussPageSize,
+        this.pagination.pageSize * (this.pagination.discussCurrent - 1),
+        "get"
+      );
       this.discussData = data.results;
+      this.pagination.discussTotal = data.count;
       // 格式化返回时间
       this.discussData.forEach(val => {
         val.created_time = formatDate.unixToTime(val.created_time);
@@ -729,12 +807,22 @@ export default {
     // 我的评价
     async myCommitList() {
       // 暂无数据
-      const data = await apiCommitList("get");
+      const data = await apiCommitList(
+        this.pagination.commitPageSize,
+        this.pagination.commitPageSize * (this.pagination.commitCurrent - 1),
+        "get"
+      );
+      this.pagination.commitTotal = data.count;
       this.commitData = data.results;
     },
     // 我发布的课程
     async reportCourse() {
-      const data = await apiReportCourse("get");
+      const data = await apiReportCourse(
+        this.pagination.reportPageSize,
+        this.pagination.reportPageSize * (this.pagination.reportCurrent - 1),
+        "get"
+      );
+      this.pagination.reportTotal = data.count;
       this.courseData = data.results;
     },
     // 我发布的课程删除
@@ -744,8 +832,13 @@ export default {
     },
     // 我的课程
     async myCourseList() {
-      const course = await apiCourseList("get");
+      const course = await apiCourseList(
+        this.pagination.coursePageSize,
+        this.pagination.coursePageSize * (this.pagination.courseCurrent - 1),
+        "get"
+      );
       this.courseData2 = course.results;
+      this.pagination.courseTotal = course.count;
       this.courseData2.map(val => {
         val.statusStr = statusMap[val.status];
         val.courseFlag = false;
@@ -789,8 +882,13 @@ export default {
     },
     // 我的预约
     async myInvite() {
-      const data = await apiMyInvite("get");
+      const data = await apiMyInvite(
+        this.pagination.invitePageSize,
+        this.pagination.invitePageSize * (this.pagination.inviteCurrent - 1),
+        "get"
+      );
       this.inviteList = data.results;
+      this.pagination.inviteTotal = data.count;
       this.inviteList.forEach(val => {
         val.status = statusMap[val.status];
       });
@@ -816,6 +914,12 @@ export default {
 <style type="text/css">
 * {
   font-size: 16px;
+}
+/* 分页 */
+.pagination-content {
+  margin-top: 30px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 /* 我的讨论区发布 */

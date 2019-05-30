@@ -92,29 +92,3 @@ module.exports = {
   //   ]
   // ]
 }
-
-
-var funcs = []
-for (var i = 0; i < 10; i++) {
-  funcs.push(function () {
-    console.log(i)
-  })
-}
-funcs.forEach(function (func) {
-  func();
-})
-
-// 闭包
-setTimeout(function () {
-  console.log(i)
-}, 0);
-new Promise(function executor(resolve) {
-  console.log(2);
-  for (var i = 0; i < 1000; i++) {
-    i = 9999 && resolve();
-  }
-  console.log(3);
-}).then(function () {
-  console.log(4);
-});
-console.log(5)

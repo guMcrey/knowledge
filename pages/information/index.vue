@@ -139,8 +139,7 @@ export default {
         current: 1,
         total: 0,
         pageSize: 10
-      },
-      nextList: ""
+      }
     };
   },
   mounted() {
@@ -157,12 +156,11 @@ export default {
     async getInformation() {
       const data = await apiInformationList(
         this.pagination.pageSize,
-        Math.pow(this.pagination.pageSize, this.pagination.current - 1),
+        this.pagination.pageSize * (this.pagination.current - 1),
         "get"
       );
       this.informationList = data.results.reverse();
       this.pagination.total = data.count;
-      this.nextList = data.next;
       this.informationList.forEach(res => {
         this.$set(res, "checkFlag", false);
       });

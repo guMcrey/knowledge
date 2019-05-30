@@ -191,6 +191,16 @@
           </ul>
         </div>
       </div>
+      <div class="pagination">
+        <el-pagination
+          @current-change="honorList"
+          :current-page.sync="pagination.current"
+          :page-size="pagination.pageSize"
+          layout="total, prev, pager, next"
+          :total="pagination.total"
+          class="pagination-content"
+        ></el-pagination>
+      </div>
     </div>
     <page-footer></page-footer>
   </div>
@@ -204,7 +214,12 @@ export default {
     return {
       userType: "",
       teacherList: [],
-      studentList: []
+      studentList: [],
+      pagination: {
+        current: 1,
+        total: 0,
+        pageSize: 10
+      }
     };
   },
   mounted() {
@@ -213,11 +228,17 @@ export default {
   },
   methods: {
     // 获取用户信息
-    // async getUserInfo() {},
     async honorList() {
       const user = await apiUserDetail("get");
       this.userType = user.type;
-      const student = await apiHonorsList(this.userType, "get");
+
+      const student = await apiHonorsList(
+        this.pagination.pageSize,
+        (this.pagination.current - 1) * this.pagination.pageSize,
+        this.userType,
+        "get"
+      );
+      this.pagination.total = student.count;
       this.teacherList = student.results;
       this.studentList = student.results;
     }
@@ -340,16 +361,22 @@ a:hover {
 }
 
 /* 必要布局样式css */
-
+.pagination-content {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}
 .ques-section {
   max-width: 1080px;
   min-height: 740px;
   margin: auto;
-  padding: 50px;
+  padding: 15px;
   border-radius: 2px;
+  margin-top: 40px;
   background-color: #fff;
   display: flex;
-  justify-content: center;
+  align-content: center;
+  flex-direction: column;
 }
 .ques-section-item {
   width: 1050px;
