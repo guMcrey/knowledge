@@ -46,6 +46,9 @@ For detailed explanation on how things work, checkout the [Nuxt.js docs](https:/
 # 安装python3.7 
 $ https://www.liaoxuefeng.com/wiki/1016959663602400/1016959856222624
 
+# 进入后端tjrac项目目录
+$ cd tjrac路径
+
 # 安装虚拟环境：
 $ pip3 install virtualenv
 $ virtualenv -p python3 venv
