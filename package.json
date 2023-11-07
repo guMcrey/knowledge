@@ -40,7 +40,7 @@
     "sd-track-event": "^0.1.32",
     "vue-awesome-swiper": "^5.0.1",
     "vue-video": "^0.1.7",
-    "vue-video-player": "^4.0.3",
+    "vue-video-player": "^6.0.0",
     "vuex": "^2.4.0"
   },
   "devDependencies": {
